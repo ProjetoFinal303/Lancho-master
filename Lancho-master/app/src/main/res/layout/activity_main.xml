@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp"
+    android:background="@drawable/background_layout">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lanchonete Digital"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:paddingBottom="20dp"
+        android:gravity="center"/>
+
+    <Button
+        android:id="@+id/btnCadastrar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="📌 Cadastrar Cliente"/>
+
+    <Button
+        android:id="@+id/btnVisualizar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🔍 Visualizar Cadastro"/>
+
+    <Button
+        android:id="@+id/btnAtualizar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="✏ Atualizar Cadastro"/>
+
+    <Button
+        android:id="@+id/btnExcluir"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="❌ Excluir Cadastro"/>
+
+    <Button
+        android:id="@+id/btnVerProdutos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🛒 Ver Produtos Disponíveis"/>
+
+    <!-- RecyclerView Adicionado -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1" />
+
+</LinearLayout>

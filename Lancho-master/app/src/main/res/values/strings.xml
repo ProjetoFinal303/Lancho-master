@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">ProjetoFinal</string>
+        <!-- Lista de produtos -->
+        <string-array name="produtos_lista">
+            <item>🍔 Hambúrguer</item>
+            <item>🍟 Batata Frita</item>
+            <item>🥤 Refrigerante</item>
+            <item>🍦 Milkshake</item>
+            <item>🍗 Coxinha</item>
+            <item>🥟 Pastel</item>
+            <item>🥖 Joelho</item>
+            <item>🍹 Caldo de Cana</item>
+            <item>🥤 Guaracamp</item>
+        </string-array>
+    </resources>

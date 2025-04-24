@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#696969">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cadastrar Cliente"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:paddingBottom="16dp"/>
+        <EditText
+            android:id="@+id/edtEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:textColorHint="@android:color/white"
+            android:textColor="@android:color/white"
+            android:padding="10dp"
+            android:backgroundTint="@android:color/white"/>
+
+
+        <EditText
+            android:id="@+id/edtNome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nome do Cliente"
+            android:textColorHint="@android:color/white"
+            android:textColor="@android:color/white"
+            android:inputType="textPersonName"
+            android:padding="10dp"
+            android:backgroundTint="@android:color/white"/>
+
+        <EditText
+            android:id="@+id/edtContato"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Contato"
+            android:textColorHint="@android:color/white"
+            android:textColor="@android:color/white"
+            android:inputType="phone"
+            android:padding="10dp"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@android:color/white"/>
+
+        <EditText
+            android:id="@+id/edtSenha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Senha"
+            android:textColorHint="@android:color/white"
+            android:textColor="@android:color/white"
+            android:inputType="textPassword"
+            android:padding="10dp"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@android:color/white"/>
+
+        <Button
+            android:id="@+id/btnCadastrar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cadastrar"
+            android:backgroundTint="@android:color/holo_green_dark"
+            android:textColor="@android:color/white"
+            android:padding="12dp"
+            android:layout_marginTop="16dp"/>
+    </LinearLayout>
+</ScrollView>

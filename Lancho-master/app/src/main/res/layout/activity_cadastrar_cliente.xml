@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:orientation="vertical"
+    android:background="#696969">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cadastrar Cliente"
+        android:textColor="@android:color/white"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"/>
+
+    <EditText
+        android:id="@+id/edtIdCliente"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="ID do Cliente"
+        android:textColorHint="@color/white"
+        android:inputType="number"
+        android:padding="8dp"/>
+
+    <EditText
+        android:id="@+id/edtNome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nome do Cliente"
+        android:textColorHint="@color/white"
+        android:inputType="textPersonName"
+        android:padding="8dp"/>
+
+    <EditText
+        android:id="@+id/edtContato"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Contato"
+        android:textColorHint="@color/white"
+        android:inputType="phone"
+        android:padding="8dp"/>
+
+    <Button
+        android:id="@+id/btnCadastrar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cadastrar"
+        android:backgroundTint="@android:color/holo_green_dark"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>
