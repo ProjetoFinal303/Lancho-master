@@ -5,11 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import projetofinal.database.DatabaseHelper;
-import projetofinal.models.Estoque;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import projetofinal.database.DatabaseHelper;
+import projetofinal.models.Estoque;
 
 public class EstoqueDao {
     private final DatabaseHelper dbHelper;

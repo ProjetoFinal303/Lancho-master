@@ -6,10 +6,11 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import projetofinal.models.Cliente;
 import com.example.projetofinal.databinding.ItemClienteBinding;
 
 import java.util.List;
+
+import projetofinal.models.Cliente;
 
 public class ClienteAdapter extends RecyclerView.Adapter<ClienteAdapter.ClientViewHolder> {
 

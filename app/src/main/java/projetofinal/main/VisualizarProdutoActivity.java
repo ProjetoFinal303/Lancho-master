@@ -2,14 +2,17 @@ package projetofinal.main;
 
 import android.os.Bundle;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import projetofinal.dao.ProdutoDao;
-import projetofinal.models.Produto;
-import projetofinal.adapters.ProdutoAdapter;
-import com.example.projetofinal.databinding.ActivityVisualizarProdutoBinding;  // Importando o ViewBinding
+
+import com.example.projetofinal.databinding.ActivityVisualizarProdutoBinding;
 
 import java.util.List;
+
+import projetofinal.adapters.ProdutoAdapter;
+import projetofinal.dao.ProdutoDao;
+import projetofinal.models.Produto;
 
 public class VisualizarProdutoActivity extends AppCompatActivity {
 

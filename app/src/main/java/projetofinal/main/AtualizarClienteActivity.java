@@ -13,7 +13,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import projetofinal.dao.ClienteDao;
-import projetofinal.database.DatabaseHelper;
 import projetofinal.models.Cliente;
 
 public class AtualizarClienteActivity extends AppCompatActivity {
@@ -30,7 +29,7 @@ public class AtualizarClienteActivity extends AppCompatActivity {
         binding = ActivityAtualizarClienteBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        clienteDao = DatabaseHelper.getInstance(this).clienteDao();
+        clienteDao = new ClienteDao(this); // Passando o contexto para o ClienteDao
 
         // Botão BUSCAR CLIENTE
         binding.btnBuscar.setOnClickListener(v -> {

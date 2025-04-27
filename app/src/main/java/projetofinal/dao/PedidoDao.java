@@ -5,11 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import projetofinal.database.DatabaseHelper;
-import projetofinal.models.Pedido;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import projetofinal.database.DatabaseHelper;
+import projetofinal.models.Pedido;
 
 public class PedidoDao {
     private final DatabaseHelper dbHelper;
@@ -49,6 +49,32 @@ public class PedidoDao {
 
         try {
             cursor = db.rawQuery("SELECT id, id_cliente, descricao, valor FROM Pedido", null);
+            if (cursor.moveToFirst()) {
+                do {
+                    lista.add(new Pedido(
+                            cursor.getInt(0),  // id
+                            cursor.getInt(1),  // Cliente id
+                            cursor.getString(2),  // Descrição
+                            cursor.getDouble(3)  // Valor
+                    ));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) cursor.close();
+            db.close();
+        }
+        return lista;
+    }
+
+    // Método para buscar pedidos por ID do cliente
+    public List<Pedido> buscarPedidosPorClienteId(int clienteId) {
+        List<Pedido> lista = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery("SELECT id, id_cliente, descricao, valor FROM Pedido WHERE id_cliente = ?",
+                    new String[]{String.valueOf(clienteId)});
             if (cursor.moveToFirst()) {
                 do {
                     lista.add(new Pedido(

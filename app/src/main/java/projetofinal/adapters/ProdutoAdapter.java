@@ -2,12 +2,15 @@ package projetofinal.adapters;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import projetofinal.databinding.ItemProdutoBinding;
-import projetofinal.models.Produto;
+
+import com.example.projetofinal.databinding.ItemProdutoBinding;
 
 import java.util.List;
+
+import projetofinal.models.Produto;
 
 public class ProdutoAdapter extends RecyclerView.Adapter<ProdutoAdapter.ProdutoViewHolder> {
 

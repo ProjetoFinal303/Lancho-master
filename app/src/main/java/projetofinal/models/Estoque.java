@@ -1,20 +1,9 @@
 package projetofinal.models;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-import androidx.room.ColumnInfo;
-
-@Entity(tableName = "Estoque")
 public class Estoque {
 
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
     private int id;
-
-    @ColumnInfo(name = "id_produto")
     private int produtoId;
-
-    @ColumnInfo(name = "quantidade")
     private int quantidade;
 
     public Estoque() {}

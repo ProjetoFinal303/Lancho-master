@@ -13,7 +13,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import projetofinal.dao.ClienteDao;
-import projetofinal.database.DatabaseHelper;
 import projetofinal.models.Cliente;
 
 public class CadastrarClienteActivity extends AppCompatActivity {
@@ -28,7 +27,7 @@ public class CadastrarClienteActivity extends AppCompatActivity {
         binding = ActivityCadastrarClienteBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        clienteDao = DatabaseHelper.getInstance(this).clienteDao();
+        clienteDao = new ClienteDao(this); // Passando o contexto para o ClienteDao
 
         binding.btnCadastrar.setOnClickListener(view -> {
             String nome = binding.edtNome.getText().toString().trim();

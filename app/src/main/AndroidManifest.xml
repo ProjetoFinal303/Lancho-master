@@ -27,15 +27,15 @@
         </activity>
 
         <!-- TELAS DE CLIENTE -->
-        <activity android:name="projetofinal.main.MainActivity" android:exported="true" />
+        <activity android:name="projetofinal.main.MainClienteActivity" android:exported="true"/>
         <activity android:name="projetofinal.main.CadastrarClienteActivity" android:exported="true"/>
         <activity android:name="projetofinal.main.VisualizarClienteActivity" android:exported="true"/>
         <activity android:name="projetofinal.main.AtualizarClienteActivity" android:exported="true"/>
         <activity android:name="projetofinal.main.ExcluirClienteActivity" android:exported="true"/>
 
         <!-- TELAS DE ADMINISTRAÇÃO E COZINHA -->
-        <activity android:name="projetofinal.main.TelaAdmActivity" android:exported="true"/>
-        <activity android:name="projetofinal.main.TelaCozinhaActivity" android:exported="true"/>
+        <activity android:name="projetofinal.main.MainAdminActivity" android:exported="true"/>
+        <activity android:name="projetofinal.main.MainCozinhaActivity" android:exported="true"/>
 
         <!-- TELAS DE PRODUTO -->
         <activity android:name="projetofinal.main.VisualizarProdutoActivity" android:exported="true"/>

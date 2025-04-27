@@ -1,26 +1,11 @@
 package projetofinal.models;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-import androidx.room.ColumnInfo;
-
-@Entity(tableName = "Cliente")
 public class Cliente {
 
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
     private int id;
-
-    @ColumnInfo(name = "nome")
     private String nome;
-
-    @ColumnInfo(name = "email")
     private String email;
-
-    @ColumnInfo(name = "contato")
     private String contato;
-
-    @ColumnInfo(name = "senha")
     private String senha;
 
     public Cliente(int id, String nome, String email, String contato, String senha) {
@@ -38,6 +23,7 @@ public class Cliente {
         this.senha = senha;
     }
 
+    // Getters e Setters
     public int getId() { return id; }
     public String getNome() { return nome; }
     public String getEmail() { return email; }

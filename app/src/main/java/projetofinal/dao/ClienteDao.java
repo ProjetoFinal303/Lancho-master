@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ public class ClienteDao {
     private final DatabaseHelper dbHelper;
 
     public ClienteDao(Context context) {
-        this.dbHelper = DatabaseHelper.getInstance(context);  // Chamada corrigida para o Singleton
+        this.dbHelper = DatabaseHelper.getInstance(context);
     }
 
     // Inserir novo cliente
@@ -31,6 +32,58 @@ public class ClienteDao {
         } finally {
             db.close();
         }
+    }
+
+    // Buscar cliente por EMAIL
+    public Cliente buscarPorEmail(String email) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cliente cliente = null;
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery("SELECT * FROM Cliente WHERE email = ?", new String[]{email});
+            if (cursor != null && cursor.moveToFirst()) {
+                cliente = new Cliente(
+                        cursor.getInt(cursor.getColumnIndex("id")),
+                        cursor.getString(cursor.getColumnIndex("nome")),
+                        cursor.getString(cursor.getColumnIndex("email")),
+                        cursor.getString(cursor.getColumnIndex("contato")),
+                        cursor.getString(cursor.getColumnIndex("senha"))
+                );
+            }
+            if (cliente == null) {
+                Log.e("ClienteDao", "Cliente não encontrado com o email: " + email);
+            }
+        } finally {
+            if (cursor != null) cursor.close();
+            db.close();
+        }
+        return cliente;
+    }
+
+    // Buscar cliente por ID
+    public Cliente buscarPorId(int id) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cliente cliente = null;
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery("SELECT * FROM Cliente WHERE id = ?", new String[]{String.valueOf(id)});
+            if (cursor != null && cursor.moveToFirst()) {
+                cliente = new Cliente(
+                        cursor.getInt(cursor.getColumnIndex("id")),
+                        cursor.getString(cursor.getColumnIndex("nome")),
+                        cursor.getString(cursor.getColumnIndex("email")),
+                        cursor.getString(cursor.getColumnIndex("contato")),
+                        cursor.getString(cursor.getColumnIndex("senha"))
+                );
+            }
+            if (cliente == null) {
+                Log.e("ClienteDao", "Cliente não encontrado com o ID: " + id);
+            }
+        } finally {
+            if (cursor != null) cursor.close();
+            db.close();
+        }
+        return cliente;
     }
 
     // Atualizar dados de cliente
@@ -50,7 +103,7 @@ public class ClienteDao {
         return linhasAfetadas;
     }
 
-    // Excluir cliente
+    // Excluir cliente por ID
     public void excluir(int id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         try {
@@ -60,75 +113,29 @@ public class ClienteDao {
         }
     }
 
-    // Listar todos os clientes
+    // Obter todos os clientes
     public List<Cliente> getAllClientes() {
-        List<Cliente> lista = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
+        List<Cliente> clientes = new ArrayList<>();
         Cursor cursor = null;
         try {
-            cursor = db.rawQuery("SELECT * FROM Cliente ORDER BY nome ASC", null);
-            if (cursor.moveToFirst()) {
+            cursor = db.rawQuery("SELECT * FROM Cliente", null);
+            if (cursor != null && cursor.moveToFirst()) {
                 do {
-                    int id = cursor.getInt(cursor.getColumnIndex("id"));
-                    String nome = cursor.getString(cursor.getColumnIndex("nome"));
-                    String email = cursor.getString(cursor.getColumnIndex("email"));
-                    String contato = cursor.getString(cursor.getColumnIndex("contato"));
-                    String senha = cursor.getString(cursor.getColumnIndex("senha"));
-
-                    Cliente cliente = new Cliente(id, nome, email, contato, senha);
-                    lista.add(cliente);
+                    Cliente cliente = new Cliente(
+                            cursor.getInt(cursor.getColumnIndex("id")),
+                            cursor.getString(cursor.getColumnIndex("nome")),
+                            cursor.getString(cursor.getColumnIndex("email")),
+                            cursor.getString(cursor.getColumnIndex("contato")),
+                            cursor.getString(cursor.getColumnIndex("senha"))
+                    );
+                    clientes.add(cliente);
                 } while (cursor.moveToNext());
             }
         } finally {
             if (cursor != null) cursor.close();
             db.close();
         }
-        return lista;
-    }
-
-    // Buscar cliente por ID
-    public Cliente buscarPorId(int id) {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cliente cliente = null;
-        Cursor cursor = null;
-        try {
-            cursor = db.rawQuery("SELECT * FROM Cliente WHERE id = ?", new String[]{String.valueOf(id)});
-            if (cursor != null && cursor.moveToFirst()) {
-                cliente = new Cliente(
-                        cursor.getInt(cursor.getColumnIndex("id")),
-                        cursor.getString(cursor.getColumnIndex("nome")),
-                        cursor.getString(cursor.getColumnIndex("email")),
-                        cursor.getString(cursor.getColumnIndex("contato")),
-                        cursor.getString(cursor.getColumnIndex("senha"))
-                );
-            }
-        } finally {
-            if (cursor != null) cursor.close();
-            db.close();
-        }
-        return cliente;
-    }
-
-    // Buscar cliente por EMAIL
-    public Cliente buscarPorEmail(String email) {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cliente cliente = null;
-        Cursor cursor = null;
-        try {
-            cursor = db.rawQuery("SELECT * FROM Cliente WHERE email = ?", new String[]{email});
-            if (cursor != null && cursor.moveToFirst()) {
-                cliente = new Cliente(
-                        cursor.getInt(cursor.getColumnIndex("id")),
-                        cursor.getString(cursor.getColumnIndex("nome")),
-                        cursor.getString(cursor.getColumnIndex("email")),
-                        cursor.getString(cursor.getColumnIndex("contato")),
-                        cursor.getString(cursor.getColumnIndex("senha"))
-                );
-            }
-        } finally {
-            if (cursor != null) cursor.close();
-            db.close();
-        }
-        return cliente;
+        return clientes;
     }
 }

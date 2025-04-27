@@ -3,12 +3,11 @@ package projetofinal.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import projetofinal.dao.ClienteDao;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "lanchonete.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
 
     private static DatabaseHelper instance;
     private final Context appContext;
@@ -18,7 +17,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         this.appContext = context.getApplicationContext();
     }
 
-    // Método para obter a instância única do DatabaseHelper
     public static synchronized DatabaseHelper getInstance(Context context) {
         if (instance == null) {
             instance = new DatabaseHelper(context.getApplicationContext());
@@ -28,7 +26,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Tabelas de Cliente e Pedido
         String createClienteTable = "CREATE TABLE Cliente (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "nome TEXT NOT NULL, " +
@@ -61,10 +58,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS Pedido");
             onCreate(db);
         }
-    }
-
-    // Exemplo de como pegar a instância da DAO do Cliente
-    public ClienteDao clienteDao() {
-        return new ClienteDao(appContext);
     }
 }

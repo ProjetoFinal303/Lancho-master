@@ -1,27 +1,57 @@
 package projetofinal.main;
 
 import android.os.Bundle;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.projetofinal.databinding.ActivityVisualizarPedidosBinding;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.projetofinal.R;
+
+import java.util.List;
+
+import projetofinal.adapters.PedidoAdapter;
+import projetofinal.dao.PedidoDao;
+import projetofinal.models.Pedido;
 
 public class VisualizarPedidosActivity extends AppCompatActivity {
 
-    private ActivityVisualizarPedidosBinding binding;
+    private RecyclerView recyclerViewPedidos;
+    private PedidoAdapter pedidoAdapter;
+    private PedidoDao pedidoDao;
+    private int clienteId; // para buscar apenas os pedidos do cliente logado
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityVisualizarPedidosBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView(R.layout.activity_visualizar_pedidos);
 
-        // Aqui você vai pegar os dados de pedido do banco
-        String[] pedidosArray = {
-                "Pedido 1: Hambúrguer + Batata Frita",
-                "Pedido 2: Coxinha + Refrigerante",
-                "Pedido 3: Pastel + Guaracamp"
-        };
+        recyclerViewPedidos = findViewById(R.id.recyclerViewPedidos);
+        recyclerViewPedidos.setLayoutManager(new LinearLayoutManager(this));
 
-        // Exibir os pedidos na tela
-        binding.txtPedidos.setText(String.join("\n", pedidosArray));
+        pedidoDao = new PedidoDao(this); // Passando o contexto para o PedidoDao
+
+
+        // Recebe o ID do cliente logado
+        clienteId = getIntent().getIntExtra("cliente_id", -1);
+
+        if (clienteId != -1) {
+            carregarPedidosDoCliente(clienteId);
+        } else {
+            Toast.makeText(this, "Erro ao carregar pedidos!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void carregarPedidosDoCliente(int clienteId) {
+        // Agora, você pode usar o PedidoDao para buscar os pedidos do cliente
+        List<Pedido> pedidos = pedidoDao.buscarPedidosPorClienteId(clienteId); // Buscar pedidos específicos por cliente
+        if (pedidos != null && !pedidos.isEmpty()) {
+            pedidoAdapter = new PedidoAdapter(pedidos);
+            recyclerViewPedidos.setAdapter(pedidoAdapter);
+        } else {
+            Toast.makeText(this, "Nenhum pedido encontrado.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -4,14 +4,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import projetofinal.dao.ClienteDao;
-import projetofinal.models.Cliente;
-import projetofinal.adapters.ClienteAdapter;
+
 import com.example.projetofinal.databinding.ActivityVisualizarClienteBinding;
 
 import java.util.List;
+
+import projetofinal.adapters.ClienteAdapter;
+import projetofinal.dao.ClienteDao;
+import projetofinal.models.Cliente;
 
 public class VisualizarClienteActivity extends AppCompatActivity {
     private ClienteDao clienteDao;

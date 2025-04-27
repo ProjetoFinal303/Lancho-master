@@ -2,14 +2,16 @@ package projetofinal.main;
 
 import android.os.Bundle;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.projetofinal.databinding.ActivityExcluirClienteBinding;
-import projetofinal.database.DatabaseHelper;
-import projetofinal.dao.ClienteDao;
-import projetofinal.models.Cliente;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import projetofinal.dao.ClienteDao;
+import projetofinal.models.Cliente;
 
 public class ExcluirClienteActivity extends AppCompatActivity {
 
@@ -26,7 +28,7 @@ public class ExcluirClienteActivity extends AppCompatActivity {
 
         // Inicializa o banco de dados
         try {
-            clienteDao = DatabaseHelper.getInstance(this).clienteDao();
+            clienteDao = new ClienteDao(this); // Passando o contexto para o ClienteDao
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, "Erro ao acessar o banco de dados!", Toast.LENGTH_LONG).show();

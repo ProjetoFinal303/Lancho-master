@@ -3,7 +3,9 @@ package projetofinal.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.projetofinal.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {

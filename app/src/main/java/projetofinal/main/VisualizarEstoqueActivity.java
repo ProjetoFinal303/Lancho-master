@@ -1,7 +1,9 @@
 package projetofinal.main;
 
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.projetofinal.databinding.ActivityVisualizarEstoqueBinding;
 
 public class VisualizarEstoqueActivity extends AppCompatActivity {

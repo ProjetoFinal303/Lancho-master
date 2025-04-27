@@ -2,6 +2,7 @@ package projetofinal.main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,7 +12,6 @@ import com.example.projetofinal.databinding.ActivityLoginBinding;
 import org.mindrot.jbcrypt.BCrypt;
 
 import projetofinal.dao.ClienteDao;
-import projetofinal.database.DatabaseHelper;
 import projetofinal.models.Cliente;
 
 public class LoginActivity extends AppCompatActivity {
@@ -25,7 +25,8 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        clienteDao = DatabaseHelper.getInstance(this).clienteDao();
+        clienteDao = new ClienteDao(this); // Passando o contexto para o ClienteDao
+
 
         binding.btnLogin.setOnClickListener(v -> {
             String email = binding.edtEmail.getText().toString().trim();
@@ -38,25 +39,35 @@ public class LoginActivity extends AppCompatActivity {
 
             // Login ADM
             if (email.equals("admin@lanchonete.com") && senha.equals("admin123")) {
-                startActivity(new Intent(this, TelaAdmActivity.class));
-                finish();
+                // Redireciona para a tela principal do administrador
+                Intent intent = new Intent(LoginActivity.this, MainAdminActivity.class);
+                startActivity(intent);
+                finish();  // Finaliza a LoginActivity
                 return;
             }
 
             // Login Cozinha
             if (email.equals("cozinha@lanchonete.com") && senha.equals("cozinha123")) {
-                startActivity(new Intent(this, TelaCozinhaActivity.class));
+               Intent intent = new Intent(LoginActivity.this, MainCozinhaActivity.class);
+                startActivity(intent);
                 finish();
                 return;
             }
 
             // Login Cliente (via email + senha hash)
             Cliente cliente = clienteDao.buscarPorEmail(email);
-            if (cliente != null && BCrypt.checkpw(senha, cliente.getSenha())) {
-                startActivity(new Intent(this, MainActivity.class));
-                finish();
+            if (cliente != null) {
+                if (BCrypt.checkpw(senha, cliente.getSenha())) {
+                    // Redireciona o cliente para a MainClienteActivity após login bem-sucedido
+                    Intent intent = new Intent(LoginActivity.this, MainClienteActivity.class);
+                    startActivity(intent);
+                    finish();  // Finaliza a LoginActivity
+                } else {
+                    Toast.makeText(this, "E-mail ou senha incorretos!", Toast.LENGTH_SHORT).show();
+                }
             } else {
-                Toast.makeText(this, "E-mail ou senha incorretos!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Cliente não encontrado!", Toast.LENGTH_SHORT).show();
+                Log.e("LoginActivity", "Cliente não encontrado com o email: " + email);
             }
         });
 
