@@ -1,32 +1,7 @@
-# Lanchô 🍔
+# Lanchonete Digital 🍔🍟🥤
 
-Bem-vindo à Lanchô! Este é um aplicativo para Android que ajuda a gerenciar uma lanchonete e facilita os pedidos dos clientes.
+Bem-vindo ao Lanchonete Digital! Este aplicativo Android moderniza a gestão de lanchonetes, oferecendo ferramentas tanto para a administração quanto para os clientes. Com ele, é possível gerenciar o cardápio, controlar o estoque, acompanhar as vendas e permitir que os clientes façam seus pedidos de forma prática e digital, diretamente pelo celular.
 
-## O que o aplicativo faz?
+O sistema possui áreas dedicadas para diferentes perfis de usuário. Administradores podem cuidar de todo o cardápio, estoque, vendas e informações dos clientes. Os clientes, por sua vez, podem se cadastrar, fazer login, navegar pelos produtos, montar seu carrinho de compras, finalizar pedidos e consultar seu histórico. Já a equipe da cozinha tem acesso às comandas digitais, podendo visualizar os pedidos que chegam e atualizar o status de preparo, agilizando todo o processo.
 
-Nosso app moderniza o dia a dia de uma lanchonete, oferecendo ferramentas específicas para cada tipo de usuário:
-
-### Para o Dono (Administrador):
-* **Cardápio:** Adicione, veja, edite ou remova lanches e bebidas.
-* **Estoque:** Controle a quantidade de produtos e atualize o que tem disponível.
-* **Vendas:** Acompanhe todos os pedidos feitos.
-* **Clientes:** Veja quem são seus clientes, atualize os dados ou remova cadastros.
-
-### Para os Clientes:
-* **Conta:** Crie sua conta ou faça login.
-* **Pedidos:** Explore o cardápio, escolha seus itens e adicione ao carrinho.
-* **Carrinho:** Confira seu pedido, altere quantidades ou remova itens antes de finalizar.
-* **Histórico:** Veja seus pedidos anteriores e como estão.
-* **Sair:** Desconecte-se com segurança.
-
-### Para a Equipe da Cozinha:
-* **Comandas Digitais:** Receba os pedidos dos clientes direto na tela, sem papel.
-* **Status do Pedido:** Avise quando um pedido começar a ser preparado e quando estiver pronto.
-* **Sair:** Desconecte ao final do expediente.
-
-## Como Acessar:
-
-* **Clientes:** Podem criar uma nova conta diretamente no aplicativo.
-* **Administrador e Cozinha:** Utilizam credenciais de acesso específicas fornecidas internamente.
-
-Este aplicativo guarda todas as informações importantes (produtos, clientes, pedidos, estoque) de forma segura no próprio dispositivo Android.
+Para acessar, clientes criam suas contas no próprio app, enquanto os perfis de administrador e cozinha utilizam credenciais específicas. Todas as informações, como produtos, dados de clientes, pedidos e o controle de estoque, são armazenadas de forma segura no dispositivo Android, garantindo que tudo esteja organizado e acessível.
