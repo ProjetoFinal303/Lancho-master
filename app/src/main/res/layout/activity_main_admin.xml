@@ -1,49 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="?android:attr/colorBackground"
+    tools:context="projetofinal.main.MainAdminActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:gravity="center">
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnProdutos"
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbarMainAdmin"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:title="Painel Administrativo" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Visualizar Produtos"
-            android:layout_marginBottom="16dp" />
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:gravity="center_horizontal">
 
-        <Button
-            android:id="@+id/btnEstoque"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Gerenciar Estoque"
-            android:layout_marginBottom="16dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Painel Administrativo"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="32dp"
+                tools:ignore="HardcodedText" />
 
-        <Button
-            android:id="@+id/btnPedidos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Gerenciar Pedidos"
-            android:layout_marginBottom="16dp" />
+            <Button
+                android:id="@+id/btnGerenciarProdutos"
+                style="@style/AppButtonStyle.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/admin_gerenciar_produtos"
+                app:icon="@android:drawable/ic_menu_edit" />
 
-        <Button
-            android:id="@+id/btnClientes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Gerenciar Clientes"
-            android:layout_marginBottom="16dp" />
+            <Button
+                android:id="@+id/btnGerenciarEstoque"
+                style="@style/AppButtonStyle.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/admin_gerenciar_estoque"
+                app:icon="@android:drawable/ic_menu_save" />
 
-        <Button
-            android:id="@+id/btnMeusPedidosCliente"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ver Meus Pedidos (modo Cliente)" />
+            <Button
+                android:id="@+id/btnVisualizarPedidos"
+                style="@style/AppButtonStyle.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/admin_visualizar_pedidos"
+                app:icon="@android:drawable/ic_menu_agenda" />
 
+            <Button
+                android:id="@+id/btnGerenciarClientes"
+                style="@style/AppButtonStyle.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/admin_gerenciar_clientes"
+                app:icon="@android:drawable/ic_menu_myplaces" />
+
+            <Button
+                android:id="@+id/btnExcluirClienteAdmin"
+                style="@style/AppButtonStyle.Danger"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Excluir Cliente por ID"
+                app:icon="@android:drawable/ic_menu_delete"
+                android:layout_marginTop="16dp"/>
+
+            <Button
+                android:id="@+id/btnLogoutAdmin"
+                style="@style/AppButtonStyle.Danger"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/logout_button"
+                android:layout_marginTop="24dp"
+                app:icon="@android:drawable/ic_lock_power_off"/>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

@@ -1,76 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     android:orientation="vertical"
-    android:background="#696969">
+    android:background="?android:attr/colorBackground"
+    tools:context="projetofinal.main.VisualizarClienteActivity">
 
-    <TextView
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbarVisualizarClientes" android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="@string/visualizar_clientes_title" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp"
+        android:gravity="center_vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilBuscarClienteId"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/buscar_cliente_id_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextBuscarClienteId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/buttonBuscarPorId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/buscar_button"
+            android:layout_marginStart="8dp" />
+
+        <Button
+            android:id="@+id/buttonLimparBusca"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/limpar_busca_button"
+            android:layout_marginStart="4dp" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBarVisualizar"
+        style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Clientes Cadastrados"
-        android:textColor="@android:color/white"
-        android:textSize="22sp"
-        android:textStyle="bold"
         android:layout_gravity="center"
-        android:paddingBottom="20dp" />
+        android:visibility="gone"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"/>
 
-    <EditText
-        android:id="@+id/editTextBuscarClienteId"
+    <LinearLayout
+        android:id="@+id/layoutDadosClienteEspecifico"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="ID do Cliente"
-        android:inputType="number"
-        android:padding="10dp"
-        android:textColor="@android:color/black"
-        android:layout_marginBottom="16dp" />
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        style="@style/AppCardViewStyle"
+        android:visibility="gone">
 
-    <Button
-        android:id="@+id/buttonBuscarPorId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Buscar Cliente"
-        android:layout_gravity="center"
-        android:textColor="@android:color/white"
-        android:layout_marginBottom="20dp"
-        android:background="?android:attr/selectableItemBackground" />
+        <TextView
+            android:id="@+id/textViewNomeClienteEspecifico"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Nome: Nome do Cliente Completo"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:layout_marginBottom="4dp" />
 
-    <TextView
-        android:id="@+id/textViewNome"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Nome: "
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        android:layout_marginBottom="8dp" />
+        <TextView
+            android:id="@+id/textViewEmailClienteEspecifico"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Email: cliente.especifico@example.com"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:layout_marginBottom="4dp" />
 
-    <TextView
-        android:id="@+id/textViewContato"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Contato: "
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
-        android:id="@+id/textViewEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Email: "
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
-        android:id="@+id/textViewSenha"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Senha: "
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        android:layout_marginBottom="8dp" />
+        <TextView
+            android:id="@+id/textViewContatoClienteEspecifico"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Contato: (21) 99999-8888"
+            android:textAppearance="?attr/textAppearanceBody2" />
+    </LinearLayout>
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -78,15 +111,19 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="8dp"
-        android:layout_marginBottom="20dp" />
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:clipToPadding="false"
+        tools:listitem="@layout/item_cliente"
+        android:visibility="gone"/>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/textViewNenhumCliente"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/nenhum_cliente_cadastrado"
+        android:gravity="center"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
         android:visibility="gone"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:indeterminateTint="@android:color/white" />
+        android:padding="16dp"/>
 </LinearLayout>

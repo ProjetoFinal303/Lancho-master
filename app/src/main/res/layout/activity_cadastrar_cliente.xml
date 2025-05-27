@@ -1,79 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#696969">
+    android:fillViewport="true"
+    android:background="?android:attr/colorBackground"
+    tools:context="projetofinal.main.CadastrarClienteActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="24dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cadastrar Cliente"
-            android:textColor="@android:color/white"
-            android:textSize="22sp"
+            android:text="@string/cadastrar_cliente_title"
+            android:textSize="24sp"
             android:textStyle="bold"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="24dp"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilNomeCliente"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/nome_cliente_hint"
+            android:layout_marginBottom="16dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtNome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName|textCapWords"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEmailCliente"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/email_hint"
+            android:layout_marginBottom="16dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilContatoCliente"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/contato_cliente_hint"
+            android:layout_marginBottom="16dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtContato"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilSenhaCliente"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/senha_hint"
+            app:passwordToggleEnabled="true"
+            android:layout_marginBottom="16dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtSenha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilConfirmarSenhaCliente"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/confirmar_senha_hint"
+            app:passwordToggleEnabled="true"
+            android:layout_marginBottom="24dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtConfirmarSenha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBarCadastro"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:paddingBottom="16dp"/>
-        <EditText
-            android:id="@+id/edtEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:textColorHint="@android:color/white"
-            android:textColor="@android:color/white"
-            android:padding="10dp"
-            android:backgroundTint="@android:color/white"/>
-
-
-        <EditText
-            android:id="@+id/edtNome"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nome do Cliente"
-            android:textColorHint="@android:color/white"
-            android:textColor="@android:color/white"
-            android:inputType="textPersonName"
-            android:padding="10dp"
-            android:backgroundTint="@android:color/white"/>
-
-        <EditText
-            android:id="@+id/edtContato"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Contato"
-            android:textColorHint="@android:color/white"
-            android:textColor="@android:color/white"
-            android:inputType="phone"
-            android:padding="10dp"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="@android:color/white"/>
-
-        <EditText
-            android:id="@+id/edtSenha"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Senha"
-            android:textColorHint="@android:color/white"
-            android:textColor="@android:color/white"
-            android:inputType="textPassword"
-            android:padding="10dp"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="@android:color/white"/>
+            android:visibility="gone"
+            android:layout_marginBottom="16dp"/>
 
         <Button
             android:id="@+id/btnCadastrar"
+            style="@style/AppButtonStyle.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Cadastrar"
-            android:backgroundTint="@android:color/holo_green_dark"
-            android:textColor="@android:color/white"
-            android:padding="12dp"
-            android:layout_marginTop="16dp"/>
+            android:text="@string/cadastrar_button"/>
+
     </LinearLayout>
 </ScrollView>

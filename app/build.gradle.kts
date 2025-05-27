@@ -32,21 +32,27 @@ android {
     }
 
     buildFeatures {
-        viewBinding = true
-        dataBinding = true
+        viewBinding = true // Already enabled, which is great!
+        dataBinding = true // Also enabled, used by ProdutoAdapter
     }
 }
 
 dependencies {
-    implementation("androidx.recyclerview:recyclerview:1.3.1")
+    implementation("androidx.recyclerview:recyclerview:1.3.2") // Consider updating to latest stable
     implementation("org.mindrot:jbcrypt:0.4")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    implementation(libs.room.common)
-    implementation(libs.room.runtime)
-    annotationProcessor(libs.room.compiler)
+    implementation("com.google.code.gson:gson:2.10.1")
+
+    
+
+    // Room dependencies were present but DatabaseHelper is custom SQLite.
+    // Sticking to custom SQLite as per analysis.
+    // implementation(libs.room.common)
+    // implementation(libs.room.runtime)
+    // annotationProcessor(libs.room.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

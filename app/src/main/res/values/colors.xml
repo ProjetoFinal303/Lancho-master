@@ -2,4 +2,27 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="colorPrimary">#FF6200EE</color>
+    <color name="colorPrimaryDark">#FF3700B3</color>
+    <color name="colorAccent">#FF03DAC5</color>
+
+    <color name="textColorPrimary">#DE000000</color>
+    <color name="textColorSecondary">#8A000000</color>
+    <color name="textColorHint">#61000000</color>
+
+    <color name="button_primary_default">@color/colorPrimary</color>
+    <color name="button_primary_pressed">@color/colorPrimaryDark</color>
+    <color name="button_danger_default">#F44336</color>
+    <color name="button_danger_pressed">#D32F2F</color>
+
+    <color name="background_light">#FAFAFA</color>
+    <color name="background_dark">#FF212121</color>
+    <color name="card_background_light">#FFFFFF</color>
+    <color name="card_background_dark">#FF424242</color>
+
+    <color name="status_pendente">#FFC107</color> <color name="status_em_preparo">#2196F3</color> <color name="status_concluido">#4CAF50</color> <color name="status_cancelado">#F44336</color> <color name="status_default_text_color">#FFFFFFFF</color>
+
+
+    <color name="divider_color">#1F000000</color>
 </resources>

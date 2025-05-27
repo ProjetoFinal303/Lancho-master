@@ -1,33 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#696969">
+    android:background="?android:attr/colorBackground"
+    tools:context="projetofinal.main.CadastrarPedidoActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cadastrar Pedido"
-        android:textColor="@android:color/white"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_gravity="center"
-        android:paddingBottom="16dp" />
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbarCarrinho"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Meu Carrinho" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <EditText
-        android:id="@+id/edtPedidoDescricao"
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewItensCarrinho"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            tools:listitem="@layout/item_carrinho_produto"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/textViewCarrinhoVazio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/carrinho_vazio"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:layout_gravity="center"
+            android:visibility="visible"/>
+    </FrameLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Descrição do Pedido"
-        android:padding="8dp" />
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="?attr/colorSurfaceContainerHighest">
 
-    <Button
-        android:id="@+id/btnCadastrarPedido"
+        <TextView
+            android:id="@+id/textViewTotalCarrinho"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Total: R$ 0,00"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:gravity="end"
+            android:layout_marginBottom="16dp"/>
+
+        <Button
+            android:id="@+id/btnFinalizarPedido"
+            style="@style/AppButtonStyle.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/finalizar_pedido"/>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBarFinalizarPedido"
+        style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cadastrar Pedido"
-        android:padding="8dp"
-        android:layout_gravity="center" />
-</LinearLayout>
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="-70dp"/> </LinearLayout>

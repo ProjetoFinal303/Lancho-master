@@ -3,41 +3,40 @@ package projetofinal.adapters;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.projetofinal.databinding.ItemClienteBinding;
-
 import java.util.List;
-
 import projetofinal.models.Cliente;
 
 public class ClienteAdapter extends RecyclerView.Adapter<ClienteAdapter.ClientViewHolder> {
 
     private List<Cliente> clienteList;
-    private Context context;
+    private final Context context;
+    private final OnItemClickListener listener;
 
-    // Construtor do adaptador
-    public ClienteAdapter(Context context, List<Cliente> clienteList) {
-        this.context = context;
-        this.clienteList = clienteList;
+    public interface OnItemClickListener {
+        void onItemClick(Cliente cliente);
     }
 
-    // Criação do ViewHolder com ViewBinding
+    public ClienteAdapter(Context context, List<Cliente> clienteList, OnItemClickListener listener) {
+        this.context = context;
+        this.clienteList = clienteList;
+        this.listener = listener;
+    }
+
+    @NonNull
     @Override
-    public ClientViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ClientViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         ItemClienteBinding binding = ItemClienteBinding.inflate(inflater, parent, false);
         return new ClientViewHolder(binding);
     }
 
-    // Preenchimento dos dados no ViewHolder
     @Override
-    public void onBindViewHolder(ClientViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ClientViewHolder holder, int position) {
         Cliente cliente = clienteList.get(position);
-        holder.binding.textClienteNome.setText(cliente.getNome());
-        holder.binding.textClienteContato.setText(cliente.getContato());
-        holder.binding.textClienteId.setText("ID: " + cliente.getId());
+        holder.bind(cliente, listener);
     }
 
     @Override
@@ -45,27 +44,32 @@ public class ClienteAdapter extends RecyclerView.Adapter<ClienteAdapter.ClientVi
         return clienteList != null ? clienteList.size() : 0;
     }
 
-    // ViewHolder atualizado com ViewBinding
-    public static class ClientViewHolder extends RecyclerView.ViewHolder {
-
+    static class ClientViewHolder extends RecyclerView.ViewHolder {
         ItemClienteBinding binding;
 
         public ClientViewHolder(ItemClienteBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
-    }
 
-    // Atualização da lista de clientes com a nova lista
-    public void updateClientList(List<Cliente> newClientList) {
-        if (newClientList != null) {
-            this.clienteList = newClientList;
-            notifyDataSetChanged();
+        public void bind(final Cliente cliente, final OnItemClickListener listener) {
+            binding.textClienteId.setText("ID: " + cliente.getId());
+            binding.textClienteNome.setText(cliente.getNome());
+            binding.textClienteContato.setText("Contato: " + cliente.getContato());
+            binding.textClienteEmail.setText("Email: " + cliente.getEmail());
+            itemView.setOnClickListener(v -> listener.onItemClick(cliente));
         }
     }
 
-    // Método para obter um cliente baseado na posição
+    public void updateClientList(List<Cliente> newClientList) {
+        this.clienteList.clear();
+        if (newClientList != null) {
+            this.clienteList.addAll(newClientList);
+        }
+        notifyDataSetChanged(); // DiffUtil melhor para listas grandes
+    }
+
     public Cliente getItemAtPosition(int position) {
-        return clienteList != null && position >= 0 && position < clienteList.size() ? clienteList.get(position) : null;
+        return (clienteList != null && position >= 0 && position < clienteList.size()) ? clienteList.get(position) : null;
     }
 }

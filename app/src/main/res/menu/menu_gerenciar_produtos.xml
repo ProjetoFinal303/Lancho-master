@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_add_produto"
+        android:title="Adicionar Novo Produto"
+        android:icon="@android:drawable/ic_menu_add"
+        app:showAsAction="ifRoom|withText" />
+    <!-- Você pode adicionar mais itens aqui para editar/excluir se quiser
+         ações globais em vez de por item na lista -->
+</menu>
+    

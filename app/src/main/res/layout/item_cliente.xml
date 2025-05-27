@@ -1,46 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/AppCardViewStyle"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="?android:attr/selectableItemBackground"
-    android:layout_marginBottom="8dp"
-    android:elevation="2dp">
+    android:layout_height="wrap_content">
 
-    <!-- Nome e ID do Cliente (juntos para fácil visualização) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="start">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- ID do Cliente -->
-        <TextView
-            android:id="@+id/text_cliente_id"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginEnd="8dp"
-            android:text="ID:"/>
-
-        <!-- Nome do Cliente -->
         <TextView
             android:id="@+id/text_cliente_nome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textColor="@android:color/black"
+            tools:text="Nome Completo do Cliente"
+            android:textAppearance="?attr/textAppearanceListItem"
             android:textStyle="bold"/>
-    </LinearLayout>
 
-    <!-- Contato do Cliente -->
-    <TextView
-        android:id="@+id/text_cliente_contato"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textColor="@android:color/darker_gray"
-        android:layout_marginTop="4dp"/>
-</LinearLayout>
+        <TextView
+            android:id="@+id/text_cliente_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="ID: 123"
+            android:textAppearance="?attr/textAppearanceCaption"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/text_cliente_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Email: cliente@example.com"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/text_cliente_contato"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Contato: (00) 12345-6789"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

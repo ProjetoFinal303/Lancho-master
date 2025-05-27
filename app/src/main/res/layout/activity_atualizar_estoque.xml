@@ -1,42 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#696969">
+    android:fillViewport="true"
+    android:background="?android:attr/colorBackground"
+    tools:context="projetofinal.main.AtualizarEstoqueActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Atualizar Estoque"
-        android:textColor="@android:color/white"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_gravity="center"
-        android:paddingBottom="16dp" />
-
-    <EditText
-        android:id="@+id/edtProdutoID"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="ID do Produto"
-        android:inputType="number"
-        android:padding="8dp" />
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/edtQuantidade"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Quantidade"
-        android:inputType="number"
-        android:padding="8dp" />
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/btnAtualizarEstoque"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Atualizar Estoque"
-        android:padding="8dp"
-        android:layout_gravity="center" />
-</LinearLayout>
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbarAtualizarEstoque"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:title="@string/atualizar_estoque_title" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/atualizar_estoque_title"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
+                tools:ignore="HardcodedText" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilIdProdutoEstoque"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/id_produto_estoque_hint"
+                android:layout_marginBottom="8dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtIdProdutoEstoque"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btnBuscarProdutoEstoque"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/buscar_button"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:id="@+id/textViewNomeProdutoEstoqueInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Produto: Hamburguer (ID: 1)"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/textViewQtdAtualEstoqueInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Quantidade Atual: 10"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilNovaQuantidadeEstoque"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/quantidade_estoque_hint"
+                android:layout_marginBottom="24dp"
+                android:visibility="gone">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtNovaQuantidadeEstoque"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ProgressBar
+                android:id="@+id/progressBarAtualizarEstoque"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:layout_marginBottom="16dp" />
+
+            <Button
+                android:id="@+id/btnSalvarAtualizacaoEstoque"
+                style="@style/AppButtonStyle.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/atualizar_button"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
