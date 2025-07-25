@@ -14,8 +14,6 @@ import com.example.projetofinal.R;
 import com.example.projetofinal.databinding.ActivityVisualizarEstoqueBinding;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import projetofinal.adapters.EstoqueAdapter;
 import projetofinal.dao.EstoqueDao;
 import projetofinal.models.Estoque;
@@ -25,16 +23,10 @@ public class VisualizarEstoqueActivity extends AppCompatActivity {
     private ActivityVisualizarEstoqueBinding binding;
     private EstoqueDao estoqueDao;
     private EstoqueAdapter estoqueAdapter;
-    private ExecutorService executorService;
-    private List<Estoque> listaDeEstoque;
-
-    private static boolean estoqueDesatualizado = true; // Inicia como true para forçar a primeira carga
+    private List<Estoque> listaDeEstoque = new ArrayList<>();
+    private static boolean estoqueDesatualizado = true;
     private static final String TAG = "VisualizarEstoque";
 
-    /**
-     * Método estático para ser chamado por outras activities quando o estoque é modificado.
-     * @param status true se o estoque foi modificado e precisa ser recarregado, false caso contrário.
-     */
     public static void setEstoqueDesatualizado(boolean status) {
         Log.d(TAG, "setEstoqueDesatualizado chamado com status: " + status);
         estoqueDesatualizado = status;
@@ -51,13 +43,9 @@ public class VisualizarEstoqueActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(getString(R.string.visualizar_estoque_title));
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
         estoqueDao = new EstoqueDao(this);
-        executorService = Executors.newSingleThreadExecutor();
-        listaDeEstoque = new ArrayList<>();
-
         setupRecyclerView();
 
         binding.btnIrCadastrarProduto.setOnClickListener(v -> {
@@ -67,10 +55,8 @@ public class VisualizarEstoqueActivity extends AppCompatActivity {
         });
 
         binding.btnIrAtualizarEstoque.setOnClickListener(v -> {
-            // A AtualizarEstoqueActivity deve chamar setEstoqueDesatualizado(true) ao salvar.
             startActivity(new Intent(this, AtualizarEstoqueActivity.class));
         });
-        Log.d(TAG, "onCreate finalizado.");
     }
 
     private void setupRecyclerView() {
@@ -81,45 +67,44 @@ public class VisualizarEstoqueActivity extends AppCompatActivity {
             startActivity(intent);
         });
         binding.recyclerViewEstoque.setAdapter(estoqueAdapter);
-        Log.d(TAG, "RecyclerView configurado.");
     }
 
     private void carregarEstoque() {
-        Log.i(TAG, "Método carregarEstoque() CHAMADO. Flag desatualizado: " + estoqueDesatualizado);
-        binding.progressBarEstoque.setVisibility(View.VISIBLE);
-        binding.textViewNenhumEstoque.setVisibility(View.GONE);
-        binding.recyclerViewEstoque.setVisibility(View.GONE);
-
-        executorService.execute(() -> {
-            List<Estoque> estoqueCarregadoDoBanco = estoqueDao.listarTodosComNomeProduto();
-            final List<Estoque> finalEstoqueCarregado = new ArrayList<>(estoqueCarregadoDoBanco != null ? estoqueCarregadoDoBanco : new ArrayList<>());
-            Log.d(TAG, "Estoque carregado do DAO na background thread: " + finalEstoqueCarregado.size());
-
-            runOnUiThread(() -> {
-                Log.d(TAG, "Atualizando UI em carregarEstoque(). Estoque carregado: " + finalEstoqueCarregado.size());
-                listaDeEstoque.clear();
-                listaDeEstoque.addAll(finalEstoqueCarregado);
-
-                binding.progressBarEstoque.setVisibility(View.GONE);
-                if (!listaDeEstoque.isEmpty()) {
-                    estoqueAdapter.updateEstoqueList(listaDeEstoque); // Passa a referência da lista de instância
-                    binding.recyclerViewEstoque.setVisibility(View.VISIBLE);
-                    Log.d(TAG, "RecyclerView atualizado e visível com " + estoqueAdapter.getItemCount() + " itens de estoque.");
-                } else {
+        setLoading(true);
+        estoqueDao.listarTodosComNomeProduto(
+                // Callback de Sucesso
+                estoqueCarregado -> runOnUiThread(() -> {
+                    setLoading(false);
+                    if (estoqueCarregado != null && !estoqueCarregado.isEmpty()) {
+                        listaDeEstoque.clear();
+                        listaDeEstoque.addAll(estoqueCarregado);
+                        estoqueAdapter.updateEstoqueList(listaDeEstoque);
+                        binding.recyclerViewEstoque.setVisibility(View.VISIBLE);
+                        binding.textViewNenhumEstoque.setVisibility(View.GONE);
+                    } else {
+                        binding.recyclerViewEstoque.setVisibility(View.GONE);
+                        binding.textViewNenhumEstoque.setVisibility(View.VISIBLE);
+                    }
+                    setEstoqueDesatualizado(false);
+                }),
+                // Callback de Erro
+                error -> runOnUiThread(() -> {
+                    setLoading(false);
+                    Log.e(TAG, "Erro ao carregar estoque: ", error);
+                    binding.textViewNenhumEstoque.setText("Erro ao carregar estoque.");
                     binding.textViewNenhumEstoque.setVisibility(View.VISIBLE);
-                    Log.d(TAG, "Nenhum item de estoque para exibir. textViewNenhumEstoque visível.");
-                }
-                estoqueDesatualizado = false; // Reseta o flag após carregar
-                Log.d(TAG, "Flag estoqueDesatualizado resetado para false.");
-            });
-        });
+                })
+        );
+    }
+
+    private void setLoading(boolean isLoading) {
+        binding.progressBarEstoque.setVisibility(isLoading ? View.VISIBLE : View.GONE);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(TAG, "onResume chamado. Flag estoqueDesatualizado: " + estoqueDesatualizado);
-        if (estoqueDesatualizado || (estoqueAdapter != null && estoqueAdapter.getItemCount() == 0 && listaDeEstoque.isEmpty())) {
+        if (estoqueDesatualizado) {
             carregarEstoque();
         }
     }
@@ -131,14 +116,5 @@ public class VisualizarEstoqueActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        binding = null;
-        if (executorService != null && !executorService.isShutdown()) {
-            executorService.shutdown();
-        }
     }
 }

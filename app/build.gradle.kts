@@ -45,8 +45,14 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation("com.google.code.gson:gson:2.10.1")
+    // Supabase
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:2.3.1")
+    implementation("io.github.jan-tennert.supabase:gotrue-kt:2.3.1")
+    implementation("io.ktor:ktor-client-android:2.3.8")
+    //dependencia do OkHttp
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
-    
+
 
     // Room dependencies were present but DatabaseHelper is custom SQLite.
     // Sticking to custom SQLite as per analysis.

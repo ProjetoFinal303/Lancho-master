@@ -1,6 +1,7 @@
 package projetofinal.main;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -12,10 +13,7 @@ import com.example.projetofinal.R;
 import com.example.projetofinal.databinding.ActivityReceberComandasBinding;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
-
 import projetofinal.adapters.PedidoAdapterCozinha;
 import projetofinal.dao.PedidoDao;
 import projetofinal.models.Pedido;
@@ -25,8 +23,8 @@ public class ReceberComandasActivity extends AppCompatActivity implements Pedido
     private ActivityReceberComandasBinding binding;
     private PedidoDao pedidoDao;
     private PedidoAdapterCozinha comandasAdapter;
-    private List<Pedido> listaDeComandas;
-    private ExecutorService executorService;
+    private List<Pedido> listaDeComandas = new ArrayList<>();
+    private static final String TAG = "ReceberComandas";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,15 +37,10 @@ public class ReceberComandasActivity extends AppCompatActivity implements Pedido
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("Comandas Ativas");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
         pedidoDao = new PedidoDao(this);
-        executorService = Executors.newSingleThreadExecutor();
-        listaDeComandas = new ArrayList<>();
-
         setupRecyclerView();
-        // carregarComandasAtivas() será chamado no onResume
     }
 
     private void setupRecyclerView() {
@@ -57,60 +50,59 @@ public class ReceberComandasActivity extends AppCompatActivity implements Pedido
     }
 
     private void carregarComandasAtivas() {
-        binding.progressBarComandas.setVisibility(View.VISIBLE);
-        binding.textViewNenhumaComanda.setVisibility(View.GONE);
-        binding.recyclerViewComandasCozinha.setVisibility(View.GONE);
+        setLoading(true);
+        pedidoDao.listarTodos(
+                todasComandas -> runOnUiThread(() -> {
+                    setLoading(false);
+                    if (todasComandas != null) {
+                        listaDeComandas = todasComandas.stream()
+                                .filter(p -> "Pendente".equalsIgnoreCase(p.getStatus()) || "Em Preparo".equalsIgnoreCase(p.getStatus()))
+                                .collect(Collectors.toList());
 
-        executorService.execute(() -> {
-            List<Pedido> todasComandas = pedidoDao.listarTodos();
-            // Filtrar para mostrar apenas "Pendente" ou "Em Preparo"
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                listaDeComandas = todasComandas.stream()
-                        .filter(p -> "Pendente".equalsIgnoreCase(p.getStatus()) || "Em Preparo".equalsIgnoreCase(p.getStatus()))
-                        .collect(Collectors.toList());
-            } else { // Fallback para versões mais antigas
-                listaDeComandas.clear();
-                for(Pedido p : todasComandas){
-                    if("Pendente".equalsIgnoreCase(p.getStatus()) || "Em Preparo".equalsIgnoreCase(p.getStatus())){
-                        listaDeComandas.add(p);
+                        if (!listaDeComandas.isEmpty()) {
+                            comandasAdapter.atualizarComandas(listaDeComandas);
+                            binding.recyclerViewComandasCozinha.setVisibility(View.VISIBLE);
+                            binding.textViewNenhumaComanda.setVisibility(View.GONE);
+                        } else {
+                            binding.recyclerViewComandasCozinha.setVisibility(View.GONE);
+                            binding.textViewNenhumaComanda.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        binding.textViewNenhumaComanda.setVisibility(View.VISIBLE);
                     }
-                }
-            }
-
-
-            runOnUiThread(() -> {
-                binding.progressBarComandas.setVisibility(View.GONE);
-                if (listaDeComandas != null && !listaDeComandas.isEmpty()) {
-                    comandasAdapter.atualizarComandas(listaDeComandas);
-                    binding.recyclerViewComandasCozinha.setVisibility(View.VISIBLE);
-                } else {
-                    binding.textViewNenhumaComanda.setVisibility(View.VISIBLE);
-                }
-            });
-        });
+                }),
+                error -> runOnUiThread(() -> {
+                    setLoading(false);
+                    Log.e(TAG, "Erro ao carregar comandas: ", error);
+                    Toast.makeText(this, "Erro ao carregar comandas.", Toast.LENGTH_SHORT).show();
+                })
+        );
     }
 
     @Override
     public void onStatusChangeClicked(Pedido pedido, String novoStatus) {
-        binding.progressBarComandas.setVisibility(View.VISIBLE); // Mostrar progresso
-        executorService.execute(() -> {
-            int linhasAfetadas = pedidoDao.atualizarStatus(pedido.getId(), novoStatus);
-            runOnUiThread(() -> {
-                binding.progressBarComandas.setVisibility(View.GONE); // Esconder progresso
-                if (linhasAfetadas > 0) {
-                    Toast.makeText(this, "Status do pedido #" + pedido.getId() + " atualizado para " + novoStatus, Toast.LENGTH_SHORT).show();
+        setLoading(true);
+        pedidoDao.atualizarStatus(pedido.getId(), novoStatus,
+                response -> runOnUiThread(() -> {
+                    Toast.makeText(this, "Status do pedido #" + pedido.getId() + " atualizado!", Toast.LENGTH_SHORT).show();
                     carregarComandasAtivas(); // Recarrega a lista para refletir a mudança
-                } else {
-                    Toast.makeText(this, "Falha ao atualizar status do pedido.", Toast.LENGTH_SHORT).show();
-                }
-            });
-        });
+                }),
+                error -> runOnUiThread(() -> {
+                    setLoading(false);
+                    Log.e(TAG, "Erro ao atualizar status: ", error);
+                    Toast.makeText(this, "Falha ao atualizar status.", Toast.LENGTH_SHORT).show();
+                })
+        );
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         carregarComandasAtivas();
+    }
+
+    private void setLoading(boolean isLoading) {
+        binding.progressBarComandas.setVisibility(isLoading ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -120,14 +112,5 @@ public class ReceberComandasActivity extends AppCompatActivity implements Pedido
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        binding = null;
-        if (executorService != null && !executorService.isShutdown()) {
-            executorService.shutdown();
-        }
     }
 }

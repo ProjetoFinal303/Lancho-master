@@ -9,24 +9,16 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
 import com.example.projetofinal.R;
 import com.example.projetofinal.databinding.ActivityCadastrarProdutoBinding;
 import java.math.BigDecimal;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import projetofinal.dao.EstoqueDao;
 import projetofinal.dao.ProdutoDao;
-import projetofinal.models.Estoque;
 import projetofinal.models.Produto;
 
 public class CadastrarProdutoActivity extends AppCompatActivity {
 
     private ActivityCadastrarProdutoBinding binding;
     private ProdutoDao produtoDao;
-    private EstoqueDao estoqueDao;
-    private ExecutorService executorService;
     private static final String TAG = "CadastrarProduto";
 
     @Override
@@ -44,8 +36,6 @@ public class CadastrarProdutoActivity extends AppCompatActivity {
         }
 
         produtoDao = new ProdutoDao(this);
-        estoqueDao = new EstoqueDao(this);
-        executorService = Executors.newSingleThreadExecutor();
 
         binding.btnSalvarProduto.setOnClickListener(v -> cadastrarNovoProduto());
     }
@@ -69,55 +59,39 @@ public class CadastrarProdutoActivity extends AppCompatActivity {
                 return;
             }
         } catch (NumberFormatException e) {
-            Toast.makeText(this, "Formato de preço inválido. Use ponto ou vírgula como separador decimal (ex: 10.50 ou 10,50).", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Formato de preço inválido.", Toast.LENGTH_LONG).show();
             return;
         }
 
-        binding.progressBarCadastrarProduto.setVisibility(View.VISIBLE);
-        binding.btnSalvarProduto.setEnabled(false);
+        setLoading(true);
 
-        executorService.execute(() -> {
-            Produto novoProduto = new Produto();
-            novoProduto.setNome(nome);
-            novoProduto.setDescricao(descricao);
-            novoProduto.setPreco(preco);
+        Produto novoProduto = new Produto();
+        novoProduto.setNome(nome);
+        novoProduto.setDescricao(descricao);
+        novoProduto.setPreco(preco);
 
-            long produtoIdLong = produtoDao.inserir(novoProduto);
-
-            String toastMessage;
-            boolean sucessoOperacao = false;
-
-            if (produtoIdLong == -2) {
-                toastMessage = getString(R.string.produto_ja_existe);
-            } else if (produtoIdLong != -1) {
-                int produtoId = (int) produtoIdLong;
-                Estoque novoEstoque = new Estoque(produtoId, 0);
-                long estoqueId = estoqueDao.inserirOuAtualizar(novoEstoque);
-                if (estoqueId != -1) {
-                    toastMessage = getString(R.string.produto_adicionado_sucesso) + " ID: " + produtoIdLong;
-                    sucessoOperacao = true;
-                } else {
-                    toastMessage = "Produto cadastrado, mas falha ao inicializar estoque.";
-                    Log.e(TAG, "Produto ID " + produtoIdLong + " cadastrado, mas falha ao criar entrada de estoque.");
-                }
-            } else {
-                toastMessage = getString(R.string.falha_adicionar_produto);
-            }
-
-            final boolean finalSucesso = sucessoOperacao;
-            final String finalToastMessage = toastMessage;
-            runOnUiThread(() -> {
-                binding.progressBarCadastrarProduto.setVisibility(View.GONE);
-                binding.btnSalvarProduto.setEnabled(true);
-                Toast.makeText(CadastrarProdutoActivity.this, finalToastMessage, Toast.LENGTH_LONG).show();
-                if (finalSucesso) {
-                    Log.d(TAG, "Produto e estoque inicializados. Sinalizando para atualizar listas.");
+        produtoDao.inserir(novoProduto,
+                // Callback de Sucesso
+                produtoCriado -> runOnUiThread(() -> {
+                    setLoading(false);
+                    Toast.makeText(CadastrarProdutoActivity.this, "Produto cadastrado com sucesso!", Toast.LENGTH_LONG).show();
+                    // Avisa as outras telas que a lista de produtos mudou
                     VisualizarProdutoActivity.setProdutosDesatualizados(true);
                     VisualizarEstoqueActivity.setEstoqueDesatualizado(true);
                     finish();
-                }
-            });
-        });
+                }),
+                // Callback de Erro
+                error -> runOnUiThread(() -> {
+                    setLoading(false);
+                    Log.e(TAG, "Erro ao cadastrar produto: ", error);
+                    Toast.makeText(CadastrarProdutoActivity.this, "Falha ao cadastrar produto: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                })
+        );
+    }
+
+    private void setLoading(boolean isLoading) {
+        binding.progressBarCadastrarProduto.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        binding.btnSalvarProduto.setEnabled(!isLoading);
     }
 
     @Override
@@ -127,14 +101,5 @@ public class CadastrarProdutoActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        binding = null;
-        if (executorService != null && !executorService.isShutdown()) {
-            executorService.shutdown();
-        }
     }
 }

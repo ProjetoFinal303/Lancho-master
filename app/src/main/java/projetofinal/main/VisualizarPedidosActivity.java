@@ -1,7 +1,7 @@
 package projetofinal.main;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -13,9 +13,7 @@ import com.example.projetofinal.R;
 import com.example.projetofinal.databinding.ActivityVisualizarPedidosBinding;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import projetofinal.adapters.PedidoAdapterCliente; // Usaremos este para ambos por enquanto, pode ser especializado
+import projetofinal.adapters.PedidoAdapterCliente;
 import projetofinal.dao.PedidoDao;
 import projetofinal.models.Pedido;
 
@@ -24,10 +22,8 @@ public class VisualizarPedidosActivity extends AppCompatActivity {
     private ActivityVisualizarPedidosBinding binding;
     private PedidoDao pedidoDao;
     private PedidoAdapterCliente pedidoAdapter;
-    private List<Pedido> listaDePedidos;
-    private ExecutorService executorService;
-    private String userRole;
-    private int clienteId;
+    private List<Pedido> listaDePedidos = new ArrayList<>();
+    private static final String TAG = "VisualizarPedidos";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,46 +38,20 @@ public class VisualizarPedidosActivity extends AppCompatActivity {
         }
 
         pedidoDao = new PedidoDao(this);
-        executorService = Executors.newSingleThreadExecutor();
-        listaDePedidos = new ArrayList<>();
-
         setupRecyclerView();
 
-        userRole = getIntent().getStringExtra("USER_ROLE");
-        clienteId = getIntent().getIntExtra("CLIENTE_ID", -1);
+        String userRole = getIntent().getStringExtra("USER_ROLE");
+        int clienteId = getIntent().getIntExtra("CLIENTE_ID", -1);
 
         if ("admin".equals(userRole)) {
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setTitle(getString(R.string.visualizar_todos_pedidos_title));
-            }
+            getSupportActionBar().setTitle(getString(R.string.visualizar_todos_pedidos_title));
             carregarTodosPedidos();
-        } else if ("cliente".equals(userRole)) {
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setTitle(getString(R.string.visualizar_pedidos_title)); // "Meus Pedidos"
-            }
+        } else {
+            getSupportActionBar().setTitle(getString(R.string.visualizar_pedidos_title));
             if (clienteId != -1) {
                 carregarPedidosDoCliente(clienteId);
             } else {
-                Toast.makeText(this, "ID do cliente não fornecido.", Toast.LENGTH_LONG).show();
-                binding.progressBarPedidos.setVisibility(View.GONE);
-                binding.textViewNenhumPedido.setVisibility(View.VISIBLE);
-            }
-        } else {
-            // Se o papel não for reconhecido, ou se for cliente mas sem ID
-            SharedPreferences prefs = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
-            clienteId = prefs.getInt(LoginActivity.KEY_USER_ID, -1);
-            userRole = prefs.getString(LoginActivity.KEY_USER_ROLE, "");
-
-            if ("cliente".equals(userRole) && clienteId != -1){
-                if (getSupportActionBar() != null) {
-                    getSupportActionBar().setTitle(getString(R.string.visualizar_pedidos_title));
-                }
-                carregarPedidosDoCliente(clienteId);
-            } else {
-                Toast.makeText(this, "Não foi possível determinar o tipo de usuário ou ID.", Toast.LENGTH_LONG).show();
-                binding.progressBarPedidos.setVisibility(View.GONE);
-                binding.textViewNenhumPedido.setText("Erro ao carregar pedidos.");
-                binding.textViewNenhumPedido.setVisibility(View.VISIBLE);
+                Toast.makeText(this, "ID do cliente não encontrado.", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -93,41 +63,50 @@ public class VisualizarPedidosActivity extends AppCompatActivity {
     }
 
     private void carregarTodosPedidos() {
-        binding.progressBarPedidos.setVisibility(View.VISIBLE);
-        binding.textViewNenhumPedido.setVisibility(View.GONE);
-        binding.recyclerViewPedidos.setVisibility(View.GONE);
-
-        executorService.execute(() -> {
-            listaDePedidos = pedidoDao.listarTodos();
-            runOnUiThread(() -> {
-                binding.progressBarPedidos.setVisibility(View.GONE);
-                if (listaDePedidos != null && !listaDePedidos.isEmpty()) {
-                    pedidoAdapter.atualizarPedidos(listaDePedidos);
-                    binding.recyclerViewPedidos.setVisibility(View.VISIBLE);
-                } else {
-                    binding.textViewNenhumPedido.setVisibility(View.VISIBLE);
-                }
-            });
-        });
+        setLoading(true);
+        pedidoDao.listarTodos(
+                pedidos -> runOnUiThread(() -> {
+                    setLoading(false);
+                    atualizarLista(pedidos);
+                }),
+                error -> runOnUiThread(() -> {
+                    setLoading(false);
+                    Log.e(TAG, "Erro ao carregar todos os pedidos: ", error);
+                    Toast.makeText(this, "Erro ao carregar pedidos.", Toast.LENGTH_SHORT).show();
+                })
+        );
     }
 
     private void carregarPedidosDoCliente(int idCliente) {
-        binding.progressBarPedidos.setVisibility(View.VISIBLE);
-        binding.textViewNenhumPedido.setVisibility(View.GONE);
-        binding.recyclerViewPedidos.setVisibility(View.GONE);
+        setLoading(true);
+        pedidoDao.buscarPedidosPorClienteId(idCliente,
+                pedidos -> runOnUiThread(() -> {
+                    setLoading(false);
+                    atualizarLista(pedidos);
+                }),
+                error -> runOnUiThread(() -> {
+                    setLoading(false);
+                    Log.e(TAG, "Erro ao carregar pedidos do cliente: ", error);
+                    Toast.makeText(this, "Erro ao carregar seus pedidos.", Toast.LENGTH_SHORT).show();
+                })
+        );
+    }
 
-        executorService.execute(() -> {
-            listaDePedidos = pedidoDao.buscarPedidosPorClienteId(idCliente);
-            runOnUiThread(() -> {
-                binding.progressBarPedidos.setVisibility(View.GONE);
-                if (listaDePedidos != null && !listaDePedidos.isEmpty()) {
-                    pedidoAdapter.atualizarPedidos(listaDePedidos);
-                    binding.recyclerViewPedidos.setVisibility(View.VISIBLE);
-                } else {
-                    binding.textViewNenhumPedido.setVisibility(View.VISIBLE);
-                }
-            });
-        });
+    private void atualizarLista(List<Pedido> pedidos) {
+        if (pedidos != null && !pedidos.isEmpty()) {
+            listaDePedidos.clear();
+            listaDePedidos.addAll(pedidos);
+            pedidoAdapter.atualizarPedidos(listaDePedidos);
+            binding.recyclerViewPedidos.setVisibility(View.VISIBLE);
+            binding.textViewNenhumPedido.setVisibility(View.GONE);
+        } else {
+            binding.recyclerViewPedidos.setVisibility(View.GONE);
+            binding.textViewNenhumPedido.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setLoading(boolean isLoading) {
+        binding.progressBarPedidos.setVisibility(isLoading ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -137,14 +116,5 @@ public class VisualizarPedidosActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        binding = null;
-        if (executorService != null && !executorService.isShutdown()) {
-            executorService.shutdown();
-        }
     }
 }

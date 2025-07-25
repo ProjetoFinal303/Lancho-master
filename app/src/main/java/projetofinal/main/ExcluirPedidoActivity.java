@@ -2,6 +2,7 @@ package projetofinal.main;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -9,20 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
 import com.example.projetofinal.R;
 import com.example.projetofinal.databinding.ActivityExcluirPedidoBinding;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import projetofinal.dao.PedidoDao;
-import projetofinal.models.Pedido;
 
 public class ExcluirPedidoActivity extends AppCompatActivity {
 
     private ActivityExcluirPedidoBinding binding;
     private PedidoDao pedidoDao;
-    private ExecutorService executorService;
-    private Pedido pedidoParaExcluir;
+    private static final String TAG = "ExcluirPedido";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,20 +26,14 @@ public class ExcluirPedidoActivity extends AppCompatActivity {
         binding = ActivityExcluirPedidoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Configurar a Toolbar
-        Toolbar toolbar = findViewById(R.id.toolbarExcluirPedido); // Adicione este ID à sua Toolbar no XML
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setTitle(R.string.excluir_pedido_title);
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                getSupportActionBar().setDisplayShowHomeEnabled(true);
-            }
+        Toolbar toolbar = binding.toolbarExcluirPedido;
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.excluir_pedido_title);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         pedidoDao = new PedidoDao(this);
-        executorService = Executors.newSingleThreadExecutor();
-
         binding.btnConfirmarExcluirPedido.setOnClickListener(v -> confirmarEExcluirPedido());
     }
 
@@ -53,58 +43,48 @@ public class ExcluirPedidoActivity extends AppCompatActivity {
             Toast.makeText(this, "Informe o ID do Pedido.", Toast.LENGTH_SHORT).show();
             return;
         }
+        int pedidoId = Integer.parseInt(idPedidoStr);
 
-        int pedidoId;
-        try {
-            pedidoId = Integer.parseInt(idPedidoStr);
-        } catch (NumberFormatException e) {
-            Toast.makeText(this, "ID do Pedido inválido.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        binding.progressBarExcluirPedido.setVisibility(View.VISIBLE);
-        binding.btnConfirmarExcluirPedido.setEnabled(false);
-
-        executorService.execute(() -> {
-            pedidoParaExcluir = pedidoDao.buscarPorId(pedidoId); // Supondo que PedidoDao tem buscarPorId
-
-            runOnUiThread(() -> {
-                binding.progressBarExcluirPedido.setVisibility(View.GONE);
-                binding.btnConfirmarExcluirPedido.setEnabled(true);
-
-                if (pedidoParaExcluir != null) {
-                    new AlertDialog.Builder(this)
-                            .setTitle(R.string.confirmar_exclusao_pedido_message)
-                            .setMessage(getString(R.string.confirmar_exclusao_pedido_message, pedidoParaExcluir.getId()))
-                            .setPositiveButton(R.string.sim, (dialog, which) -> procederComExclusao(pedidoParaExcluir.getId()))
-                            .setNegativeButton(R.string.nao, null)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
-                } else {
-                    Toast.makeText(ExcluirPedidoActivity.this, getString(R.string.pedido_nao_encontrado), Toast.LENGTH_LONG).show();
-                }
-            });
-        });
+        setLoading(true);
+        pedidoDao.buscarPorId(pedidoId,
+                pedido -> runOnUiThread(() -> {
+                    setLoading(false);
+                    if (pedido != null) {
+                        new AlertDialog.Builder(this)
+                                .setTitle("Confirmar Exclusão")
+                                .setMessage("Tem certeza que deseja excluir o pedido #" + pedido.getId() + "?")
+                                .setPositiveButton("Sim", (dialog, which) -> procederComExclusao(pedido.getId()))
+                                .setNegativeButton("Não", null)
+                                .show();
+                    } else {
+                        Toast.makeText(this, "Pedido não encontrado.", Toast.LENGTH_LONG).show();
+                    }
+                }),
+                error -> runOnUiThread(() -> {
+                    setLoading(false);
+                    Toast.makeText(this, "Erro ao buscar pedido: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                })
+        );
     }
 
     private void procederComExclusao(int pedidoId) {
-        binding.progressBarExcluirPedido.setVisibility(View.VISIBLE);
-        binding.btnConfirmarExcluirPedido.setEnabled(false);
+        setLoading(true);
+        pedidoDao.excluir(pedidoId,
+                response -> runOnUiThread(() -> {
+                    setLoading(false);
+                    Toast.makeText(this, "Pedido excluído com sucesso!", Toast.LENGTH_SHORT).show();
+                    binding.edtPedidoIDExcluir.setText("");
+                }),
+                error -> runOnUiThread(() -> {
+                    setLoading(false);
+                    Toast.makeText(this, "Falha ao excluir pedido: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                })
+        );
+    }
 
-        executorService.execute(() -> {
-            int linhasAfetadas = pedidoDao.excluir(pedidoId);
-            runOnUiThread(() -> {
-                binding.progressBarExcluirPedido.setVisibility(View.GONE);
-                binding.btnConfirmarExcluirPedido.setEnabled(true);
-                if (linhasAfetadas > 0) {
-                    Toast.makeText(ExcluirPedidoActivity.this, getString(R.string.pedido_excluido_sucesso), Toast.LENGTH_SHORT).show();
-                    binding.edtPedidoIDExcluir.setText(""); // Limpa o campo
-                    // finish(); // Opcional: fechar a activity
-                } else {
-                    Toast.makeText(ExcluirPedidoActivity.this, getString(R.string.falha_excluir_pedido), Toast.LENGTH_LONG).show();
-                }
-            });
-        });
+    private void setLoading(boolean isLoading) {
+        binding.progressBarExcluirPedido.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        binding.btnConfirmarExcluirPedido.setEnabled(!isLoading);
     }
 
     @Override
@@ -114,13 +94,5 @@ public class ExcluirPedidoActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (executorService != null && !executorService.isShutdown()) {
-            executorService.shutdown();
-        }
     }
 }

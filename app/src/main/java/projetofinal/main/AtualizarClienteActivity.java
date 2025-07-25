@@ -1,16 +1,13 @@
 package projetofinal.main;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.projetofinal.databinding.ActivityAtualizarClienteBinding;
-import org.mindrot.jbcrypt.BCrypt;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import projetofinal.dao.ClienteDao;
 import projetofinal.models.Cliente;
 
@@ -19,8 +16,7 @@ public class AtualizarClienteActivity extends AppCompatActivity {
     private ActivityAtualizarClienteBinding binding;
     private ClienteDao clienteDao;
     private Cliente clienteSelecionado;
-    private ExecutorService executorService;
-    private int clienteIdToLoad = -1;
+    private static final String TAG = "AtualizarCliente";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,20 +25,11 @@ public class AtualizarClienteActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         clienteDao = new ClienteDao(this);
-        executorService = Executors.newSingleThreadExecutor();
-
-        if (getIntent().hasExtra("CLIENTE_ID")) {
-            clienteIdToLoad = getIntent().getIntExtra("CLIENTE_ID", -1);
-            binding.edtId.setText(String.valueOf(clienteIdToLoad));
-            binding.edtId.setEnabled(false); // Disable ID editing if passed via Intent
-            buscarClienteParaAtualizar(clienteIdToLoad);
-        }
-
 
         binding.btnBuscar.setOnClickListener(v -> {
             String idStr = binding.edtId.getText().toString().trim();
             if (TextUtils.isEmpty(idStr)) {
-                Toast.makeText(this, "Informe o ID do cliente!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Informe o ID!", Toast.LENGTH_SHORT).show();
                 return;
             }
             try {
@@ -57,92 +44,75 @@ public class AtualizarClienteActivity extends AppCompatActivity {
     }
 
     private void buscarClienteParaAtualizar(int id) {
-        if (id == -1) return;
-
-        binding.progressBarAtualizar.setVisibility(View.VISIBLE);
-        binding.fieldsGroup.setVisibility(View.GONE);
-
-        executorService.execute(() -> {
-            clienteSelecionado = clienteDao.buscarPorId(id);
-            runOnUiThread(() -> {
-                binding.progressBarAtualizar.setVisibility(View.GONE);
-                if (clienteSelecionado == null) {
-                    Toast.makeText(this, "Cliente não encontrado!", Toast.LENGTH_SHORT).show();
-                    binding.fieldsGroup.setVisibility(View.GONE);
-                } else {
-                    binding.edtNome.setText(clienteSelecionado.getNome());
-                    binding.edtEmail.setText(clienteSelecionado.getEmail());
-                    binding.edtContato.setText(clienteSelecionado.getContato());
-                    // Não preencher a senha. Deixar em branco para "não alterar" ou pedir nova.
-                    binding.edtSenha.setHint("Nova Senha (deixe em branco para não alterar)");
-                    binding.fieldsGroup.setVisibility(View.VISIBLE);
-                }
-            });
-        });
+        setLoading(true, false);
+        clienteDao.buscarPorId(id,
+                cliente -> runOnUiThread(() -> {
+                    setLoading(false, cliente != null);
+                    if (cliente != null) {
+                        clienteSelecionado = cliente;
+                        binding.edtNome.setText(cliente.getNome());
+                        binding.edtEmail.setText(cliente.getEmail());
+                        binding.edtContato.setText(cliente.getContato());
+                        binding.edtSenha.setText(""); // Limpa o campo senha
+                    } else {
+                        Toast.makeText(this, "Cliente não encontrado!", Toast.LENGTH_SHORT).show();
+                    }
+                }),
+                error -> runOnUiThread(() -> {
+                    setLoading(false, false);
+                    Log.e(TAG, "Erro ao buscar cliente: ", error);
+                    Toast.makeText(this, "Erro de conexão.", Toast.LENGTH_SHORT).show();
+                })
+        );
     }
 
     private void atualizarDadosCliente() {
         if (clienteSelecionado == null) {
-            Toast.makeText(this, "Nenhum cliente selecionado para atualizar. Busque primeiro!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Busque um cliente primeiro!", Toast.LENGTH_SHORT).show();
             return;
         }
 
         String nome = binding.edtNome.getText().toString().trim();
         String email = binding.edtEmail.getText().toString().trim();
         String contato = binding.edtContato.getText().toString().trim();
-        String senhaNova = binding.edtSenha.getText().toString().trim(); // Nova senha, pode ser vazia
+        String senhaNova = binding.edtSenha.getText().toString().trim();
 
         if (TextUtils.isEmpty(nome) || TextUtils.isEmpty(email) || TextUtils.isEmpty(contato)) {
             Toast.makeText(this, "Nome, e-mail e contato são obrigatórios!", Toast.LENGTH_SHORT).show();
             return;
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            binding.edtEmail.setError("E-mail inválido!");
+            Toast.makeText(this, "Email inválido!", Toast.LENGTH_SHORT).show();
             return;
         }
-        binding.edtEmail.setError(null);
 
-        binding.progressBarAtualizar.setVisibility(View.VISIBLE);
+        setLoading(true, true);
 
-        executorService.execute(() -> {
-            // Verificar se o email foi alterado e se já existe
-            if (!email.equals(clienteSelecionado.getEmail())) {
-                Cliente clienteComNovoEmail = clienteDao.buscarPorEmail(email);
-                if (clienteComNovoEmail != null) {
-                    runOnUiThread(() -> {
-                        binding.progressBarAtualizar.setVisibility(View.GONE);
-                        Toast.makeText(this, "Este e-mail já está em uso por outro cliente!", Toast.LENGTH_LONG).show();
-                    });
-                    return;
-                }
-            }
+        clienteSelecionado.setNome(nome);
+        clienteSelecionado.setEmail(email);
+        clienteSelecionado.setContato(contato);
+        if (!senhaNova.isEmpty()) {
+            clienteSelecionado.setSenha(senhaNova); // Se a senha for alterada
+        }
 
-            clienteSelecionado.setNome(nome);
-            clienteSelecionado.setEmail(email);
-            clienteSelecionado.setContato(contato);
-
-            if (!TextUtils.isEmpty(senhaNova)) {
-                clienteSelecionado.setSenha(BCrypt.hashpw(senhaNova, BCrypt.gensalt()));
-            }
-
-            int sucesso = clienteDao.atualizar(clienteSelecionado);
-            runOnUiThread(() -> {
-                binding.progressBarAtualizar.setVisibility(View.GONE);
-                if (sucesso > 0) {
+        clienteDao.atualizar(clienteSelecionado,
+                response -> runOnUiThread(() -> {
+                    setLoading(false, true);
                     Toast.makeText(this, "Cliente atualizado com sucesso!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Erro ao atualizar cliente. Verifique os dados ou se o ID é válido.", Toast.LENGTH_LONG).show();
-                }
-            });
-        });
+                    finish();
+                }),
+                error -> runOnUiThread(() -> {
+                    setLoading(false, true);
+                    Log.e(TAG, "Erro ao atualizar cliente: ", error);
+                    Toast.makeText(this, "Erro ao atualizar: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                })
+        );
     }
 
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (executorService != null && !executorService.isShutdown()) {
-            executorService.shutdown();
-        }
+    private void setLoading(boolean isLoading, boolean showFields) {
+        binding.progressBarAtualizar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        binding.fieldsGroup.setVisibility(showFields ? View.VISIBLE : View.GONE);
+        binding.btnBuscar.setEnabled(!isLoading);
+        binding.btnAtualizar.setEnabled(!isLoading && showFields);
     }
 }
