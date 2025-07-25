@@ -24,6 +24,7 @@ public class VisualizarPedidosActivity extends AppCompatActivity {
     private PedidoAdapterCliente pedidoAdapter;
     private List<Pedido> listaDePedidos = new ArrayList<>();
     private static final String TAG = "VisualizarPedidos";
+    private boolean isAdmin = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,27 +39,32 @@ public class VisualizarPedidosActivity extends AppCompatActivity {
         }
 
         pedidoDao = new PedidoDao(this);
-        setupRecyclerView();
 
         String userRole = getIntent().getStringExtra("USER_ROLE");
         int clienteId = getIntent().getIntExtra("CLIENTE_ID", -1);
 
         if ("admin".equals(userRole)) {
+            isAdmin = true;
             getSupportActionBar().setTitle(getString(R.string.visualizar_todos_pedidos_title));
+            setupRecyclerView();
             carregarTodosPedidos();
         } else {
+            isAdmin = false;
             getSupportActionBar().setTitle(getString(R.string.visualizar_pedidos_title));
+            setupRecyclerView();
             if (clienteId != -1) {
                 carregarPedidosDoCliente(clienteId);
             } else {
                 Toast.makeText(this, "ID do cliente não encontrado.", Toast.LENGTH_LONG).show();
+                binding.textViewNenhumPedido.setVisibility(View.VISIBLE);
             }
         }
     }
 
     private void setupRecyclerView() {
         binding.recyclerViewPedidos.setLayoutManager(new LinearLayoutManager(this));
-        pedidoAdapter = new PedidoAdapterCliente(this, listaDePedidos);
+        // Agora passamos a variável 'isAdmin' para o adaptador
+        pedidoAdapter = new PedidoAdapterCliente(this, listaDePedidos, isAdmin);
         binding.recyclerViewPedidos.setAdapter(pedidoAdapter);
     }
 
@@ -96,6 +102,8 @@ public class VisualizarPedidosActivity extends AppCompatActivity {
         if (pedidos != null && !pedidos.isEmpty()) {
             listaDePedidos.clear();
             listaDePedidos.addAll(pedidos);
+            // Ordena a lista para mostrar os pedidos mais recentes primeiro
+            listaDePedidos.sort((p1, p2) -> Integer.compare(p2.getId(), p1.getId()));
             pedidoAdapter.atualizarPedidos(listaDePedidos);
             binding.recyclerViewPedidos.setVisibility(View.VISIBLE);
             binding.textViewNenhumPedido.setVisibility(View.GONE);

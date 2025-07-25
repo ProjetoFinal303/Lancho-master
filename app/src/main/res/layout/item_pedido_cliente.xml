@@ -25,38 +25,49 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 tools:text="Pedido ID: #1023"
-                android:textAppearance="?attr/textAppearanceHeadline6"/>
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/textViewPedidoStatusCliente"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Pendente"
-                android:textAppearance="?attr/textAppearanceSubtitle2"
-                android:textColor="@color/status_default_text_color"
+                tools:text="Concluído"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                android:textColor="@color/white"
                 android:textStyle="bold"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"
                 android:background="@drawable/status_background_placeholder" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/textViewInfoClienteAdmin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Cliente ID: 5"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:layout_marginTop="@dimen/margin_tiny"/>
 
 
         <TextView
             android:id="@+id/textViewPedidoDataCliente"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="Data: 25/05/2025 14:30"
-            android:textAppearance="?attr/textAppearanceCaption"
+            tools:text="Data: 25/07/2025 16:30"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
             android:layout_marginTop="@dimen/margin_tiny"/>
 
         <TextView
             android:id="@+id/textViewPedidoDescricaoCliente"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="Itens: 2x Hambúrguer Clássico, 1x Batata Frita Média, 1x Refrigerante Lata"
-            android:textAppearance="?attr/textAppearanceBody1"
+            tools:text="Itens: 2x Lanchô X-Burger, 1x Batata Frita da Casa"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
             android:layout_marginTop="@dimen/margin_small"
             android:maxLines="3"
             android:ellipsize="end"/>
@@ -65,10 +76,10 @@
             android:id="@+id/textViewPedidoValorCliente"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="Total: R$ 35,00"
-            android:textAppearance="?attr/textAppearanceSubtitle1"
+            tools:text="Total: R$ 46,98"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
             android:textStyle="bold"
             android:gravity="end"
-            android:layout_marginTop="@dimen/margin_small"/>
+            android:layout_marginTop="@dimen/margin_default"/>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

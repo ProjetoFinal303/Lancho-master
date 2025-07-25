@@ -72,15 +72,6 @@
                 app:icon="@android:drawable/ic_menu_myplaces" />
 
             <Button
-                android:id="@+id/btnExcluirClienteAdmin"
-                style="@style/AppButtonStyle.Danger"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Excluir Cliente por ID"
-                app:icon="@android:drawable/ic_menu_delete"
-                android:layout_marginTop="16dp"/>
-
-            <Button
                 android:id="@+id/btnLogoutAdmin"
                 style="@style/AppButtonStyle.Danger"
                 android:layout_width="match_parent"

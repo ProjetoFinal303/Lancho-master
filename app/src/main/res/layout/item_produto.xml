@@ -1,96 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/AppCardViewStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <data>
-        <import type="java.util.Locale"/>
-        <import type="java.math.BigDecimal"/>
-        <variable
-            name="produto"
-            type="projetofinal.models.Produto" />
-        <variable
-            name="interactionListener"
-            type="projetofinal.adapters.ProdutoAdapter.OnProdutoInteractionListener" />
-    </data>
-
-    <com.google.android.material.card.MaterialCardView
-        style="@style/AppCardViewStyle"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="@{(view) -> interactionListener.onProdutoClick(produto, view)}">
+        android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/imagemProduto"
+            android:layout_width="0dp"
+            android:layout_height="140dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="@dimen/item_padding">
+            android:orientation="vertical"
+            android:padding="16dp"
+            app:layout_constraintTop_toBottomOf="@id/imagemProduto"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <TextView
                 android:id="@+id/nomeProduto"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{produto.nome}"
-                tools:text="Nome do Produto Super Longo"
-                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:textStyle="bold"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnAdicionarProdutoItem"
-                android:layout_marginEnd="@dimen/margin_small"/>
-
-            <TextView
-                android:id="@+id/idProdutoText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text='@{"ID: " + String.valueOf(produto.id)}'
-                tools:text="ID: 1"
-                android:textAppearance="?attr/textAppearanceCaption"
-                app:layout_constraintTop_toBottomOf="@id/nomeProduto"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginTop="@dimen/margin_tiny"/>
+                android:maxLines="1"
+                android:ellipsize="end"
+                tools:text="Nome do Produto Super Longo" />
 
             <TextView
                 android:id="@+id/descricaoProduto"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{produto.descricao}"
-                tools:text="Descrição breve e interessante do produto."
-                android:textAppearance="?attr/textAppearanceBody2"
+                android:layout_marginTop="4dp"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:maxLines="2"
                 android:ellipsize="end"
-                app:layout_constraintTop_toBottomOf="@id/idProdutoText"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnAdicionarProdutoItem"
-                android:layout_marginTop="@dimen/margin_tiny"
-                android:layout_marginEnd="@dimen/margin_small"/>
+                tools:text="Descrição breve e interessante do produto." />
 
             <TextView
                 android:id="@+id/precoProduto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text='@{"R$ " + (produto.preco != null ? String.format(Locale.getDefault(), "%.2f", produto.preco) : "0.00")}'
-                tools:text="R$ 25,99"
-                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:layout_marginTop="8dp"
+                android:textAppearance="?attr/textAppearanceTitleLarge"
                 android:textStyle="bold"
                 android:textColor="?attr/colorPrimary"
-                app:layout_constraintTop_toBottomOf="@id/descricaoProduto"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginTop="@dimen/margin_small"/>
+                tools:text="R$ 25,99" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAdicionarProdutoItem"
-                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:minHeight="48dp"
-                android:text="@string/adicionar_ao_carrinho"
-                app:icon="@drawable/ic_shopping_cart"
-                app:iconGravity="textStart"
-                android:onClick="@{(view) -> interactionListener.onProdutoClick(produto, view)}"
-                app:layout_constraintTop_toTopOf="@id/nomeProduto"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/precoProduto"/>
+                android:id="@+id/btnComprar"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Comprar"
+                app:icon="@drawable/ic_shopping_cart" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-</layout>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

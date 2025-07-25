@@ -12,15 +12,15 @@ import projetofinal.models.Cliente;
 public class ClienteAdapter extends RecyclerView.Adapter<ClienteAdapter.ClientViewHolder> {
 
     private List<Cliente> clienteList;
-    private final Context context;
     private final OnItemClickListener listener;
 
+    // Interface para lidar com cliques no item e no botão de excluir
     public interface OnItemClickListener {
         void onItemClick(Cliente cliente);
+        void onDeleteClick(Cliente cliente); // Novo método para o clique de exclusão
     }
 
-    public ClienteAdapter(Context context, List<Cliente> clienteList, OnItemClickListener listener) {
-        this.context = context;
+    public ClienteAdapter(List<Cliente> clienteList, OnItemClickListener listener) {
         this.clienteList = clienteList;
         this.listener = listener;
     }
@@ -57,7 +57,11 @@ public class ClienteAdapter extends RecyclerView.Adapter<ClienteAdapter.ClientVi
             binding.textClienteNome.setText(cliente.getNome());
             binding.textClienteContato.setText("Contato: " + cliente.getContato());
             binding.textClienteEmail.setText("Email: " + cliente.getEmail());
+
             itemView.setOnClickListener(v -> listener.onItemClick(cliente));
+
+            // Configura o clique para o botão de excluir
+            binding.btnExcluirCliente.setOnClickListener(v -> listener.onDeleteClick(cliente));
         }
     }
 
@@ -66,10 +70,6 @@ public class ClienteAdapter extends RecyclerView.Adapter<ClienteAdapter.ClientVi
         if (newClientList != null) {
             this.clienteList.addAll(newClientList);
         }
-        notifyDataSetChanged(); // DiffUtil melhor para listas grandes
-    }
-
-    public Cliente getItemAtPosition(int position) {
-        return (clienteList != null && position >= 0 && position < clienteList.size()) ? clienteList.get(position) : null;
+        notifyDataSetChanged();
     }
 }

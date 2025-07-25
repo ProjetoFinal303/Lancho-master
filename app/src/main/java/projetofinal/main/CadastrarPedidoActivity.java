@@ -1,7 +1,9 @@
 package projetofinal.main;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -18,27 +20,36 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
+import org.json.JSONObject;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import projetofinal.adapters.CarrinhoAdapter;
-import projetofinal.dao.PedidoDao;
+import projetofinal.dao.ClienteDao;
 import projetofinal.models.CarrinhoItem;
-import projetofinal.models.Pedido;
-import projetofinal.models.Produto;
+import projetofinal.models.Cliente;
 
 public class CadastrarPedidoActivity extends AppCompatActivity implements CarrinhoAdapter.OnCarrinhoInteractionListener {
 
     private ActivityCadastrarPedidoBinding binding;
     private CarrinhoAdapter carrinhoAdapter;
     private List<CarrinhoItem> itensNoCarrinho = new ArrayList<>();
-    private PedidoDao pedidoDao;
     private int clienteIdLogado = -1;
     private Gson gson;
-
+    private Cliente clienteLogado;
+    private ClienteDao clienteDao;
     public static final String CARRINHO_PREFS = "CarrinhoPrefs";
     public static final String KEY_ITENS_CARRINHO = "ItensCarrinho";
     private static final String TAG = "CadastrarPedido";
@@ -49,7 +60,6 @@ public class CadastrarPedidoActivity extends AppCompatActivity implements Carrin
         binding = ActivityCadastrarPedidoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Configura o Gson para lidar com BigDecimal, que é usado nos modelos
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(BigDecimal.class, (JsonSerializer<BigDecimal>) (src, typeOfSrc, context) -> src == null ? null : context.serialize(src.toPlainString()));
         gsonBuilder.registerTypeAdapter(BigDecimal.class, (JsonDeserializer<BigDecimal>) (json, typeOfT, context) -> json == null ? null : new BigDecimal(json.getAsString()));
@@ -62,69 +72,109 @@ public class CadastrarPedidoActivity extends AppCompatActivity implements Carrin
             getSupportActionBar().setTitle(getString(R.string.meu_carrinho_title));
         }
 
-        pedidoDao = new PedidoDao(this);
-
+        clienteDao = new ClienteDao(this);
         SharedPreferences prefs = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
         clienteIdLogado = prefs.getInt(LoginActivity.KEY_USER_ID, -1);
 
         if (clienteIdLogado == -1) {
             Toast.makeText(this, "Erro: Sessão de cliente inválida. Faça login.", Toast.LENGTH_LONG).show();
-            finish(); // Fecha a tela se não houver cliente logado
+            finish();
             return;
         }
 
+        carregarDadosCliente();
         carregarItensCarrinho();
         setupRecyclerView();
         atualizarVisibilidadeCarrinho();
         calcularEAtualizarTotal();
 
-        binding.btnFinalizarPedido.setOnClickListener(v -> finalizarPedido());
+        binding.btnFinalizarPedido.setOnClickListener(v -> iniciarCheckoutStripe());
+    }
+
+    private void carregarDadosCliente() {
+        if (clienteIdLogado != -1) {
+            clienteDao.buscarPorId(clienteIdLogado,
+                    cliente -> {
+                        if (cliente != null) this.clienteLogado = cliente;
+                        else runOnUiThread(() -> Toast.makeText(this, "Erro ao carregar seus dados.", Toast.LENGTH_LONG).show());
+                    },
+                    error -> runOnUiThread(() -> Toast.makeText(this, "Erro de conexão.", Toast.LENGTH_LONG).show())
+            );
+        }
+    }
+
+    private void iniciarCheckoutStripe() {
+        if (itensNoCarrinho.isEmpty()) {
+            Toast.makeText(this, "Seu carrinho está vazio.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (clienteLogado == null || clienteLogado.getEmail() == null) {
+            Toast.makeText(this, "Aguarde, carregando seus dados...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        setLoading(true);
+        String functionUrl = "https://ygsziltorjcgpjbmlptr.supabase.co/functions/v1/create-mobile-checkout";
+        String anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlnc3ppbHRvcmpjZ3BqYm1scHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgyOTUzNTQsImV4cCI6MjA2Mzg3MTM1NH0.3J19gnI_qwM3nWolVdvCcNNusC3YlOTvZEjOwM6z2PU";
+
+        List<CheckoutItemPayload> itemsPayload = itensNoCarrinho.stream()
+                .map(item -> new CheckoutItemPayload(item.getPriceId(), item.getQuantidade()))
+                .collect(Collectors.toList());
+
+        String jsonPayload = gson.toJson(new CheckoutPayload(itemsPayload, clienteLogado.getEmail(), clienteIdLogado));
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(jsonPayload, MediaType.get("application/json; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url(functionUrl)
+                .header("Authorization", "Bearer " + anonKey)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                runOnUiThread(() -> {
+                    setLoading(false);
+                    Toast.makeText(CadastrarPedidoActivity.this, "Falha na comunicação com o servidor.", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                try (response) {
+                    if (response.isSuccessful()) {
+                        String responseBody = response.body().string();
+                        JSONObject jsonResponse = new JSONObject(responseBody);
+                        String checkoutUrl = jsonResponse.getString("checkoutUrl");
+
+                        runOnUiThread(() -> {
+                            itensNoCarrinho.clear();
+                            salvarItensCarrinho();
+                            Toast.makeText(CadastrarPedidoActivity.this, "Redirecionando para o pagamento...", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(checkoutUrl)));
+                            finish();
+                        });
+                    } else {
+                        runOnUiThread(() -> {
+                            setLoading(false);
+                            Toast.makeText(CadastrarPedidoActivity.this, "Erro ao criar sessão de pagamento.", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                } catch (Exception e) {
+                    runOnUiThread(() -> {
+                        setLoading(false);
+                        Toast.makeText(CadastrarPedidoActivity.this, "Resposta inválida do servidor.", Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+        });
     }
 
     private void setupRecyclerView() {
         binding.recyclerViewItensCarrinho.setLayoutManager(new LinearLayoutManager(this));
         carrinhoAdapter = new CarrinhoAdapter(this, itensNoCarrinho, this);
         binding.recyclerViewItensCarrinho.setAdapter(carrinhoAdapter);
-    }
-
-    private void finalizarPedido() {
-        if (itensNoCarrinho.isEmpty() || clienteIdLogado == -1) {
-            Toast.makeText(this, "Carrinho vazio ou erro de sessão.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        setLoading(true);
-
-        StringBuilder descricao = new StringBuilder();
-        BigDecimal valorTotal = BigDecimal.ZERO;
-        for(int i = 0; i < itensNoCarrinho.size(); i++) {
-            CarrinhoItem item = itensNoCarrinho.get(i);
-            descricao.append(item.getQuantidade()).append("x ").append(item.getProduto().getNome());
-            if (i < itensNoCarrinho.size() - 1) {
-                descricao.append(", ");
-            }
-            valorTotal = valorTotal.add(item.getPrecoTotalItem());
-        }
-
-        Pedido novoPedido = new Pedido(clienteIdLogado, descricao.toString(), valorTotal.doubleValue());
-
-        pedidoDao.inserir(novoPedido,
-                // Callback de Sucesso
-                response -> runOnUiThread(() -> {
-                    setLoading(false);
-                    Toast.makeText(this, "Pedido realizado com sucesso!", Toast.LENGTH_LONG).show();
-                    itensNoCarrinho.clear();
-                    salvarItensCarrinho(); // Limpa o carrinho salvo
-                    VisualizarProdutoActivity.setProdutosDesatualizados(true); // Avisa a outra tela para recarregar
-                    finish(); // Fecha a tela do carrinho
-                }),
-                // Callback de Erro
-                error -> runOnUiThread(() -> {
-                    setLoading(false);
-                    Log.e(TAG, "Erro ao finalizar pedido: ", error);
-                    Toast.makeText(this, "Falha ao realizar pedido: " + error.getMessage(), Toast.LENGTH_LONG).show();
-                })
-        );
     }
 
     private void setLoading(boolean isLoading) {
@@ -167,12 +217,10 @@ public class CadastrarPedidoActivity extends AppCompatActivity implements Carrin
     }
 
     private void calcularEAtualizarTotal() {
-        BigDecimal total = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
-        for (CarrinhoItem item : itensNoCarrinho) {
-            if (item.getPrecoTotalItem() != null) {
-                total = total.add(item.getPrecoTotalItem());
-            }
-        }
+        BigDecimal total = itensNoCarrinho.stream()
+                .map(CarrinhoItem::getPrecoTotalItem)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
         binding.textViewTotalCarrinho.setText(String.format(Locale.getDefault(), "Total: R$ %.2f", total));
     }
 
@@ -202,5 +250,24 @@ public class CadastrarPedidoActivity extends AppCompatActivity implements Carrin
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private static class CheckoutItemPayload {
+        final String priceId;
+        final int quantity;
+        CheckoutItemPayload(String priceId, int quantity) {
+            this.priceId = priceId;
+            this.quantity = quantity;
+        }
+    }
+    private static class CheckoutPayload {
+        final List<CheckoutItemPayload> cartItems;
+        final String customerEmail;
+        final int clienteId;
+        CheckoutPayload(List<CheckoutItemPayload> cartItems, String customerEmail, int clienteId) {
+            this.cartItems = cartItems;
+            this.customerEmail = customerEmail;
+            this.clienteId = clienteId;
+        }
     }
 }

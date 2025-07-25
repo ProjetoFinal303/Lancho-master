@@ -27,7 +27,7 @@ public class MainAdminActivity extends AppCompatActivity {
         }
 
         binding.btnGerenciarProdutos.setOnClickListener(v -> {
-            // Navegar para uma activity que lista produtos e permite Add/Edit/Delete
+            // A tela VisualizarProdutoActivity agora mostra os produtos do Stripe
             startActivity(new Intent(MainAdminActivity.this, VisualizarProdutoActivity.class));
         });
 
@@ -42,13 +42,13 @@ public class MainAdminActivity extends AppCompatActivity {
         });
 
         binding.btnGerenciarClientes.setOnClickListener(v -> {
+            // A tela VisualizarClienteActivity agora inclui a função de excluir
             startActivity(new Intent(MainAdminActivity.this, VisualizarClienteActivity.class));
         });
 
-        // Listener para o novo botão
-        binding.btnExcluirClienteAdmin.setOnClickListener(v -> {
-            startActivity(new Intent(MainAdminActivity.this, ExcluirClienteActivity.class));
-        });
+        // CÓDIGO REMOVIDO DAQUI
+        // O listener para o botão 'btnExcluirClienteAdmin' foi removido
+        // porque a tela ExcluirClienteActivity não existe mais.
 
         binding.btnLogoutAdmin.setOnClickListener(v -> {
             logoutAdmin();
