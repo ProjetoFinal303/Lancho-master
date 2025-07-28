@@ -1,6 +1,17 @@
 <resources>
     <string name="app_name">Lanchonete Digital</string>
 
+    <string name="default_web_client_id">975618621125-k0qaq6qimn0ddb45gv8d9mfkps0pttgv.apps.googleusercontent.com</string>
+
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Escuro</string>
+    <string name="theme_system">Padrão do Sistema</string>
+
+    <string name="cadastrar_text_link"><u>Não tem uma conta? Cadastre-se</u></string>
+    <string name="settings_title">Configurações</string>
+    <string name="theme_label">Tema</string>
+
+
     <string name="login_title">Login</string>
     <string name="email_hint">E-mail ou Nome de Usuário</string>
     <string name="senha_hint">Senha</string>

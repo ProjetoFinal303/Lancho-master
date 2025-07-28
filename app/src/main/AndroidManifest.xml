@@ -34,19 +34,16 @@
         <activity android:name="projetofinal.main.CadastrarClienteActivity" android:exported="false" />
         <activity android:name="projetofinal.main.VisualizarClienteActivity" android:exported="false" />
         <activity android:name="projetofinal.main.AtualizarClienteActivity" android:exported="false" />
-        <activity android:name="projetofinal.main.ExcluirClienteActivity" android:exported="false" />
 
         <activity android:name="projetofinal.main.VisualizarProdutoActivity" android:exported="false" />
-        <activity android:name="projetofinal.main.CadastrarProdutoActivity" android:exported="false" />
-        <activity android:name="projetofinal.main.AtualizarProdutoActivity" android:exported="false" />
-        <activity android:name="projetofinal.main.ExcluirProdutoActivity" android:exported="false" />
 
         <activity android:name="projetofinal.main.CadastrarPedidoActivity" android:exported="false" />
         <activity android:name="projetofinal.main.VisualizarPedidosActivity" android:exported="false" />
         <activity android:name="projetofinal.main.ExcluirPedidoActivity" android:exported="false" />
         <activity android:name="projetofinal.main.ReceberComandasActivity" android:exported="false" />
         <activity android:name="projetofinal.main.VisualizarEstoqueActivity" android:exported="false" />
-        <activity android:name="projetofinal.main.AtualizarEstoqueActivity" android:exported="false" />
+
+        <activity android:name="projetofinal.main.SettingsActivity" android:exported="false" />
 
     </application>
 </manifest>

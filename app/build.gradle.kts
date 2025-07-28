@@ -52,6 +52,9 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
+    // *** NOVA DEPENDÊNCIA PARA O LOGIN COM GOOGLE ***
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
+
     // Dependências do Glide (para carregar imagens da internet)
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")

@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="dark_primary">#FFC107</color> <color name="dark_primary_dark">#FFA000</color> <color name="dark_accent">#FFD600</color> <color name="dark_background">#121212</color> <color name="dark_surface">#212121</color> <color name="dark_text_primary">#FFFFFF</color> <color name="dark_text_secondary">#BDBDBD</color> </resources>

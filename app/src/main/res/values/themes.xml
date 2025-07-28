@@ -1,28 +1,21 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Base.Theme.LanchoneteDigital" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/colorAccent</item>
-        <item name="colorSecondaryVariant">@color/colorAccent</item> <item name="colorOnSecondary">@color/black</item>
+    <style name="Theme.LanchoneteDigital" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/light_primary</item>
+        <item name="colorPrimaryVariant">@color/light_primary_dark</item>
+        <item name="colorOnPrimary">@color/light_text_primary</item>
+        <item name="colorSecondary">@color/light_accent</item>
+        <item name="colorSecondaryVariant">@color/light_accent</item>
+        <item name="colorOnSecondary">@color/light_text_primary</item>
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <item name="android:windowBackground">@color/background_light</item>
-        <item name="android:textColor">@color/textColorPrimary</item>
-    </style>
-
-    <style name="Theme.LanchoneteDigital" parent="Base.Theme.LanchoneteDigital" />
-
-    <style name="AppEditTextStyle" parent="Widget.AppCompat.EditText">
-        <item name="android:background">@drawable/edittext_background</item>
-        <item name="android:textColor">@color/textColorPrimary</item>
-        <item name="android:textColorHint">@color/textColorHint</item>
-        <item name="android:padding">12dp</item>
-        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:windowBackground">@color/light_background</item>
+        <item name="android:textColor">@color/light_text_primary</item>
+        <item name="colorSurface">@color/light_surface</item>
+        <item name="colorOnSurface">@color/light_text_primary</item>
     </style>
 
     <style name="AppButtonStyle.Primary" parent="Widget.Material3.Button">
-        <item name="android:background">@drawable/button_background_primary</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:backgroundTint">?attr/colorPrimary</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
         <item name="android:paddingStart">24dp</item>
         <item name="android:paddingEnd">24dp</item>
         <item name="android:paddingTop">12dp</item>
@@ -34,7 +27,7 @@
     </style>
 
     <style name="AppButtonStyle.Danger" parent="Widget.Material3.Button">
-        <item name="android:background">@drawable/button_background_danger</item>
+        <item name="android:backgroundTint">@color/button_danger_default</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:paddingStart">24dp</item>
         <item name="android:paddingEnd">24dp</item>
@@ -50,7 +43,6 @@
         <item name="cardElevation">4dp</item>
         <item name="cardCornerRadius">8dp</item>
         <item name="android:layout_margin">8dp</item>
-        <item name="cardBackgroundColor">@color/card_background_light</item>
+        <item name="cardBackgroundColor">?attr/colorSurface</item>
     </style>
-
 </resources>

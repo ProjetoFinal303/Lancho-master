@@ -8,6 +8,9 @@ public class Cliente {
     private String contato;
     private String senha;
 
+    // Construtor vazio que estava faltando
+    public Cliente() {}
+
     public Cliente(int id, String nome, String email, String contato, String senha) {
         this.id = id;
         this.nome = nome;
