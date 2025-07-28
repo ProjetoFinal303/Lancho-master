@@ -35,7 +35,7 @@ import projetofinal.adapters.ProdutoAdapter;
 import projetofinal.models.CarrinhoItem;
 import projetofinal.models.Produto;
 
-public class VisualizarProdutoActivity extends AppCompatActivity {
+public class VisualizarProdutoActivity extends BaseActivity {
 
     private ActivityVisualizarProdutoBinding binding;
     private ProdutoAdapter produtoAdapter;

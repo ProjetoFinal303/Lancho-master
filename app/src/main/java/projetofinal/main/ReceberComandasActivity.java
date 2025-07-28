@@ -18,7 +18,7 @@ import projetofinal.adapters.PedidoAdapterCozinha;
 import projetofinal.dao.PedidoDao;
 import projetofinal.models.Pedido;
 
-public class ReceberComandasActivity extends AppCompatActivity implements PedidoAdapterCozinha.OnComandaInteractionListener {
+public class ReceberComandasActivity extends BaseActivity implements PedidoAdapterCozinha.OnComandaInteractionListener {
 
     private ActivityReceberComandasBinding binding;
     private PedidoDao pedidoDao;

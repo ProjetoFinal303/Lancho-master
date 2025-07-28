@@ -2,16 +2,15 @@ package projetofinal.main;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import androidx.appcompat.app.AppCompatActivity;
+import android.view.MenuItem;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
 import com.example.projetofinal.R;
 import com.example.projetofinal.databinding.ActivitySettingsBinding;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
 
     private ActivitySettingsBinding binding;
     public static final String THEME_PREFS = "ThemePrefs";
@@ -23,74 +22,77 @@ public class SettingsActivity extends AppCompatActivity {
         binding = ActivitySettingsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        setSupportActionBar(binding.toolbarSettings);
+        Toolbar toolbar = binding.toolbarSettings;
+        setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        binding.toolbarSettings.setNavigationOnClickListener(v -> onBackPressed());
 
-        setupThemeSpinner();
+        updateThemeSummary();
+        binding.optionTheme.setOnClickListener(v -> showThemeDialog());
     }
 
-    private void setupThemeSpinner() {
-        Spinner spinner = binding.spinnerTheme;
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.theme_options, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+    private void showThemeDialog() {
+        String[] themes = { "Claro", "Escuro", "Padrão do Sistema" };
+        int currentNightMode = getSharedPreferences(THEME_PREFS, MODE_PRIVATE)
+                .getInt(KEY_THEME_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
 
-        SharedPreferences prefs = getSharedPreferences(THEME_PREFS, MODE_PRIVATE);
-        int currentThemeMode = prefs.getInt(KEY_THEME_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-
-        // Define a seleção inicial do spinner
-        switch (currentThemeMode) {
-            case AppCompatDelegate.MODE_NIGHT_NO:
-                spinner.setSelection(0); // Claro
-                break;
-            case AppCompatDelegate.MODE_NIGHT_YES:
-                spinner.setSelection(1); // Escuro
-                break;
-            case AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM:
-            default:
-                spinner.setSelection(2); // Sistema
-                break;
+        int checkedItem = 2; // Padrão do Sistema
+        if (currentNightMode == AppCompatDelegate.MODE_NIGHT_NO) {
+            checkedItem = 0; // Claro
+        } else if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
+            checkedItem = 1; // Escuro
         }
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                int selectedMode;
-                switch (position) {
-                    case 0: // Claro
-                        selectedMode = AppCompatDelegate.MODE_NIGHT_NO;
-                        break;
-                    case 1: // Escuro
-                        selectedMode = AppCompatDelegate.MODE_NIGHT_YES;
-                        break;
-                    case 2: // Sistema
-                    default:
-                        selectedMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
-                        break;
-                }
-
-                // Salva e aplica o tema se for diferente do atual
-                if (AppCompatDelegate.getDefaultNightMode() != selectedMode) {
-                    AppCompatDelegate.setDefaultNightMode(selectedMode);
-                    saveThemePreference(selectedMode);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // Não faz nada
-            }
-        });
+        new AlertDialog.Builder(this)
+                .setTitle("Escolher Tema")
+                .setSingleChoiceItems(themes, checkedItem, (dialog, which) -> {
+                    int selectedThemeMode;
+                    switch (which) {
+                        case 0: // Claro
+                            selectedThemeMode = AppCompatDelegate.MODE_NIGHT_NO;
+                            break;
+                        case 1: // Escuro
+                            selectedThemeMode = AppCompatDelegate.MODE_NIGHT_YES;
+                            break;
+                        default: // Sistema
+                            selectedThemeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+                            break;
+                    }
+                    saveThemeSetting(selectedThemeMode);
+                    AppCompatDelegate.setDefaultNightMode(selectedThemeMode);
+                    updateThemeSummary();
+                    dialog.dismiss();
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 
-    private void saveThemePreference(int mode) {
+    private void updateThemeSummary() {
         SharedPreferences prefs = getSharedPreferences(THEME_PREFS, MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt(KEY_THEME_MODE, mode);
-        editor.apply();
+        int currentNightMode = prefs.getInt(KEY_THEME_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        String themeName;
+        if (currentNightMode == AppCompatDelegate.MODE_NIGHT_NO) {
+            themeName = "Claro";
+        } else if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
+            themeName = "Escuro";
+        } else {
+            themeName = "Padrão do Sistema";
+        }
+        binding.textViewCurrentTheme.setText(themeName);
+    }
+
+    private void saveThemeSetting(int themeMode) {
+        SharedPreferences prefs = getSharedPreferences(THEME_PREFS, MODE_PRIVATE);
+        prefs.edit().putInt(KEY_THEME_MODE, themeMode).apply();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

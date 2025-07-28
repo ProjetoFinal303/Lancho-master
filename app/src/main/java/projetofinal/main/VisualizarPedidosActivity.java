@@ -17,7 +17,7 @@ import projetofinal.adapters.PedidoAdapterCliente;
 import projetofinal.dao.PedidoDao;
 import projetofinal.models.Pedido;
 
-public class VisualizarPedidosActivity extends AppCompatActivity {
+public class VisualizarPedidosActivity extends BaseActivity {
 
     private ActivityVisualizarPedidosBinding binding;
     private PedidoDao pedidoDao;

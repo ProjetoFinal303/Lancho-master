@@ -11,7 +11,7 @@ import com.example.projetofinal.databinding.ActivityAtualizarClienteBinding;
 import projetofinal.dao.ClienteDao;
 import projetofinal.models.Cliente;
 
-public class AtualizarClienteActivity extends AppCompatActivity {
+public class AtualizarClienteActivity extends BaseActivity { // Herda de BaseActivity
 
     private ActivityAtualizarClienteBinding binding;
     private ClienteDao clienteDao;
@@ -25,6 +25,21 @@ public class AtualizarClienteActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         clienteDao = new ClienteDao(this);
+
+        // Verifica se a activity foi aberta a partir da tela de Perfil
+        if (getIntent().hasExtra("CLIENTE_ID_EDITAR")) {
+            int clienteId = getIntent().getIntExtra("CLIENTE_ID_EDITAR", -1);
+            if (clienteId != -1) {
+                // Esconde a busca por ID e já carrega os dados do cliente
+                binding.tilIdClienteAtualizar.setVisibility(View.GONE);
+                binding.btnBuscar.setVisibility(View.GONE);
+                buscarClienteParaAtualizar(clienteId);
+            }
+        } else {
+            // Comportamento normal para o Admin: mostra a busca por ID
+            binding.tilIdClienteAtualizar.setVisibility(View.VISIBLE);
+            binding.btnBuscar.setVisibility(View.VISIBLE);
+        }
 
         binding.btnBuscar.setOnClickListener(v -> {
             String idStr = binding.edtId.getText().toString().trim();
@@ -53,7 +68,7 @@ public class AtualizarClienteActivity extends AppCompatActivity {
                         binding.edtNome.setText(cliente.getNome());
                         binding.edtEmail.setText(cliente.getEmail());
                         binding.edtContato.setText(cliente.getContato());
-                        binding.edtSenha.setText(""); // Limpa o campo senha
+                        binding.edtSenha.setText(""); // Limpa o campo senha por segurança
                     } else {
                         Toast.makeText(this, "Cliente não encontrado!", Toast.LENGTH_SHORT).show();
                     }
@@ -92,14 +107,14 @@ public class AtualizarClienteActivity extends AppCompatActivity {
         clienteSelecionado.setEmail(email);
         clienteSelecionado.setContato(contato);
         if (!senhaNova.isEmpty()) {
-            clienteSelecionado.setSenha(senhaNova); // Se a senha for alterada
+            clienteSelecionado.setSenha(senhaNova);
         }
 
         clienteDao.atualizar(clienteSelecionado,
                 response -> runOnUiThread(() -> {
                     setLoading(false, true);
-                    Toast.makeText(this, "Cliente atualizado com sucesso!", Toast.LENGTH_SHORT).show();
-                    finish();
+                    Toast.makeText(this, "Dados atualizados com sucesso!", Toast.LENGTH_SHORT).show();
+                    finish(); // Volta para a tela anterior (Perfil)
                 }),
                 error -> runOnUiThread(() -> {
                     setLoading(false, true);

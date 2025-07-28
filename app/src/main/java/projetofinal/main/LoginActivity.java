@@ -36,7 +36,7 @@ import okhttp3.Response;
 import projetofinal.dao.ClienteDao;
 import projetofinal.models.Cliente;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity {
 
     private ActivityLoginBinding binding;
     private ClienteDao clienteDao;

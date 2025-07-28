@@ -21,7 +21,7 @@ import projetofinal.adapters.EstoqueAdapter;
 import projetofinal.dao.EstoqueDao;
 import projetofinal.models.Estoque;
 
-public class VisualizarEstoqueActivity extends AppCompatActivity {
+public class VisualizarEstoqueActivity extends BaseActivity {
 
     private ActivityVisualizarEstoqueBinding binding;
     private EstoqueDao estoqueDao;

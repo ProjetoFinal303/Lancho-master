@@ -14,7 +14,7 @@ import com.example.projetofinal.R;
 import com.example.projetofinal.databinding.ActivityExcluirPedidoBinding;
 import projetofinal.dao.PedidoDao;
 
-public class ExcluirPedidoActivity extends AppCompatActivity {
+public class ExcluirPedidoActivity extends BaseActivity {
 
     private ActivityExcluirPedidoBinding binding;
     private PedidoDao pedidoDao;

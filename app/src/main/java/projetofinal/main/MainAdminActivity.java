@@ -10,7 +10,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.example.projetofinal.R;
 import com.example.projetofinal.databinding.ActivityMainAdminBinding;
 
-public class MainAdminActivity extends AppCompatActivity {
+public class MainAdminActivity extends BaseActivity {
 
     private ActivityMainAdminBinding binding;
 

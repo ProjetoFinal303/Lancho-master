@@ -43,6 +43,7 @@
         <activity android:name="projetofinal.main.ReceberComandasActivity" android:exported="false" />
         <activity android:name="projetofinal.main.VisualizarEstoqueActivity" android:exported="false" />
 
+        <activity android:name="projetofinal.main.ProfileActivity" android:exported="false" />
         <activity android:name="projetofinal.main.SettingsActivity" android:exported="false" />
 
     </application>

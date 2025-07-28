@@ -41,7 +41,7 @@ import projetofinal.dao.ClienteDao;
 import projetofinal.models.CarrinhoItem;
 import projetofinal.models.Cliente;
 
-public class CadastrarPedidoActivity extends AppCompatActivity implements CarrinhoAdapter.OnCarrinhoInteractionListener {
+public class CadastrarPedidoActivity extends BaseActivity implements CarrinhoAdapter.OnCarrinhoInteractionListener {
 
     private ActivityCadastrarPedidoBinding binding;
     private CarrinhoAdapter carrinhoAdapter;

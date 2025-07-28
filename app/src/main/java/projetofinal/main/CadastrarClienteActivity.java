@@ -11,7 +11,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import projetofinal.dao.ClienteDao;
 import projetofinal.models.Cliente;
 
-public class CadastrarClienteActivity extends AppCompatActivity {
+public class CadastrarClienteActivity extends BaseActivity {
 
     private ActivityCadastrarClienteBinding binding;
     private ClienteDao clienteDao;

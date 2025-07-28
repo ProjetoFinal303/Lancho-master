@@ -10,7 +10,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.example.projetofinal.R;
 import com.example.projetofinal.databinding.ActivityMainCozinhaBinding; // Importar a classe de binding
 
-public class MainCozinhaActivity extends AppCompatActivity {
+public class MainCozinhaActivity extends BaseActivity {
 
     private ActivityMainCozinhaBinding binding; // Variável para o binding
 

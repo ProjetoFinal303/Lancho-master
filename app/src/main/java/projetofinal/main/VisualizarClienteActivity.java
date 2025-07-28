@@ -14,7 +14,7 @@ import projetofinal.adapters.ClienteAdapter;
 import projetofinal.dao.ClienteDao;
 import projetofinal.models.Cliente;
 
-public class VisualizarClienteActivity extends AppCompatActivity {
+public class VisualizarClienteActivity extends BaseActivity {
     private ClienteDao clienteDao;
     private ClienteAdapter clienteAdapter;
     private ActivityVisualizarClienteBinding binding;
