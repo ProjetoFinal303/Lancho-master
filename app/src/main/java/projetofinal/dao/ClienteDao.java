@@ -17,7 +17,7 @@ public class ClienteDao {
     private Cliente parseCliente(JSONObject obj) throws Exception {
         return new Cliente(
                 obj.getInt("id"), obj.getString("nome"), obj.getString("email"),
-                obj.getString("contato"), obj.getString("senha")
+                obj.getString("contato"), obj.optString("senha", "") // senha pode ser nula
         );
     }
 

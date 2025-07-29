@@ -18,7 +18,6 @@ public class SupabaseDatabaseClient {
     private static final OkHttpClient client = new OkHttpClient();
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    // GET (Buscar dados)
     public static void get(String urlPath, Consumer<String> onSuccess, Consumer<Exception> onError) {
         Request request = new Request.Builder()
                 .url(SUPABASE_URL + "/rest/v1/" + urlPath)
@@ -29,7 +28,6 @@ public class SupabaseDatabaseClient {
         client.newCall(request).enqueue(new SimpleCallback(onSuccess, onError));
     }
 
-    // INSERT (Cadastrar dados)
     public static void insert(String table, JSONObject data, Consumer<String> onSuccess, Consumer<Exception> onError) {
         RequestBody body = RequestBody.create(data.toString(), JSON);
         Request request = new Request.Builder()
@@ -42,7 +40,6 @@ public class SupabaseDatabaseClient {
         client.newCall(request).enqueue(new SimpleCallback(onSuccess, onError));
     }
 
-    // UPDATE (Atualizar dados)
     public static void update(String table, int id, JSONObject data, Consumer<String> onSuccess, Consumer<Exception> onError) {
         RequestBody body = RequestBody.create(data.toString(), JSON);
         Request request = new Request.Builder()
@@ -54,7 +51,6 @@ public class SupabaseDatabaseClient {
         client.newCall(request).enqueue(new SimpleCallback(onSuccess, onError));
     }
 
-    // DELETE (Excluir dados)
     public static void delete(String table, int id, Consumer<String> onSuccess, Consumer<Exception> onError) {
         Request request = new Request.Builder()
                 .url(SUPABASE_URL + "/rest/v1/" + table + "?id=eq." + id)
@@ -65,27 +61,40 @@ public class SupabaseDatabaseClient {
         client.newCall(request).enqueue(new SimpleCallback(onSuccess, onError));
     }
 
-    // Classe auxiliar para simplificar os callbacks
+    // MÉTODO CORRETO PARA RESETAR SENHA
+    public static void resetPasswordForEmail(String email, Consumer<String> onSuccess, Consumer<Exception> onError) {
+        try {
+            JSONObject json = new JSONObject();
+            json.put("email", email);
+            RequestBody body = RequestBody.create(json.toString(), JSON);
+            Request request = new Request.Builder()
+                    .url(SUPABASE_URL + "/auth/v1/recover")
+                    .addHeader("apikey", SUPABASE_KEY)
+                    .post(body)
+                    .build();
+            client.newCall(request).enqueue(new SimpleCallback(onSuccess, onError));
+        } catch (Exception e) {
+            onError.accept(e);
+        }
+    }
+
     private static class SimpleCallback implements Callback {
         private final Consumer<String> onSuccess;
         private final Consumer<Exception> onError;
-
         SimpleCallback(Consumer<String> onSuccess, Consumer<Exception> onError) {
             this.onSuccess = onSuccess;
             this.onError = onError;
         }
-
         @Override
         public void onFailure(Call call, IOException e) { onError.accept(e); }
-
         @Override
         public void onResponse(Call call, Response response) throws IOException {
-            try (response) {
-                String responseBody = response.body().string();
-                if (response.isSuccessful()) {
+            try (Response r = response) { // Correção para try-with-resources
+                String responseBody = r.body().string();
+                if (r.isSuccessful()) {
                     onSuccess.accept(responseBody);
                 } else {
-                    onError.accept(new IOException("Erro: " + response.code() + " " + responseBody));
+                    onError.accept(new IOException("Erro: " + r.code() + " " + responseBody));
                 }
             }
         }

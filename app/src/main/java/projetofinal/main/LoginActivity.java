@@ -3,16 +3,18 @@ package projetofinal.main;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.projetofinal.R;
 import com.example.projetofinal.databinding.ActivityLoginBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -21,11 +23,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-
 import org.json.JSONObject;
-
 import java.io.IOException;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -34,6 +33,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import projetofinal.dao.ClienteDao;
+import projetofinal.database.SupabaseDatabaseClient;
 import projetofinal.models.Cliente;
 
 public class LoginActivity extends BaseActivity {
@@ -73,19 +73,16 @@ public class LoginActivity extends BaseActivity {
 
         clienteDao = new ClienteDao(this);
 
-        // Configura o cliente de Login do Google
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // Configura os cliques dos botões
         binding.btnLogin.setOnClickListener(v -> attemptManualLogin());
         binding.btnGoogleLogin.setOnClickListener(v -> signInWithGoogle());
-        binding.btnIrParaCadastro.setOnClickListener(v ->
-                startActivity(new Intent(LoginActivity.this, CadastrarClienteActivity.class))
-        );
+        binding.btnEsqueceuSenha.setOnClickListener(v -> showPasswordResetDialog());
+        binding.btnIrParaCadastro.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, CadastrarClienteActivity.class)));
     }
 
     private void attemptManualLogin() {
@@ -121,6 +118,42 @@ public class LoginActivity extends BaseActivity {
         );
     }
 
+    private void showPasswordResetDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Recuperar Senha");
+        builder.setMessage("Digite seu e-mail para receber o link de recuperação.");
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(50, 20, 50, 20);
+        input.setLayoutParams(lp);
+        builder.setView(input);
+        builder.setPositiveButton("Enviar", (dialog, which) -> {
+            String email = input.getText().toString().trim();
+            if (!TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                sendPasswordResetEmail(email);
+            } else {
+                Toast.makeText(this, "Por favor, insira um e-mail válido.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    private void sendPasswordResetEmail(String email) {
+        setLoading(true);
+        SupabaseDatabaseClient.resetPasswordForEmail(email,
+                response -> runOnUiThread(() -> {
+                    setLoading(false);
+                    Toast.makeText(this, getString(R.string.recuperar_senha_email_enviado), Toast.LENGTH_LONG).show();
+                }),
+                error -> runOnUiThread(() -> {
+                    setLoading(false);
+                    Toast.makeText(this, getString(R.string.recuperar_senha_email_enviado), Toast.LENGTH_LONG).show();
+                })
+        );
+    }
+
     private void signInWithGoogle() {
         setLoading(true);
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
@@ -131,18 +164,20 @@ public class LoginActivity extends BaseActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             String idToken = account.getIdToken();
-            autenticarComSupabase(idToken);
+            if (idToken == null) {
+                throw new ApiException(new com.google.android.gms.common.api.Status(10, "ID Token do Google nulo"));
+            }
+            autenticarComSupabaseFunction(idToken);
         } catch (ApiException e) {
-            Log.w(TAG, "Falha no login com Google. Código: " + e.getStatusCode());
+            Log.w(TAG, "Falha no login com Google. Código: " + e.getStatusCode(), e);
             Toast.makeText(this, "Falha no login com Google.", Toast.LENGTH_SHORT).show();
             setLoading(false);
         }
     }
 
-    private void autenticarComSupabase(String idToken) {
+    private void autenticarComSupabaseFunction(String idToken) {
         String functionUrl = "https://ygsziltorjcgpjbmlptr.supabase.co/functions/v1/handle-google-signin";
         String anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlnc3ppbHRvcmpjZ3BqYm1scHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgyOTUzNTQsImV4cCI6MjA2Mzg3MTM1NH0.3J19gnI_qwM3nWolVdvCcNNusC3YlOTvZEjOwM6z2PU";
-
         try {
             JSONObject jsonPayload = new JSONObject();
             jsonPayload.put("id_token", idToken);
@@ -153,7 +188,6 @@ public class LoginActivity extends BaseActivity {
                     .header("Authorization", "Bearer " + anonKey)
                     .post(body)
                     .build();
-
             client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -162,37 +196,37 @@ public class LoginActivity extends BaseActivity {
                         Toast.makeText(LoginActivity.this, "Erro de rede ao validar login.", Toast.LENGTH_SHORT).show();
                     });
                 }
-
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                    final String responseBody = response.body().string();
-                    if (response.isSuccessful()) {
-                        try {
-                            JSONObject userJson = new JSONObject(responseBody);
-                            int userId = userJson.getInt("id");
-                            String userNome = userJson.getString("nome");
-                            String userEmail = userJson.getString("email");
-
-                            runOnUiThread(() -> {
-                                if ("admin@lancho.com".equalsIgnoreCase(userEmail)) {
-                                    saveUserSession(userId, "admin", userNome);
-                                    navigateToRoleSpecificActivity("admin");
-                                } else {
-                                    saveUserSession(userId, "cliente", userNome);
-                                    navigateToRoleSpecificActivity("cliente");
-                                }
-                            });
-                        } catch (Exception e) {
+                    try(Response r = response) {
+                        final String responseBody = r.body().string();
+                        if (r.isSuccessful()) {
+                            try {
+                                JSONObject userJson = new JSONObject(responseBody);
+                                int userId = userJson.getInt("id");
+                                String userNome = userJson.getString("nome");
+                                String userEmail = userJson.getString("email");
+                                runOnUiThread(() -> {
+                                    if ("admin@lancho.com".equalsIgnoreCase(userEmail)) {
+                                        saveUserSession(userId, "admin", userNome);
+                                        navigateToRoleSpecificActivity("admin");
+                                    } else {
+                                        saveUserSession(userId, "cliente", userNome);
+                                        navigateToRoleSpecificActivity("cliente");
+                                    }
+                                });
+                            } catch (Exception e) {
+                                runOnUiThread(() -> {
+                                    setLoading(false);
+                                    Toast.makeText(LoginActivity.this, "Erro ao processar dados do servidor.", Toast.LENGTH_SHORT).show();
+                                });
+                            }
+                        } else {
                             runOnUiThread(() -> {
                                 setLoading(false);
-                                Toast.makeText(LoginActivity.this, "Erro ao processar dados do servidor.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, "Falha na autenticação com o servidor.", Toast.LENGTH_SHORT).show();
                             });
                         }
-                    } else {
-                        runOnUiThread(() -> {
-                            setLoading(false);
-                            Toast.makeText(LoginActivity.this, "Falha na autenticação com o servidor.", Toast.LENGTH_SHORT).show();
-                        });
                     }
                 }
             });
@@ -209,18 +243,16 @@ public class LoginActivity extends BaseActivity {
         binding.btnLogin.setEnabled(!isLoading);
         binding.btnGoogleLogin.setEnabled(!isLoading);
         binding.btnIrParaCadastro.setEnabled(!isLoading);
+        binding.btnEsqueceuSenha.setEnabled(!isLoading);
     }
-
     private boolean isUserLoggedIn() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         return !TextUtils.isEmpty(prefs.getString(KEY_USER_ROLE, null));
     }
-
     private String getLoggedInUserRole() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         return prefs.getString(KEY_USER_ROLE, "");
     }
-
     private void saveUserSession(int userId, String role, String nome) {
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -229,7 +261,6 @@ public class LoginActivity extends BaseActivity {
         editor.putString(KEY_USER_NOME, nome);
         editor.apply();
     }
-
     private void navigateToRoleSpecificActivity(String role) {
         Intent intent;
         switch (role) {

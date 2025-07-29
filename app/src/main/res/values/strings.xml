@@ -7,18 +7,18 @@
     <string name="theme_dark">Escuro</string>
     <string name="theme_system">Padrão do Sistema</string>
 
-    <string name="cadastrar_text_link"><u>Não tem uma conta? Cadastre-se</u></string>
     <string name="settings_title">Configurações</string>
     <string name="theme_label">Tema</string>
-
+    <string name="esqueci_senha"><u>Esqueceu sua senha?</u></string>
+    <string name="recuperar_senha_email_enviado">Se o e-mail estiver correto, um link para redefinir a senha foi enviado.</string>
+    <string name="email_hint">E-mail</string>
 
     <string name="login_title">Login</string>
-    <string name="email_hint">E-mail ou Nome de Usuário</string>
     <string name="senha_hint">Senha</string>
     <string name="entrar_button">Entrar</string>
-    <string name="criar_conta_cliente_button">Criar conta como Cliente</string>
-    <string name="login_failed">E-mail/Usuário ou senha incorretos!</string>
-    <string name="login_fields_required">Preencha e-mail/usuário e senha!</string>
+    <string name="criar_conta_cliente_button">Primeira vez? Cadastre-se</string>
+    <string name="login_failed">E-mail ou senha incorretos!</string>
+    <string name="login_fields_required">Preencha e-mail e senha!</string>
     <string name="cliente_nao_encontrado">Usuário não encontrado!</string>
 
     <string name="cadastrar_cliente_title">Cadastrar Novo Cliente</string>

@@ -3,20 +3,38 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="colorPrimaryLegacy">#FF6200EE</color>
-    <color name="colorPrimaryDarkLegacy">#FF3700B3</color>
-    <color name="colorAccentLegacy">#FF03DAC5</color>
+    <color name="md_theme_primary">#825500</color>
+    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_primaryContainer">#FFDDBA</color>
+    <color name="md_theme_onPrimaryContainer">#291800</color>
+    <color name="md_theme_secondary">#705D41</color>
+    <color name="md_theme_onSecondary">#FFFFFF</color>
+    <color name="md_theme_secondaryContainer">#FBDFA8</color>
+    <color name="md_theme_onSecondaryContainer">#281A05</color>
+    <color name="md_theme_tertiary">#51643F</color>
+    <color name="md_theme_onTertiary">#FFFFFF</color>
+    <color name="md_theme_tertiaryContainer">#D3EABC</color>
+    <color name="md_theme_onTertiaryContainer">#102003</color>
+    <color name="md_theme_error">#BA1A1A</color>
+    <color name="md_theme_onError">#FFFFFF</color>
+    <color name="md_theme_background">#FFFBFF</color>
+    <color name="md_theme_onBackground">#1F1B16</color>
+    <color name="md_theme_surface">#FFFBFF</color>
+    <color name="md_theme_onSurface">#1F1B16</color>
 
-    <color name="light_primary">#FFC107</color> <color name="light_primary_dark">#FFA000</color> <color name="light_accent">#FFD600</color> <color name="light_background">#FFFFFF</color> <color name="light_surface">#FFFFFF</color> <color name="light_text_primary">#212121</color> <color name="light_text_secondary">#757575</color> <color name="button_primary_default">@color/light_primary</color>
-    <color name="button_primary_pressed">@color/light_primary_dark</color>
-    <color name="button_danger_default">#F44336</color>
-    <color name="button_danger_pressed">#D32F2F</color>
+    <color name="colorPrimary">@color/md_theme_primary</color>
+    <color name="colorPrimaryDark">#684400</color>
+    <color name="colorAccent">@color/md_theme_secondary</color>
+    <color name="textColorPrimary">@color/md_theme_onSurface</color>
+    <color name="background_light">@color/md_theme_background</color>
+    <color name="card_background_light">@color/md_theme_surface</color>
+    <color name="button_primary_default">@color/md_theme_primary</color>
+    <color name="button_primary_pressed">#684400</color>
+    <color name="button_danger_default">@color/md_theme_error</color>
+    <color name="button_danger_pressed">#93000A</color>
 
     <color name="status_pendente">#FFC107</color>
     <color name="status_em_preparo">#2196F3</color>
     <color name="status_concluido">#4CAF50</color>
-    <color name="status_cancelado">#F44336</color>
-    <color name="status_default_text_color">#FFFFFFFF</color>
-
-    <color name="divider_color">#1F000000</color>
+    <color name="status_cancelado">@color/md_theme_error</color>
 </resources>

@@ -1,24 +1,21 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Base.Theme.LanchoneteDigital" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/dark_primary</item>
-        <item name="colorPrimaryVariant">@color/dark_primary_dark</item>
-        <item name="colorOnPrimary">@color/dark_text_primary</item>
-        <item name="colorSecondary">@color/dark_accent</item>
-        <item name="colorSecondaryVariant">@color/dark_accent</item>
-        <item name="colorOnSecondary">@color/dark_text_primary</item>
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <item name="android:windowBackground">@color/dark_background</item>
-        <item name="android:textColor">@color/dark_text_primary</item>
-        <item name="colorSurface">@color/dark_surface</item>
-        <item name="colorOnSurface">@color/dark_text_primary</item>
+    <style name="Base.Theme.LanchoneteDigital" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/md_theme_primaryContainer</item>
+        <item name="colorOnPrimary">@color/md_theme_onPrimaryContainer</item>
+        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_onPrimaryContainer</item>
+        <item name="colorSecondary">@color/md_theme_secondaryContainer</item>
+        <item name="colorOnSecondary">@color/md_theme_onSecondaryContainer</item>
+        <item name="colorSecondaryContainer">@color/md_theme_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_onSecondaryContainer</item>
+        <item name="colorTertiary">@color/md_theme_tertiaryContainer</item>
+        <item name="colorOnTertiary">@color/md_theme_onTertiaryContainer</item>
+        <item name="colorTertiaryContainer">@color/md_theme_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_onTertiaryContainer</item>
+        <item name="colorError">@color/md_theme_error</item>
+        <item name="colorOnError">@color/md_theme_onError</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
     </style>
 
     <style name="Theme.LanchoneteDigital" parent="Base.Theme.LanchoneteDigital" />
-
-    <style name="AppCardViewStyle" parent="Widget.Material3.CardView.Elevated">
-        <item name="cardElevation">4dp</item>
-        <item name="cardCornerRadius">8dp</item>
-        <item name="android:layout_margin">8dp</item>
-        <item name="cardBackgroundColor">?attr/colorSurface</item>
-    </style>
 </resources>

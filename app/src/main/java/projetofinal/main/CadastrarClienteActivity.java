@@ -5,9 +5,7 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
 import com.example.projetofinal.databinding.ActivityCadastrarClienteBinding;
-import org.mindrot.jbcrypt.BCrypt;
 import projetofinal.dao.ClienteDao;
 import projetofinal.models.Cliente;
 
@@ -30,11 +28,10 @@ public class CadastrarClienteActivity extends BaseActivity {
     private void cadastrarCliente() {
         String nome = binding.edtNome.getText().toString().trim();
         String email = binding.edtEmail.getText().toString().trim();
-        String contato = binding.edtContato.getText().toString().trim();
         String senha = binding.edtSenha.getText().toString().trim();
         String confirmarSenha = binding.edtConfirmarSenha.getText().toString().trim();
 
-        if (TextUtils.isEmpty(nome) || TextUtils.isEmpty(email) || TextUtils.isEmpty(contato) || TextUtils.isEmpty(senha)) {
+        if (TextUtils.isEmpty(nome) || TextUtils.isEmpty(email) || TextUtils.isEmpty(senha)) {
             Toast.makeText(this, "Preencha todos os campos!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -49,18 +46,15 @@ public class CadastrarClienteActivity extends BaseActivity {
 
         setLoading(true);
 
-        // A senha ainda é armazenada em texto plano conforme o banco de dados.
-        // O ideal seria usar o sistema de Auth do Supabase, mas isso mantém a estrutura original.
-        Cliente novoCliente = new Cliente(nome, email, contato, senha);
+        // Cliente criado sem o campo de contato
+        Cliente novoCliente = new Cliente(nome, email, "", senha);
 
         clienteDao.inserir(novoCliente,
-                // Callback de Sucesso
                 response -> runOnUiThread(() -> {
                     setLoading(false);
                     Toast.makeText(CadastrarClienteActivity.this, "Cliente cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
-                    finish(); // Fecha a tela de cadastro
+                    finish();
                 }),
-                // Callback de Erro
                 error -> runOnUiThread(() -> {
                     setLoading(false);
                     Toast.makeText(CadastrarClienteActivity.this, "Erro ao cadastrar: " + error.getMessage(), Toast.LENGTH_LONG).show();
