@@ -32,6 +32,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import projetofinal.adapters.ProdutoAdapter;
+import projetofinal.dao.ProdutoDao; // Importar o novo DAO
 import projetofinal.models.CarrinhoItem;
 import projetofinal.models.Produto;
 
@@ -44,6 +45,7 @@ public class VisualizarProdutoActivity extends BaseActivity {
     private Gson gson;
     private int clienteIdLogado = -1;
     private String userRole;
+    private ProdutoDao produtoDao; // Adicionar o DAO
     private static final String TAG = "VisualizarProduto";
 
     @Override
@@ -57,6 +59,8 @@ public class VisualizarProdutoActivity extends BaseActivity {
         gsonBuilder.registerTypeAdapter(BigDecimal.class, (JsonDeserializer<BigDecimal>) (json, typeOfT, context) -> json == null ? null : new BigDecimal(json.getAsString()));
         gson = gsonBuilder.create();
 
+        produtoDao = new ProdutoDao(this); // Instanciar o DAO
+
         SharedPreferences prefs = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
         clienteIdLogado = prefs.getInt(LoginActivity.KEY_USER_ID, -1);
         userRole = prefs.getString(LoginActivity.KEY_USER_ROLE, "");
@@ -68,7 +72,8 @@ public class VisualizarProdutoActivity extends BaseActivity {
             startActivity(new Intent(this, CadastrarPedidoActivity.class));
         });
 
-        fetchStripeProducts();
+        // MODIFICADO: Busca produtos do banco de dados
+        fetchProductsFromSupabase();
     }
 
     @Override
@@ -84,7 +89,7 @@ public class VisualizarProdutoActivity extends BaseActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             if ("admin".equals(userRole)) {
-                getSupportActionBar().setTitle("Produtos (via Stripe)");
+                getSupportActionBar().setTitle("Produtos (Sincronizados)");
             } else {
                 getSupportActionBar().setTitle("Cardápio");
             }
@@ -99,65 +104,27 @@ public class VisualizarProdutoActivity extends BaseActivity {
         binding.recyclerViewProdutos.setAdapter(produtoAdapter);
     }
 
-    private void fetchStripeProducts() {
+    private void fetchProductsFromSupabase() {
         setLoading(true);
-        String functionUrl = "https://ygsziltorjcgpjbmlptr.supabase.co/functions/v1/get-stripe-products";
-        String anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlnc3ppbHRvcmpjZ3BqYm1scHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgyOTUzNTQsImV4cCI6MjA2Mzg3MTM1NH0.3J19gnI_qwM3nWolVdvCcNNusC3YlOTvZEjOwM6z2PU";
-
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(functionUrl)
-                .header("Authorization", "Bearer " + anonKey)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                runOnUiThread(() -> {
+        produtoDao.listarTodos(
+                produtosRecebidos -> runOnUiThread(() -> {
                     setLoading(false);
-                    Log.e(TAG, "Falha ao buscar produtos do Stripe: ", e);
-                    Toast.makeText(VisualizarProdutoActivity.this, "Erro de rede. Não foi possível carregar o cardápio.", Toast.LENGTH_LONG).show();
-                });
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                final String responseBody = response.body().string();
-
-                if (!response.isSuccessful()) {
-                    Log.e(TAG, "Erro do servidor ao buscar produtos: " + response.code() + " Body: " + responseBody);
-                    runOnUiThread(() -> {
-                        setLoading(false);
-                        binding.textViewNenhumProduto.setText("Erro ao conectar com o servidor.");
+                    if (produtosRecebidos != null && !produtosRecebidos.isEmpty()) {
+                        produtoAdapter.atualizarProdutos(produtosRecebidos);
+                        binding.recyclerViewProdutos.setVisibility(View.VISIBLE);
+                        binding.textViewNenhumProduto.setVisibility(View.GONE);
+                    } else {
+                        binding.recyclerViewProdutos.setVisibility(View.GONE);
                         binding.textViewNenhumProduto.setVisibility(View.VISIBLE);
-                        Toast.makeText(VisualizarProdutoActivity.this, "Falha ao carregar o cardápio. Verifique a conexão.", Toast.LENGTH_LONG).show();
-                    });
-                    return;
-                }
-
-                runOnUiThread(() -> {
-                    try {
-                        Type productListType = new TypeToken<ArrayList<Produto>>(){}.getType();
-                        List<Produto> produtosRecebidos = gson.fromJson(responseBody, productListType);
-
-                        if (produtosRecebidos != null && !produtosRecebidos.isEmpty()) {
-                            produtoAdapter.atualizarProdutos(produtosRecebidos);
-                            binding.recyclerViewProdutos.setVisibility(View.VISIBLE);
-                            binding.textViewNenhumProduto.setVisibility(View.GONE);
-                        } else {
-                            binding.recyclerViewProdutos.setVisibility(View.GONE);
-                            binding.textViewNenhumProduto.setVisibility(View.VISIBLE);
-                        }
-                    } catch (Exception e) {
-                        Log.e(TAG, "Erro ao parsear produtos: ", e);
-                        binding.textViewNenhumProduto.setText("Erro ao ler cardápio.");
-                        binding.textViewNenhumProduto.setVisibility(View.VISIBLE);
-                    } finally {
-                        setLoading(false);
                     }
-                });
-            }
-        });
+                }),
+                error -> runOnUiThread(() -> {
+                    setLoading(false);
+                    Log.e(TAG, "Erro ao buscar produtos do Supabase: ", error);
+                    binding.textViewNenhumProduto.setText("Erro ao carregar o cardápio.");
+                    binding.textViewNenhumProduto.setVisibility(View.VISIBLE);
+                })
+        );
     }
 
     private void adicionarAoCarrinho(Produto produto) {

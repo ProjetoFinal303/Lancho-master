@@ -81,7 +81,6 @@ public class LoginActivity extends BaseActivity {
 
         binding.btnLogin.setOnClickListener(v -> attemptManualLogin());
         binding.btnGoogleLogin.setOnClickListener(v -> signInWithGoogle());
-        binding.btnEsqueceuSenha.setOnClickListener(v -> showPasswordResetDialog());
         binding.btnIrParaCadastro.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, CadastrarClienteActivity.class)));
     }
 
@@ -114,42 +113,6 @@ public class LoginActivity extends BaseActivity {
                 error -> runOnUiThread(() -> {
                     setLoading(false);
                     Toast.makeText(this, "Erro de conexão. Tente novamente.", Toast.LENGTH_SHORT).show();
-                })
-        );
-    }
-
-    private void showPasswordResetDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Recuperar Senha");
-        builder.setMessage("Digite seu e-mail para receber o link de recuperação.");
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        lp.setMargins(50, 20, 50, 20);
-        input.setLayoutParams(lp);
-        builder.setView(input);
-        builder.setPositiveButton("Enviar", (dialog, which) -> {
-            String email = input.getText().toString().trim();
-            if (!TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                sendPasswordResetEmail(email);
-            } else {
-                Toast.makeText(this, "Por favor, insira um e-mail válido.", Toast.LENGTH_SHORT).show();
-            }
-        });
-        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
-        builder.show();
-    }
-
-    private void sendPasswordResetEmail(String email) {
-        setLoading(true);
-        SupabaseDatabaseClient.resetPasswordForEmail(email,
-                response -> runOnUiThread(() -> {
-                    setLoading(false);
-                    Toast.makeText(this, getString(R.string.recuperar_senha_email_enviado), Toast.LENGTH_LONG).show();
-                }),
-                error -> runOnUiThread(() -> {
-                    setLoading(false);
-                    Toast.makeText(this, getString(R.string.recuperar_senha_email_enviado), Toast.LENGTH_LONG).show();
                 })
         );
     }
@@ -243,7 +206,6 @@ public class LoginActivity extends BaseActivity {
         binding.btnLogin.setEnabled(!isLoading);
         binding.btnGoogleLogin.setEnabled(!isLoading);
         binding.btnIrParaCadastro.setEnabled(!isLoading);
-        binding.btnEsqueceuSenha.setEnabled(!isLoading);
     }
     private boolean isUserLoggedIn() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
