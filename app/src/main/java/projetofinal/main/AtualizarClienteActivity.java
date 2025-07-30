@@ -6,12 +6,12 @@ import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
 import com.example.projetofinal.databinding.ActivityAtualizarClienteBinding;
+import org.json.JSONObject;
 import projetofinal.dao.ClienteDao;
 import projetofinal.models.Cliente;
 
-public class AtualizarClienteActivity extends BaseActivity { // Herda de BaseActivity
+public class AtualizarClienteActivity extends BaseActivity {
 
     private ActivityAtualizarClienteBinding binding;
     private ClienteDao clienteDao;
@@ -26,17 +26,14 @@ public class AtualizarClienteActivity extends BaseActivity { // Herda de BaseAct
 
         clienteDao = new ClienteDao(this);
 
-        // Verifica se a activity foi aberta a partir da tela de Perfil
         if (getIntent().hasExtra("CLIENTE_ID_EDITAR")) {
             int clienteId = getIntent().getIntExtra("CLIENTE_ID_EDITAR", -1);
             if (clienteId != -1) {
-                // Esconde a busca por ID e já carrega os dados do cliente
                 binding.tilIdClienteAtualizar.setVisibility(View.GONE);
                 binding.btnBuscar.setVisibility(View.GONE);
                 buscarClienteParaAtualizar(clienteId);
             }
         } else {
-            // Comportamento normal para o Admin: mostra a busca por ID
             binding.tilIdClienteAtualizar.setVisibility(View.VISIBLE);
             binding.btnBuscar.setVisibility(View.VISIBLE);
         }
@@ -68,7 +65,7 @@ public class AtualizarClienteActivity extends BaseActivity { // Herda de BaseAct
                         binding.edtNome.setText(cliente.getNome());
                         binding.edtEmail.setText(cliente.getEmail());
                         binding.edtContato.setText(cliente.getContato());
-                        binding.edtSenha.setText(""); // Limpa o campo senha por segurança
+                        binding.edtSenha.setText("");
                     } else {
                         Toast.makeText(this, "Cliente não encontrado!", Toast.LENGTH_SHORT).show();
                     }
@@ -103,25 +100,31 @@ public class AtualizarClienteActivity extends BaseActivity { // Herda de BaseAct
 
         setLoading(true, true);
 
-        clienteSelecionado.setNome(nome);
-        clienteSelecionado.setEmail(email);
-        clienteSelecionado.setContato(contato);
-        if (!senhaNova.isEmpty()) {
-            clienteSelecionado.setSenha(senhaNova);
-        }
+        try {
+            JSONObject payload = new JSONObject();
+            payload.put("nome", nome);
+            payload.put("email", email);
+            payload.put("contato", contato);
+            if (!senhaNova.isEmpty()) {
+                payload.put("senha", senhaNova);
+            }
 
-        clienteDao.atualizar(clienteSelecionado,
-                response -> runOnUiThread(() -> {
-                    setLoading(false, true);
-                    Toast.makeText(this, "Dados atualizados com sucesso!", Toast.LENGTH_SHORT).show();
-                    finish(); // Volta para a tela anterior (Perfil)
-                }),
-                error -> runOnUiThread(() -> {
-                    setLoading(false, true);
-                    Log.e(TAG, "Erro ao atualizar cliente: ", error);
-                    Toast.makeText(this, "Erro ao atualizar: " + error.getMessage(), Toast.LENGTH_LONG).show();
-                })
-        );
+            clienteDao.atualizar(clienteSelecionado.getId(), payload,
+                    response -> runOnUiThread(() -> {
+                        setLoading(false, true);
+                        Toast.makeText(this, "Dados atualizados com sucesso!", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }),
+                    error -> runOnUiThread(() -> {
+                        setLoading(false, true);
+                        Log.e(TAG, "Erro ao atualizar cliente: ", error);
+                        Toast.makeText(this, "Erro ao atualizar: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    })
+            );
+        } catch (Exception e) {
+            setLoading(false, true);
+            Toast.makeText(this, "Erro ao preparar dados.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void setLoading(boolean isLoading, boolean showFields) {

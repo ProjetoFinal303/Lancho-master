@@ -3,8 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="md_theme_primary">#825500</color>
-    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_primary">#FF8F00</color> <color name="md_theme_onPrimary">#FFFFFF</color>
     <color name="md_theme_primaryContainer">#FFDDBA</color>
     <color name="md_theme_onPrimaryContainer">#291800</color>
     <color name="md_theme_secondary">#705D41</color>
@@ -23,13 +22,13 @@
     <color name="md_theme_onSurface">#1F1B16</color>
 
     <color name="colorPrimary">@color/md_theme_primary</color>
-    <color name="colorPrimaryDark">#684400</color>
+    <color name="colorPrimaryDark">#C56000</color>
     <color name="colorAccent">@color/md_theme_secondary</color>
     <color name="textColorPrimary">@color/md_theme_onSurface</color>
     <color name="background_light">@color/md_theme_background</color>
     <color name="card_background_light">@color/md_theme_surface</color>
     <color name="button_primary_default">@color/md_theme_primary</color>
-    <color name="button_primary_pressed">#684400</color>
+    <color name="button_primary_pressed">#C56000</color>
     <color name="button_danger_default">@color/md_theme_error</color>
     <color name="button_danger_pressed">#93000A</color>
 

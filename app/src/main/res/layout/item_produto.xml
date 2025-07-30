@@ -21,6 +21,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
+        <ImageButton
+            android:id="@+id/btnExcluirProduto"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_menu_delete"
+            app:tint="@color/white"
+            android:background="?attr/colorError"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_margin="8dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:contentDescription="Excluir produto"/>
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -71,6 +85,5 @@
                 app:icon="@drawable/ic_shopping_cart" />
 
         </LinearLayout>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -15,10 +15,14 @@ public class ClienteDao {
     public ClienteDao(Context context) {}
 
     private Cliente parseCliente(JSONObject obj) throws Exception {
-        return new Cliente(
-                obj.getInt("id"), obj.getString("nome"), obj.getString("email"),
-                obj.getString("contato"), obj.optString("senha", "") // senha pode ser nula
-        );
+        Cliente c = new Cliente();
+        c.setId(obj.getInt("id"));
+        c.setNome(obj.optString("nome", ""));
+        c.setEmail(obj.optString("email", ""));
+        c.setContato(obj.optString("contato", ""));
+        c.setSenha(obj.optString("senha", ""));
+        c.setAvatarUrl(obj.optString("avatar_url", null));
+        return c;
     }
 
     public void buscarPorId(int id, Consumer<Cliente> onSuccess, Consumer<Exception> onError) {
@@ -61,24 +65,22 @@ public class ClienteDao {
             json.put("email", cliente.getEmail());
             json.put("contato", cliente.getContato());
             json.put("senha", cliente.getSenha());
-            SupabaseDatabaseClient.insert(TABELA, json, onSuccess, onError);
+            SupabaseDatabaseClient.insert(TABELA, json.toString(), onSuccess, onError);
         } catch (Exception e) { onError.accept(e); }
     }
 
-    public void atualizar(Cliente cliente, Consumer<String> onSuccess, Consumer<Exception> onError) {
-        try {
-            JSONObject json = new JSONObject();
-            json.put("nome", cliente.getNome());
-            json.put("email", cliente.getEmail());
-            json.put("contato", cliente.getContato());
-            if (cliente.getSenha() != null && !cliente.getSenha().isEmpty()) {
-                json.put("senha", cliente.getSenha());
-            }
-            SupabaseDatabaseClient.update(TABELA, cliente.getId(), json, onSuccess, onError);
-        } catch (Exception e) { onError.accept(e); }
+    public void atualizar(int clienteId, JSONObject data, Consumer<String> onSuccess, Consumer<Exception> onError) {
+        String urlPath = TABELA + "?id=eq." + clienteId;
+        SupabaseDatabaseClient.patch(urlPath, data.toString(), onSuccess, onError);
+    }
+
+    public void atualizarParcial(int clienteId, JSONObject data, Consumer<String> onSuccess, Consumer<Exception> onError) {
+        String urlPath = TABELA + "?id=eq." + clienteId;
+        SupabaseDatabaseClient.patch(urlPath, data.toString(), onSuccess, onError);
     }
 
     public void excluir(int id, Consumer<String> onSuccess, Consumer<Exception> onError) {
-        SupabaseDatabaseClient.delete(TABELA, id, onSuccess, onError);
+        String urlPath = TABELA + "?id=eq." + id;
+        SupabaseDatabaseClient.delete(urlPath, onSuccess, onError);
     }
 }

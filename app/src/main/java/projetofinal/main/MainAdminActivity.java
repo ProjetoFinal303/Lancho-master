@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast; // Import necessário para o Toast
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -26,6 +27,16 @@ public class MainAdminActivity extends BaseActivity {
             getSupportActionBar().setTitle("Painel Administrativo");
         }
 
+        // Listener para o novo botão de Sincronização
+        binding.btnSincronizarProdutos.setOnClickListener(v -> {
+            // A implementação da chamada de rede para a Edge Function precisa ser criada.
+            // Por enquanto, exibimos uma mensagem ao usuário.
+            Toast.makeText(this, "Iniciando sincronização com o Stripe...", Toast.LENGTH_LONG).show();
+
+            // TODO: Implementar a chamada para a Edge Function 'sync-stripe-products'
+            // usando um serviço de rede autenticado (ex: OkHttp com o token JWT do usuário).
+        });
+
         binding.btnGerenciarProdutos.setOnClickListener(v -> {
             // A tela VisualizarProdutoActivity agora mostra os produtos do Stripe
             startActivity(new Intent(MainAdminActivity.this, VisualizarProdutoActivity.class));
@@ -45,10 +56,6 @@ public class MainAdminActivity extends BaseActivity {
             // A tela VisualizarClienteActivity agora inclui a função de excluir
             startActivity(new Intent(MainAdminActivity.this, VisualizarClienteActivity.class));
         });
-
-        // CÓDIGO REMOVIDO DAQUI
-        // O listener para o botão 'btnExcluirClienteAdmin' foi removido
-        // porque a tela ExcluirClienteActivity não existe mais.
 
         binding.btnLogoutAdmin.setOnClickListener(v -> {
             logoutAdmin();

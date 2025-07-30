@@ -67,7 +67,7 @@ public class PedidoDao {
             json.put("valor", pedido.getValor());
             json.put("data", pedido.getData());
             json.put("status", pedido.getStatus());
-            SupabaseDatabaseClient.insert(TABELA, json, onSuccess, onError);
+            SupabaseDatabaseClient.insert(TABELA, json.toString(), onSuccess, onError);
         } catch (Exception e) { onError.accept(e); }
     }
 
@@ -75,11 +75,13 @@ public class PedidoDao {
         try {
             JSONObject json = new JSONObject();
             json.put("status", novoStatus);
-            SupabaseDatabaseClient.update(TABELA, pedidoId, json, onSuccess, onError);
+            String urlPath = TABELA + "?id=eq." + pedidoId;
+            SupabaseDatabaseClient.patch(urlPath, json.toString(), onSuccess, onError);
         } catch (Exception e) { onError.accept(e); }
     }
 
     public void excluir(int id, Consumer<String> onSuccess, Consumer<Exception> onError) {
-        SupabaseDatabaseClient.delete(TABELA, id, onSuccess, onError);
+        String urlPath = TABELA + "?id=eq." + id;
+        SupabaseDatabaseClient.delete(urlPath, onSuccess, onError);
     }
 }

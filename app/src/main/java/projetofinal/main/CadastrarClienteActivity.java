@@ -30,6 +30,8 @@ public class CadastrarClienteActivity extends BaseActivity {
         String email = binding.edtEmail.getText().toString().trim();
         String senha = binding.edtSenha.getText().toString().trim();
         String confirmarSenha = binding.edtConfirmarSenha.getText().toString().trim();
+        // O campo contato não está no layout de cadastro, então passamos vazio
+        String contato = "";
 
         if (TextUtils.isEmpty(nome) || TextUtils.isEmpty(email) || TextUtils.isEmpty(senha)) {
             Toast.makeText(this, "Preencha todos os campos!", Toast.LENGTH_SHORT).show();
@@ -46,8 +48,7 @@ public class CadastrarClienteActivity extends BaseActivity {
 
         setLoading(true);
 
-        // Cliente criado sem o campo de contato
-        Cliente novoCliente = new Cliente(nome, email, "", senha);
+        Cliente novoCliente = new Cliente(nome, email, contato, senha);
 
         clienteDao.inserir(novoCliente,
                 response -> runOnUiThread(() -> {

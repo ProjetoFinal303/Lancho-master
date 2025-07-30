@@ -39,9 +39,10 @@ public class EstoqueDao {
                         json.put("id_produto", estoque.getProdutoId());
                         json.put("quantidade", estoque.getQuantidade());
                         if (estoqueExistente != null) {
-                            SupabaseDatabaseClient.update(TABELA, estoqueExistente.getId(), json, onSuccess, onError);
+                            String urlPath = TABELA + "?id=eq." + estoqueExistente.getId();
+                            SupabaseDatabaseClient.patch(urlPath, json.toString(), onSuccess, onError);
                         } else {
-                            SupabaseDatabaseClient.insert(TABELA, json, onSuccess, onError);
+                            SupabaseDatabaseClient.insert(TABELA, json.toString(), onSuccess, onError);
                         }
                     } catch (Exception e) { onError.accept(e); }
                 },
@@ -50,7 +51,6 @@ public class EstoqueDao {
     }
 
     public void listarTodosComNomeProduto(Consumer<List<Estoque>> onSuccess, Consumer<Exception> onError) {
-        // A junção (join) é feita com o parâmetro 'select'
         String urlPath = TABELA + "?select=id,id_produto,quantidade,Produto(nome)";
         SupabaseDatabaseClient.get(urlPath, response -> {
             try {
@@ -63,7 +63,6 @@ public class EstoqueDao {
                             obj.getInt("id_produto"),
                             obj.getInt("quantidade")
                     );
-                    // Pega o nome do produto do objeto aninhado
                     JSONObject produtoObj = obj.getJSONObject("Produto");
                     e.setNomeProduto(produtoObj.getString("nome"));
                     lista.add(e);
@@ -77,7 +76,8 @@ public class EstoqueDao {
         buscarPorProdutoId(produtoId,
                 estoque -> {
                     if (estoque != null) {
-                        SupabaseDatabaseClient.delete(TABELA, estoque.getId(), onSuccess, onError);
+                        String urlPath = TABELA + "?id=eq." + estoque.getId();
+                        SupabaseDatabaseClient.delete(urlPath, onSuccess, onError);
                     } else {
                         onSuccess.accept("Nenhum estoque para excluir.");
                     }

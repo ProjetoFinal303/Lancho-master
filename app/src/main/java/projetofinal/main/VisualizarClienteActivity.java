@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.projetofinal.databinding.ActivityVisualizarClienteBinding;
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ public class VisualizarClienteActivity extends BaseActivity {
         clienteDao = new ClienteDao(this);
         setupRecyclerView();
 
-        // Removemos a lógica de busca por ID, pois a lista é mais prática
         binding.tilBuscarClienteId.setVisibility(View.GONE);
         binding.buttonBuscarPorId.setVisibility(View.GONE);
         binding.buttonLimparBusca.setVisibility(View.GONE);
@@ -42,13 +40,11 @@ public class VisualizarClienteActivity extends BaseActivity {
         clienteAdapter = new ClienteAdapter(todosClientes, new ClienteAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Cliente cliente) {
-                // Aqui você pode adicionar uma ação ao clicar no card, como editar
                 Toast.makeText(VisualizarClienteActivity.this, "Cliente selecionado: " + cliente.getNome(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onDeleteClick(Cliente cliente) {
-                // Pede confirmação antes de excluir
                 mostrarDialogoConfirmacao(cliente);
             }
         });
@@ -71,7 +67,7 @@ public class VisualizarClienteActivity extends BaseActivity {
         clienteDao.excluir(cliente.getId(),
                 response -> runOnUiThread(() -> {
                     Toast.makeText(this, "Cliente excluído com sucesso!", Toast.LENGTH_SHORT).show();
-                    carregarTodosClientes(); // Recarrega a lista para remover o cliente
+                    carregarTodosClientes();
                 }),
                 error -> runOnUiThread(() -> {
                     setLoading(false);

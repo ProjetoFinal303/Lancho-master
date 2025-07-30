@@ -40,7 +40,7 @@
 
             <ProgressBar
                 android:id="@+id/progressBarProdutos"
-                style="?android:attr/progressBarStyle"
+                style="?android.attr/progressBarStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -66,6 +66,17 @@
         android:text="@string/ver_carrinho"
         android:visibility="gone"
         app:icon="@drawable/ic_shopping_cart"
+        tools:visibility="visible" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAdicionarProduto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="Adicionar Produto"
+        app:srcCompat="@android:drawable/ic_input_add"
+        android:visibility="gone"
         tools:visibility="visible" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

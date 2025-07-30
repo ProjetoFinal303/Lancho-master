@@ -28,8 +28,8 @@ public class SupabaseDatabaseClient {
         client.newCall(request).enqueue(new SimpleCallback(onSuccess, onError));
     }
 
-    public static void insert(String table, JSONObject data, Consumer<String> onSuccess, Consumer<Exception> onError) {
-        RequestBody body = RequestBody.create(data.toString(), JSON);
+    public static void insert(String table, String jsonData, Consumer<String> onSuccess, Consumer<Exception> onError) {
+        RequestBody body = RequestBody.create(jsonData, JSON);
         Request request = new Request.Builder()
                 .url(SUPABASE_URL + "/rest/v1/" + table)
                 .addHeader("apikey", SUPABASE_KEY)
@@ -40,10 +40,10 @@ public class SupabaseDatabaseClient {
         client.newCall(request).enqueue(new SimpleCallback(onSuccess, onError));
     }
 
-    public static void update(String table, int id, JSONObject data, Consumer<String> onSuccess, Consumer<Exception> onError) {
-        RequestBody body = RequestBody.create(data.toString(), JSON);
+    public static void patch(String urlPath, String jsonData, Consumer<String> onSuccess, Consumer<Exception> onError) {
+        RequestBody body = RequestBody.create(jsonData, JSON);
         Request request = new Request.Builder()
-                .url(SUPABASE_URL + "/rest/v1/" + table + "?id=eq." + id)
+                .url(SUPABASE_URL + "/rest/v1/" + urlPath)
                 .addHeader("apikey", SUPABASE_KEY)
                 .addHeader("Authorization", "Bearer " + SUPABASE_KEY)
                 .patch(body)
@@ -51,9 +51,9 @@ public class SupabaseDatabaseClient {
         client.newCall(request).enqueue(new SimpleCallback(onSuccess, onError));
     }
 
-    public static void delete(String table, int id, Consumer<String> onSuccess, Consumer<Exception> onError) {
+    public static void delete(String urlPath, Consumer<String> onSuccess, Consumer<Exception> onError) {
         Request request = new Request.Builder()
-                .url(SUPABASE_URL + "/rest/v1/" + table + "?id=eq." + id)
+                .url(SUPABASE_URL + "/rest/v1/" + urlPath)
                 .addHeader("apikey", SUPABASE_KEY)
                 .addHeader("Authorization", "Bearer " + SUPABASE_KEY)
                 .delete()
@@ -61,7 +61,6 @@ public class SupabaseDatabaseClient {
         client.newCall(request).enqueue(new SimpleCallback(onSuccess, onError));
     }
 
-    // MÉTODO CORRETO PARA RESETAR SENHA
     public static void resetPasswordForEmail(String email, Consumer<String> onSuccess, Consumer<Exception> onError) {
         try {
             JSONObject json = new JSONObject();
@@ -89,7 +88,7 @@ public class SupabaseDatabaseClient {
         public void onFailure(Call call, IOException e) { onError.accept(e); }
         @Override
         public void onResponse(Call call, Response response) throws IOException {
-            try (Response r = response) { // Correção para try-with-resources
+            try (Response r = response) {
                 String responseBody = r.body().string();
                 if (r.isSuccessful()) {
                     onSuccess.accept(responseBody);

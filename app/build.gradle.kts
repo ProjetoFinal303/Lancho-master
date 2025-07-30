@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation("androidx.recyclerview:recyclerview:1.3.2")
 
+    implementation("de.hdodenhof:circleimageview:3.1.0")
     // Google Sign-In
     implementation("com.google.android.gms:play-services-auth:21.2.0")
 
