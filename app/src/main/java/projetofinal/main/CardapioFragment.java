@@ -1,6 +1,5 @@
 package projetofinal.main;
 
-// Adicione todas estas importações
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import com.example.projetofinal.R;
 import com.example.projetofinal.databinding.FragmentCardapioBinding;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -69,7 +69,6 @@ public class CardapioFragment extends Fragment implements ProdutoAdapter.OnProdu
     public void onResume() {
         super.onResume();
         carregarItensCarrinho();
-        // O botão do carrinho agora fica na Activity principal, então não o controlamos mais aqui.
     }
 
     private void setupRecyclerView() {
@@ -147,7 +146,7 @@ public class CardapioFragment extends Fragment implements ProdutoAdapter.OnProdu
 
         Toast.makeText(getContext(), produto.getNome() + " adicionado!", Toast.LENGTH_SHORT).show();
         salvarItensCarrinho();
-        // Notifica a Activity para atualizar o botão do carrinho
+
         if (getActivity() instanceof MainClienteActivity) {
             ((MainClienteActivity) getActivity()).atualizarBotaoCarrinho();
         }
@@ -171,6 +170,7 @@ public class CardapioFragment extends Fragment implements ProdutoAdapter.OnProdu
         SharedPreferences sharedPreferences = getContext().getSharedPreferences(CadastrarPedidoActivity.CARRINHO_PREFS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String jsonItens = gson.toJson(itensNoCarrinho);
+        // ---> CORREÇÃO DO TYPO AQUI <---
         editor.putString(CadastrarPedidoActivity.KEY_ITENS_CARRINHO + "_" + clienteIdLogado, jsonItens);
         editor.apply();
     }

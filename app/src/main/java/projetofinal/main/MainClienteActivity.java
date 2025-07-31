@@ -2,21 +2,27 @@ package projetofinal.main;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.projetofinal.R;
 import com.example.projetofinal.databinding.ActivityMainClienteBinding;
-import projetofinal.models.Cliente;
+import projetofinal.dao.ClienteDao;
 
 public class MainClienteActivity extends BaseActivity {
 
     private ActivityMainClienteBinding binding;
+    private ClienteDao clienteDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,17 +30,15 @@ public class MainClienteActivity extends BaseActivity {
         binding = ActivityMainClienteBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // ---> INÍCIO DA CORREÇÃO <---
-        // Configura o ícone de navegação diretamente na Toolbar
-        binding.toolbarMainCliente.setNavigationIcon(R.drawable.ic_person);
-        setSupportActionBar(binding.toolbarMainCliente);
+        Toolbar toolbar = binding.toolbarMainCliente;
+        setSupportActionBar(toolbar);
+
+        clienteDao = new ClienteDao(this);
+        carregarDadosClienteLogado();
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("Destaque");
         }
-        // ---> FIM DA CORREÇÃO <---
-
-        carregarDadosClienteLogado();
 
         if (savedInstanceState == null) {
             replaceFragment(new DestaqueFragment());
@@ -45,15 +49,15 @@ public class MainClienteActivity extends BaseActivity {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_destaque) {
                 replaceFragment(new DestaqueFragment());
-                getSupportActionBar().setTitle("Destaque");
+                if (getSupportActionBar() != null) getSupportActionBar().setTitle("Destaque");
                 return true;
             } else if (itemId == R.id.nav_cardapio) {
                 replaceFragment(new CardapioFragment());
-                getSupportActionBar().setTitle("Cardápio");
+                if (getSupportActionBar() != null) getSupportActionBar().setTitle("Cardápio");
                 return true;
             } else if (itemId == R.id.nav_pedidos) {
                 replaceFragment(new PedidosFragment());
-                getSupportActionBar().setTitle("Meus Pedidos");
+                if (getSupportActionBar() != null) getSupportActionBar().setTitle("Meus Pedidos");
                 return true;
             } else if (itemId == R.id.nav_carrinho) {
                 startActivity(new Intent(this, CadastrarPedidoActivity.class));
@@ -80,7 +84,6 @@ public class MainClienteActivity extends BaseActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
 
-        // O ID 'android.R.id.home' é o ID padrão para o ícone de navegação (à esquerda)
         if (itemId == android.R.id.home) {
             startActivity(new Intent(this, ProfileActivity.class));
             return true;
@@ -97,7 +100,48 @@ public class MainClienteActivity extends BaseActivity {
         int clienteId = prefs.getInt(LoginActivity.KEY_USER_ID, -1);
         if (clienteId == -1) {
             logoutCliente();
+            return;
         }
+
+        clienteDao.buscarPorId(clienteId, cliente -> {
+            if (cliente != null && cliente.getAvatarUrl() != null && !cliente.getAvatarUrl().isEmpty()) {
+                runOnUiThread(() -> setProfileIcon(cliente.getAvatarUrl()));
+            } else {
+                runOnUiThread(() -> {
+                    if (getSupportActionBar() != null) {
+                        binding.toolbarMainCliente.setNavigationIcon(R.drawable.ic_person);
+                    }
+                });
+            }
+        }, error -> runOnUiThread(() -> {
+            if (getSupportActionBar() != null) {
+                binding.toolbarMainCliente.setNavigationIcon(R.drawable.ic_person);
+            }
+        }));
+    }
+
+    private void setProfileIcon(String url) {
+        Toolbar toolbar = binding.toolbarMainCliente;
+
+        // ---> INÍCIO DA CORREÇÃO <---
+        // Pega o tamanho definido em dimens.xml e converte para pixels
+        int iconSize = getResources().getDimensionPixelSize(R.dimen.toolbar_profile_icon_size);
+
+        Glide.with(this)
+                .load(url)
+                .circleCrop()
+                .override(iconSize, iconSize) // Força a imagem a ter o tamanho exato do ícone
+                .into(new CustomTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        toolbar.setNavigationIcon(resource);
+                    }
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                        toolbar.setNavigationIcon(R.drawable.ic_person);
+                    }
+                });
+        // ---> FIM DA CORREÇÃO <---
     }
 
     public void logoutCliente() {

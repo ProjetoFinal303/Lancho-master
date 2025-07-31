@@ -45,6 +45,7 @@ public class DestaqueFragment extends Fragment {
         produtoDao = new ProdutoDao(getContext());
         carregarDestaqueDoDia();
 
+        // AÇÃO DO BOTÃO DE COMPRAR QUE ESTAVA FALTANDO
         binding.btnComprarDestaque.setOnClickListener(v -> {
             if (produtoDestaqueAtual != null) {
                 adicionarAoCarrinho(produtoDestaqueAtual);
@@ -55,12 +56,10 @@ public class DestaqueFragment extends Fragment {
     }
 
     private void carregarDestaqueDoDia() {
-        // Agora buscamos os produtos reais do banco de dados
         produtoDao.listarTodos(
                 produtos -> {
                     if (getActivity() != null && produtos != null && !produtos.isEmpty()) {
                         getActivity().runOnUiThread(() -> {
-                            // Lógica para escolher um produto de destaque baseado no dia
                             long daysSinceEpoch = System.currentTimeMillis() / (1000 * 60 * 60 * 24);
                             int productIndex = (int) (daysSinceEpoch % produtos.size());
                             produtoDestaqueAtual = produtos.get(productIndex);
@@ -71,7 +70,7 @@ public class DestaqueFragment extends Fragment {
                         });
                     }
                 },
-                error -> { // Em caso de erro, esconde o botão
+                error -> {
                     if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> binding.btnComprarDestaque.setVisibility(View.GONE));
                     }
@@ -79,14 +78,12 @@ public class DestaqueFragment extends Fragment {
         );
     }
 
-    // Lógica de adicionar ao carrinho, copiada do CardapioFragment
     private void adicionarAoCarrinho(Produto produto) {
         if (getContext() == null) return;
 
         SharedPreferences prefs = getContext().getSharedPreferences(LoginActivity.PREFS_NAME, Context.MODE_PRIVATE);
         int clienteIdLogado = prefs.getInt(LoginActivity.KEY_USER_ID, -1);
 
-        // Lógica para carregar, modificar e salvar o carrinho
         SharedPreferences sharedPreferences = getContext().getSharedPreferences(CadastrarPedidoActivity.CARRINHO_PREFS, Context.MODE_PRIVATE);
         String jsonItens = sharedPreferences.getString(CadastrarPedidoActivity.KEY_ITENS_CARRINHO + "_" + clienteIdLogado, null);
         Type type = new TypeToken<ArrayList<CarrinhoItem>>() {}.getType();
@@ -109,7 +106,6 @@ public class DestaqueFragment extends Fragment {
             itensNoCarrinho.add(new CarrinhoItem(produto, 1));
         }
 
-        // Salva o carrinho atualizado
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String jsonItensAtualizado = new Gson().toJson(itensNoCarrinho);
         editor.putString(CadastrarPedidoActivity.KEY_ITENS_CARRINHO + "_" + clienteIdLogado, jsonItensAtualizado);
@@ -117,11 +113,9 @@ public class DestaqueFragment extends Fragment {
 
         Toast.makeText(getContext(), produto.getNome() + " adicionado ao carrinho!", Toast.LENGTH_SHORT).show();
 
-        // Avisa a activity principal para abrir o carrinho
         Intent intent = new Intent(getContext(), CadastrarPedidoActivity.class);
         startActivity(intent);
     }
-
 
     @Override
     public void onDestroyView() {
