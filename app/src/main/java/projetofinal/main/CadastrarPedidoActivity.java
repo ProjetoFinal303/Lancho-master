@@ -5,12 +5,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.projetofinal.R;
@@ -52,6 +52,8 @@ public class CadastrarPedidoActivity extends BaseActivity implements CarrinhoAda
     private ClienteDao clienteDao;
     public static final String CARRINHO_PREFS = "CarrinhoPrefs";
     public static final String KEY_ITENS_CARRINHO = "ItensCarrinho";
+    public static final String KEY_APLICAR_DESCONTO = "AplicarDesconto";
+    private boolean aplicarDesconto = false;
     private static final String TAG = "CadastrarPedido";
 
     @Override
@@ -121,7 +123,7 @@ public class CadastrarPedidoActivity extends BaseActivity implements CarrinhoAda
                 .map(item -> new CheckoutItemPayload(item.getPriceId(), item.getQuantidade()))
                 .collect(Collectors.toList());
 
-        String jsonPayload = gson.toJson(new CheckoutPayload(itemsPayload, clienteLogado.getEmail(), clienteIdLogado));
+        String jsonPayload = gson.toJson(new CheckoutPayload(itemsPayload, clienteLogado.getEmail(), clienteIdLogado, aplicarDesconto));
 
         OkHttpClient client = new OkHttpClient();
         RequestBody body = RequestBody.create(jsonPayload, MediaType.get("application/json; charset=utf-8"));
@@ -149,8 +151,7 @@ public class CadastrarPedidoActivity extends BaseActivity implements CarrinhoAda
                         String checkoutUrl = jsonResponse.getString("checkoutUrl");
 
                         runOnUiThread(() -> {
-                            itensNoCarrinho.clear();
-                            salvarItensCarrinho();
+                            limparCarrinhoESalvar();
                             Toast.makeText(CadastrarPedidoActivity.this, "Redirecionando para o pagamento...", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(checkoutUrl)));
                             finish();
@@ -186,6 +187,8 @@ public class CadastrarPedidoActivity extends BaseActivity implements CarrinhoAda
         if (clienteIdLogado == -1) return;
         SharedPreferences sharedPreferences = getSharedPreferences(CARRINHO_PREFS, Context.MODE_PRIVATE);
         String jsonItens = sharedPreferences.getString(KEY_ITENS_CARRINHO + "_" + clienteIdLogado, null);
+        aplicarDesconto = sharedPreferences.getBoolean(KEY_APLICAR_DESCONTO + "_" + clienteIdLogado, false);
+
         Type type = new TypeToken<ArrayList<CarrinhoItem>>() {}.getType();
         if (jsonItens != null) {
             itensNoCarrinho = gson.fromJson(jsonItens, type);
@@ -201,7 +204,14 @@ public class CadastrarPedidoActivity extends BaseActivity implements CarrinhoAda
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String jsonItens = gson.toJson(itensNoCarrinho);
         editor.putString(KEY_ITENS_CARRINHO + "_" + clienteIdLogado, jsonItens);
+        editor.putBoolean(KEY_APLICAR_DESCONTO + "_" + clienteIdLogado, aplicarDesconto);
         editor.apply();
+    }
+
+    private void limparCarrinhoESalvar() {
+        itensNoCarrinho.clear();
+        aplicarDesconto = false;
+        salvarItensCarrinho();
     }
 
     private void atualizarVisibilidadeCarrinho() {
@@ -221,11 +231,22 @@ public class CadastrarPedidoActivity extends BaseActivity implements CarrinhoAda
                 .map(CarrinhoItem::getPrecoTotalItem)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .setScale(2, RoundingMode.HALF_UP);
-        binding.textViewTotalCarrinho.setText(String.format(Locale.getDefault(), "Total: R$ %.2f", total));
+
+        if (aplicarDesconto) {
+            BigDecimal totalComDesconto = total.multiply(new BigDecimal("0.90")).setScale(2, RoundingMode.HALF_UP);
+            String textoTotal = String.format(Locale.getDefault(), "Total: R$ %.2f <strike>R$ %.2f</strike>", totalComDesconto, total);
+            binding.textViewTotalCarrinho.setText(Html.fromHtml(textoTotal, Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            binding.textViewTotalCarrinho.setText(String.format(Locale.getDefault(), "Total: R$ %.2f", total));
+        }
     }
 
     @Override
     public void onItemQuantityChanged() {
+        if (aplicarDesconto) {
+            aplicarDesconto = false;
+            Toast.makeText(this, "Desconto de item único removido.", Toast.LENGTH_SHORT).show();
+        }
         calcularEAtualizarTotal();
         salvarItensCarrinho();
     }
@@ -236,6 +257,9 @@ public class CadastrarPedidoActivity extends BaseActivity implements CarrinhoAda
             itensNoCarrinho.remove(position);
             carrinhoAdapter.notifyItemRemoved(position);
             carrinhoAdapter.notifyItemRangeChanged(position, itensNoCarrinho.size());
+            if (itensNoCarrinho.isEmpty()) {
+                aplicarDesconto = false;
+            }
             salvarItensCarrinho();
             atualizarVisibilidadeCarrinho();
             calcularEAtualizarTotal();
@@ -264,10 +288,12 @@ public class CadastrarPedidoActivity extends BaseActivity implements CarrinhoAda
         final List<CheckoutItemPayload> cartItems;
         final String customerEmail;
         final int clienteId;
-        CheckoutPayload(List<CheckoutItemPayload> cartItems, String customerEmail, int clienteId) {
+        final boolean applyDiscount;
+        CheckoutPayload(List<CheckoutItemPayload> cartItems, String customerEmail, int clienteId, boolean applyDiscount) {
             this.cartItems = cartItems;
             this.customerEmail = customerEmail;
             this.clienteId = clienteId;
+            this.applyDiscount = applyDiscount;
         }
     }
 }

@@ -24,6 +24,19 @@ public class MainClienteActivity extends BaseActivity {
     private ActivityMainClienteBinding binding;
     private ClienteDao clienteDao;
 
+    // Objeto público para que o fragmento possa acessá-lo
+    public static class ProdutoDestaque {
+        public final String nome;
+        public final String descricao;
+        public final int drawableId;
+
+        ProdutoDestaque(String nome, String descricao, int drawableId) {
+            this.nome = nome;
+            this.descricao = descricao;
+            this.drawableId = drawableId;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,10 +81,9 @@ public class MainClienteActivity extends BaseActivity {
     }
 
     private void replaceFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.commit();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit();
     }
 
     @Override
@@ -93,6 +105,12 @@ public class MainClienteActivity extends BaseActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    // Método público para o DestaqueFragment chamar
+    public ProdutoDestaque getProdutoDestaqueDoDia() {
+        // A sua lógica de destaque continua aqui
+        return new ProdutoDestaque("Lanchô X-Burger", "Nosso clássico X-Burger com pão fofinho e molho especial.", R.drawable.lanchoxburger);
     }
 
     private void carregarDadosClienteLogado() {
@@ -122,15 +140,12 @@ public class MainClienteActivity extends BaseActivity {
 
     private void setProfileIcon(String url) {
         Toolbar toolbar = binding.toolbarMainCliente;
-
-        // ---> INÍCIO DA CORREÇÃO <---
-        // Pega o tamanho definido em dimens.xml e converte para pixels
         int iconSize = getResources().getDimensionPixelSize(R.dimen.toolbar_profile_icon_size);
 
         Glide.with(this)
                 .load(url)
                 .circleCrop()
-                .override(iconSize, iconSize) // Força a imagem a ter o tamanho exato do ícone
+                .override(iconSize, iconSize)
                 .into(new CustomTarget<Drawable>() {
                     @Override
                     public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
@@ -141,7 +156,6 @@ public class MainClienteActivity extends BaseActivity {
                         toolbar.setNavigationIcon(R.drawable.ic_person);
                     }
                 });
-        // ---> FIM DA CORREÇÃO <---
     }
 
     public void logoutCliente() {
