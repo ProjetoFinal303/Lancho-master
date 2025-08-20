@@ -47,7 +47,7 @@ dependencies {
     implementation("de.hdodenhof:circleimageview:3.1.0")
     // Google Sign-In
     implementation("com.google.android.gms:play-services-auth:21.2.0")
-
+    implementation("com.stripe:stripe-android:20.34.0")
     // Bibliotecas Essenciais de Rede e JSON
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.google.code.gson:gson:2.10.1")
