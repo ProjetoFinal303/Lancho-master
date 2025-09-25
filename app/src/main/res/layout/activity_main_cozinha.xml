@@ -1,55 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="?android:attr/colorBackground"
+    android:background="?attr/colorSurface"
     tools:context="projetofinal.main.MainCozinhaActivity">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:id="@+id/appBarLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
         <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbarMainCozinha"
+            android:id="@+id/topAppBar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Painel da Cozinha" />
+            app:title="Painel da Cozinha"
+            app:titleCentered="true"
+            app:menu="@menu/cozinha_menu" />
+
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewPedidosCozinha"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            tools:listitem="@layout/item_pedido_cozinha" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <LinearLayout
+        android:id="@+id/textViewEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="24dp">
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:visibility="visible">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_status_em_preparo"
+            app:tint="?attr/colorOnSurface"
+            android:alpha="0.5"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Painel da Cozinha"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="32dp"
-            tools:ignore="HardcodedText"/>
+            android:layout_marginTop="16dp"
+            android:text="Nenhum pedido no momento."
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="?attr/colorOnSurface" />
 
-        <Button
-            android:id="@+id/btnReceberComandas"
-            style="@style/AppButtonStyle.Primary"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/cozinha_receber_comandas"
-            app:icon="@android:drawable/ic_menu_sort_by_size"/>
-
-        <Button
-            android:id="@+id/btnLogoutCozinha" style="@style/AppButtonStyle.Danger"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/logout_button"
-            android:layout_marginTop="24dp"
-            app:icon="@android:drawable/ic_lock_power_off"/>
+            android:layout_marginTop="4dp"
+            android:text="Arraste para baixo para atualizar"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"/>
     </LinearLayout>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,97 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/AppCardViewStyle"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginStart="12dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="16dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/textViewPedidoId"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-            <TextView
-                android:id="@+id/textViewPedidoIdCozinha"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                tools:text="Comanda ID: #1024"
-                android:textAppearance="?attr/textAppearanceHeadline6"/>
-
-            <TextView
-                android:id="@+id/textViewPedidoStatusAtualCozinha"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="Pendente"
-                android:textAppearance="?attr/textAppearanceSubtitle2"
-                android:textStyle="bold"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"
-                android:background="@drawable/status_background_placeholder"/>
-        </LinearLayout>
-
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            android:textColor="?attr/colorPrimary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/textViewStatus"
+            tools:text="Pedido #123" />
 
         <TextView
-            android:id="@+id/textViewPedidoClienteInfoCozinha"
+            android:id="@+id/textViewData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="Cliente ID: 5 (Nome Cliente)"
+            android:layout_marginTop="4dp"
             android:textAppearance="?attr/textAppearanceCaption"
-            android:layout_marginTop="2dp"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewPedidoId"
+            tools:text="14/08/2024 20:30" />
 
         <TextView
-            android:id="@+id/textViewPedidoDataCozinha"
+            android:id="@+id/textViewStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="Recebido: 25/05/2025 14:35"
-            android:textAppearance="?attr/textAppearanceCaption"
-            android:layout_marginTop="2dp"/>
+            android:paddingStart="12dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="6dp"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:background="@drawable/status_pendente_bg"
+            tools:text="Pendente" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewData" />
 
         <TextView
-            android:id="@+id/textViewPedidoDescricaoCozinha"
-            android:layout_width="match_parent"
+            android:id="@+id/textViewDescricao"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="Itens: 1x X-Burger Especial com bacon extra, sem cebola, 1x Suco de Laranja sem açúcar, 2x Porção de Batata com Cheddar e Bacon"
+            android:layout_marginTop="16dp"
             android:textAppearance="?attr/textAppearanceBody1"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="12dp"
-            android:maxLines="5"
-            android:ellipsize="end"/>
+            android:textColor="?attr/colorOnSurface"
+            android:lineSpacingExtra="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider"
+            tools:text="• 1x X-Burger\n• 2x Coca-Cola\n• 1x Batata Frita Grande" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMudarStatus"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="end">
+            android:layout_marginTop="24dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:textSize="16sp"
+            app:cornerRadius="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewDescricao"
+            tools:text="Iniciar Preparo" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnMarcarEmPreparo"
-                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/marcar_como_em_preparo"
-                app:icon="@drawable/ic_status_em_preparo"
-                android:layout_marginEnd="8dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnMarcarConcluido"
-                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/marcar_como_concluido"
-                app:icon="@drawable/ic_status_concluido"
-                app:iconTint="@color/status_concluido"/>
-        </LinearLayout>
-
-    </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

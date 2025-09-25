@@ -4,55 +4,120 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
+import android.widget.Toast;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.projetofinal.R;
-import com.example.projetofinal.databinding.ActivityMainCozinhaBinding; // Importar a classe de binding
+import com.example.projetofinal.databinding.ActivityMainCozinhaBinding; // Import correto para o binding
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import projetofinal.adapters.PedidoAdapterCozinha;
+import projetofinal.dao.PedidoDao;
+import projetofinal.models.Pedido;
 
 public class MainCozinhaActivity extends BaseActivity {
 
-    private ActivityMainCozinhaBinding binding; // Variável para o binding
+    private ActivityMainCozinhaBinding binding; // Variável de binding
+    private PedidoAdapterCozinha pedidoAdapter;
+    private List<Pedido> pedidoList = new ArrayList<>();
+    private PedidoDao pedidoDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Inflar o layout usando ViewBinding
+        // Infla o layout usando o binding
         binding = ActivityMainCozinhaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Configurar a Toolbar
-        Toolbar toolbar = binding.toolbarMainCozinha; // Usando o ID do binding
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Painel da Cozinha");
-            // getSupportActionBar().setDisplayHomeAsUpEnabled(true); // Se precisar de botão voltar
-        }
+        pedidoDao = new PedidoDao(this);
+        setupRecyclerView();
+        setupListeners();
+        carregarPedidos();
+    }
 
-        binding.btnReceberComandas.setOnClickListener(v -> {
-            startActivity(new Intent(MainCozinhaActivity.this, ReceberComandasActivity.class));
-        });
+    private void setupRecyclerView() {
+        // Acessa o RecyclerView através do binding
+        binding.recyclerViewPedidosCozinha.setLayoutManager(new LinearLayoutManager(this));
+        pedidoAdapter = new PedidoAdapterCozinha(pedidoList, this, this::mudarStatusPedido);
+        binding.recyclerViewPedidosCozinha.setAdapter(pedidoAdapter);
+    }
 
-        // Configurar o botão de logout
-        binding.btnLogoutCozinha.setOnClickListener(v -> {
-            logoutCozinha();
+    private void setupListeners() {
+        // Acessa os componentes através do binding
+        binding.swipeRefreshLayout.setOnRefreshListener(this::carregarPedidos);
+
+        binding.topAppBar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_logout) {
+                fazerLogout();
+                return true;
+            }
+            return false;
         });
     }
 
-    private void logoutCozinha() {
-        // Limpar SharedPreferences (as mesmas chaves usadas no LoginActivity)
-        SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove(LoginActivity.KEY_USER_ID);
-        editor.remove(LoginActivity.KEY_USER_ROLE);
-        editor.remove(LoginActivity.KEY_USER_NOME);
-        editor.apply();
+    private void carregarPedidos() {
+        binding.swipeRefreshLayout.setRefreshing(true);
+        List<String> statusParaBuscar = Arrays.asList("pendente", "em preparo");
 
-        // Redirecionar para LoginActivity
+        pedidoDao.getPedidosPorStatus(statusParaBuscar,
+                pedidos -> runOnUiThread(() -> {
+                    pedidoList.clear();
+                    if (pedidos != null) {
+                        pedidoList.addAll(pedidos);
+                    }
+                    pedidoAdapter.notifyDataSetChanged();
+                    binding.swipeRefreshLayout.setRefreshing(false);
+                    verificarListaVazia();
+                }),
+                error -> runOnUiThread(() -> {
+                    Toast.makeText(this, "Erro ao carregar pedidos: " + error, Toast.LENGTH_SHORT).show();
+                    binding.swipeRefreshLayout.setRefreshing(false);
+                    verificarListaVazia();
+                })
+        );
+    }
+
+    private void mudarStatusPedido(Pedido pedido) {
+        String statusAtual = pedido.getStatus();
+        String novoStatus;
+
+        if ("pendente".equalsIgnoreCase(statusAtual)) {
+            novoStatus = "em preparo";
+        } else if ("em preparo".equalsIgnoreCase(statusAtual)) {
+            novoStatus = "concluido";
+        } else {
+            return;
+        }
+
+        pedidoDao.updateStatus(pedido.getId(), novoStatus,
+                () -> runOnUiThread(() -> {
+                    Toast.makeText(this, "Status do pedido #" + pedido.getId() + " atualizado!", Toast.LENGTH_SHORT).show();
+                    carregarPedidos();
+                }),
+                error -> runOnUiThread(() -> {
+                    Toast.makeText(this, "Erro ao atualizar status: " + error, Toast.LENGTH_SHORT).show();
+                })
+        );
+    }
+
+    private void verificarListaVazia() {
+        // Acessa as views através do binding
+        if (pedidoList.isEmpty()) {
+            binding.recyclerViewPedidosCozinha.setVisibility(View.GONE);
+            binding.textViewEmpty.setVisibility(View.VISIBLE);
+        } else {
+            binding.recyclerViewPedidosCozinha.setVisibility(View.VISIBLE);
+            binding.textViewEmpty.setVisibility(View.GONE);
+        }
+    }
+
+    private void fazerLogout() {
+        SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
+        sharedPreferences.edit().clear().apply();
+
         Intent intent = new Intent(MainCozinhaActivity.this, LoginActivity.class);
-        // Limpa a pilha de activities para que o usuário não possa voltar para esta tela
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        finish(); // Fecha a MainCozinhaActivity
+        finish();
     }
 }

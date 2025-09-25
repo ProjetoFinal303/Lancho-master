@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0") // <-- ADICIONADO AQUI
 
     implementation("de.hdodenhof:circleimageview:3.1.0")
     // Google Sign-In

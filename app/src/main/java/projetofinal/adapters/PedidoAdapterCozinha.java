@@ -1,127 +1,119 @@
 package projetofinal.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.projetofinal.R;
-import com.example.projetofinal.databinding.ItemPedidoCozinhaBinding;
+
 import java.util.List;
-import java.util.Locale;
+import java.util.function.Consumer;
 import projetofinal.models.Pedido;
 
-public class PedidoAdapterCozinha extends RecyclerView.Adapter<PedidoAdapterCozinha.ComandaViewHolder> {
+public class PedidoAdapterCozinha extends RecyclerView.Adapter<PedidoAdapterCozinha.PedidoViewHolder> {
 
-    private List<Pedido> comandaList;
+    private final List<Pedido> pedidoList;
     private final Context context;
-    private final OnComandaInteractionListener listener;
+    private final Consumer<Pedido> onStatusChange;
 
-    public interface OnComandaInteractionListener {
-        void onStatusChangeClicked(Pedido pedido, String novoStatus);
-    }
-
-    public PedidoAdapterCozinha(Context context, List<Pedido> comandaList, OnComandaInteractionListener listener) {
+    public PedidoAdapterCozinha(List<Pedido> pedidoList, Context context, Consumer<Pedido> onStatusChange) {
+        this.pedidoList = pedidoList;
         this.context = context;
-        this.comandaList = comandaList;
-        this.listener = listener;
+        this.onStatusChange = onStatusChange;
     }
 
     @NonNull
     @Override
-    public ComandaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        ItemPedidoCozinhaBinding binding = ItemPedidoCozinhaBinding.inflate(inflater, parent, false);
-        return new ComandaViewHolder(binding);
+    public PedidoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.item_pedido_cozinha, parent, false);
+        return new PedidoViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ComandaViewHolder holder, int position) {
-        Pedido comanda = comandaList.get(position);
-        holder.bind(comanda);
+    public void onBindViewHolder(@NonNull PedidoViewHolder holder, int position) {
+        Pedido pedido = pedidoList.get(position);
+        holder.bind(pedido);
     }
 
     @Override
     public int getItemCount() {
-        return comandaList != null ? comandaList.size() : 0;
+        return pedidoList.size();
     }
 
-    public void atualizarComandas(List<Pedido> novasComandas) {
-        this.comandaList = novasComandas;
-        notifyDataSetChanged();
-    }
+    class PedidoViewHolder extends RecyclerView.ViewHolder {
 
-    class ComandaViewHolder extends RecyclerView.ViewHolder {
-        private final ItemPedidoCozinhaBinding binding;
+        private final TextView textViewPedidoId;
+        private final TextView textViewDescricao;
+        private final TextView textViewData;
+        private final TextView textViewStatus;
+        private final Button btnMudarStatus;
 
-        ComandaViewHolder(ItemPedidoCozinhaBinding binding) {
-            super(binding.getRoot());
-            this.binding = binding;
+        public PedidoViewHolder(@NonNull View itemView) {
+            super(itemView);
+            textViewPedidoId = itemView.findViewById(R.id.textViewPedidoId);
+            textViewDescricao = itemView.findViewById(R.id.textViewDescricao);
+            textViewData = itemView.findViewById(R.id.textViewData);
+            textViewStatus = itemView.findViewById(R.id.textViewStatus);
+            btnMudarStatus = itemView.findViewById(R.id.btnMudarStatus);
+        }
 
-            binding.btnMarcarEmPreparo.setOnClickListener(v -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    listener.onStatusChangeClicked(comandaList.get(position), "Em Preparo");
-                }
-            });
+        public void bind(Pedido pedido) {
+            textViewPedidoId.setText("Pedido #" + pedido.getId());
+            textViewDescricao.setText(pedido.getDescricao().replace("\\n", "\n"));
+            textViewData.setText(pedido.getData());
+            textViewStatus.setText(capitalize(pedido.getStatus()));
 
-            binding.btnMarcarConcluido.setOnClickListener(v -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    listener.onStatusChangeClicked(comandaList.get(position), "Concluído");
-                }
+            updateStatusUI(pedido.getStatus());
+
+            btnMudarStatus.setOnClickListener(v -> {
+                onStatusChange.accept(pedido);
             });
         }
 
-        void bind(Pedido comanda) {
-            binding.textViewPedidoIdCozinha.setText(String.format(Locale.getDefault(), "Comanda ID: #%d", comanda.getId()));
-            binding.textViewPedidoClienteInfoCozinha.setText(String.format(Locale.getDefault(), "Cliente ID: %d", comanda.getClienteId()));
-            binding.textViewPedidoDataCozinha.setText(String.format("Recebido: %s", comanda.getData()));
-            binding.textViewPedidoDescricaoCozinha.setText(comanda.getDescricao());
-            binding.textViewPedidoStatusAtualCozinha.setText(String.format("Status: %s", comanda.getStatus()));
+        private void updateStatusUI(String status) {
+            int backgroundResId;
+            String buttonText = "";
+            int buttonVisibility = View.VISIBLE;
 
-            // Visibilidade dos botões baseada no status atual
-            if ("Pendente".equalsIgnoreCase(comanda.getStatus())) {
-                binding.btnMarcarEmPreparo.setVisibility(View.VISIBLE);
-                binding.btnMarcarConcluido.setVisibility(View.GONE);
-            } else if ("Em Preparo".equalsIgnoreCase(comanda.getStatus())) {
-                binding.btnMarcarEmPreparo.setVisibility(View.GONE);
-                binding.btnMarcarConcluido.setVisibility(View.VISIBLE);
-            } else { // Concluído ou Cancelado
-                binding.btnMarcarEmPreparo.setVisibility(View.GONE);
-                binding.btnMarcarConcluido.setVisibility(View.GONE);
-            }
-
-            GradientDrawable statusBackground = (GradientDrawable) binding.textViewPedidoStatusAtualCozinha.getBackground();
-            if (statusBackground == null) {
-                statusBackground = new GradientDrawable();
-                statusBackground.setCornerRadius(context.getResources().getDimensionPixelSize(R.dimen.status_corner_radius));
-                binding.textViewPedidoStatusAtualCozinha.setBackground(statusBackground);
-            }
-
-            int colorResId;
-            switch (comanda.getStatus().toLowerCase(Locale.ROOT)) {
+            switch (status.toLowerCase()) {
                 case "pendente":
-                    colorResId = R.color.status_pendente;
+                    backgroundResId = R.drawable.status_pendente_bg;
+                    buttonText = "Iniciar Preparo";
                     break;
                 case "em preparo":
-                    colorResId = R.color.status_em_preparo;
+                    backgroundResId = R.drawable.status_em_preparo_bg;
+                    buttonText = "Finalizar Pedido";
                     break;
-                case "concluído":
+                case "saiu para entrega":
                 case "concluido":
-                    colorResId = R.color.status_concluido;
-                    break;
-                case "cancelado":
-                    colorResId = R.color.status_cancelado;
+                    // Itens com esses status não deveriam aparecer, mas por segurança:
+                    backgroundResId = R.drawable.status_concluido_bg;
+                    buttonVisibility = View.GONE; // Esconde o botão
                     break;
                 default:
-                    colorResId = android.R.color.darker_gray;
+                    backgroundResId = R.drawable.status_background_placeholder;
+                    buttonVisibility = View.GONE; // Esconde o botão para status desconhecido
                     break;
             }
-            statusBackground.setColor(ContextCompat.getColor(context, colorResId));
+
+            textViewStatus.setBackground(ContextCompat.getDrawable(context, backgroundResId));
+            btnMudarStatus.setText(buttonText);
+            btnMudarStatus.setVisibility(buttonVisibility);
+        }
+
+        private String capitalize(String str) {
+            if (str == null || str.isEmpty()) {
+                return str;
+            }
+            return str.substring(0, 1).toUpperCase() + str.substring(1);
         }
     }
 }

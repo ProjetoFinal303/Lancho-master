@@ -3,17 +3,13 @@ package projetofinal.main;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.projetofinal.R;
 import com.example.projetofinal.databinding.ActivityLoginBinding;
@@ -33,7 +29,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import projetofinal.dao.ClienteDao;
-import projetofinal.database.SupabaseDatabaseClient;
 import projetofinal.models.Cliente;
 
 public class LoginActivity extends BaseActivity {
@@ -90,6 +85,15 @@ public class LoginActivity extends BaseActivity {
 
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(senha)) {
             Toast.makeText(this, "Preencha todos os campos!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Login hardcoded para a cozinha com a SENHA CORRETA
+        if ("cozinha@lancho.com".equalsIgnoreCase(email) && "13032025info".equals(senha)) {
+            setLoading(true);
+            Toast.makeText(this, "Bem-vindo(a), Cozinha!", Toast.LENGTH_SHORT).show();
+            saveUserSession(-1, "cozinha", "Cozinha");
+            navigateToRoleSpecificActivity("cozinha");
             return;
         }
 
