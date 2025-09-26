@@ -1,57 +1,50 @@
 package projetofinal.models;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Objects;
 
-public class CarrinhoItem implements Serializable {
+public class CarrinhoItem {
     private Produto produto;
     private int quantidade;
-
-    // Campo novo para enviar para a função de checkout
     private String priceId;
 
+    // Construtor corrigido para aceitar a quantidade
     public CarrinhoItem(Produto produto, int quantidade) {
-        if (produto == null) {
-            throw new IllegalArgumentException("Produto não pode ser nulo no CarrinhoItem.");
-        }
         this.produto = produto;
-        this.priceId = produto.getId(); // Guarda o Price ID
-        this.quantidade = Math.max(0, quantidade);
+        this.quantidade = quantidade;
+        this.priceId = produto.getStripePriceId();
     }
+
+    // Construtor original mantido para compatibilidade
+    public CarrinhoItem(Produto produto) {
+        this.produto = produto;
+        this.quantidade = 1;
+        this.priceId = produto.getStripePriceId();
+    }
+
 
     public Produto getProduto() {
         return produto;
     }
 
     public void setProduto(Produto produto) {
-        if (produto == null) {
-            throw new IllegalArgumentException("Produto não pode ser nulo.");
-        }
         this.produto = produto;
-        this.priceId = produto.getId();
+        this.priceId = produto.getStripePriceId();
     }
 
     public int getQuantidade() {
         return quantidade;
     }
 
+    public void setQuantidade(int quantidade) {
+        this.quantidade = quantidade;
+    }
+
     public String getPriceId() {
         return priceId;
     }
 
-    public void setQuantidade(int quantidade) {
-        this.quantidade = Math.max(0, quantidade);
-    }
-
-    public BigDecimal getPrecoTotalItem() {
-        if (produto == null || produto.getPreco() == null) {
-            return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
-        }
-        BigDecimal precoProduto = produto.getPreco();
-        BigDecimal quantidadeDecimal = BigDecimal.valueOf(this.quantidade);
-        return precoProduto.multiply(quantidadeDecimal).setScale(2, RoundingMode.HALF_UP);
+    public void setPriceId(String priceId) {
+        this.priceId = priceId;
     }
 
     public void incrementarQuantidade() {
@@ -59,21 +52,16 @@ public class CarrinhoItem implements Serializable {
     }
 
     public void decrementarQuantidade() {
-        if (this.quantidade > 1) {
+        if (this.quantidade > 0) {
             this.quantidade--;
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CarrinhoItem that = (CarrinhoItem) o;
-        return Objects.equals(priceId, that.priceId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(priceId);
+    // Método renomeado de volta para getPrecoTotalItem()
+    public BigDecimal getPrecoTotalItem() {
+        if (produto.getPreco() == null) {
+            return BigDecimal.ZERO;
+        }
+        return produto.getPreco().multiply(new BigDecimal(quantidade));
     }
 }

@@ -1,103 +1,92 @@
 package projetofinal.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.projetofinal.databinding.ItemPedidoClienteBinding;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.example.projetofinal.R;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.function.Consumer;
 import projetofinal.models.Pedido;
 
 public class PedidoAdapterCliente extends RecyclerView.Adapter<PedidoAdapterCliente.PedidoViewHolder> {
 
-    private List<Pedido> pedidoList;
+    private final List<Pedido> pedidoList;
     private final Context context;
-    private final boolean isAdminView;
+    private final Consumer<Pedido> onConfirmarEntrega; // Interface para o clique
 
-    public PedidoAdapterCliente(Context context, List<Pedido> pedidoList, boolean isAdminView) {
-        this.context = context;
+    public PedidoAdapterCliente(List<Pedido> pedidoList, Context context, Consumer<Pedido> onConfirmarEntrega) {
         this.pedidoList = pedidoList;
-        this.isAdminView = isAdminView;
+        this.context = context;
+        this.onConfirmarEntrega = onConfirmarEntrega;
     }
 
     @NonNull
     @Override
     public PedidoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        ItemPedidoClienteBinding binding = ItemPedidoClienteBinding.inflate(inflater, parent, false);
-        return new PedidoViewHolder(binding);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_pedido_cliente, parent, false);
+        return new PedidoViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull PedidoViewHolder holder, int position) {
         Pedido pedido = pedidoList.get(position);
-        holder.bind(pedido, isAdminView);
+        holder.bind(pedido);
     }
 
     @Override
     public int getItemCount() {
-        return pedidoList != null ? pedidoList.size() : 0;
-    }
-
-    public void atualizarPedidos(List<Pedido> novosPedidos) {
-        this.pedidoList = novosPedidos;
-        notifyDataSetChanged();
+        return pedidoList.size();
     }
 
     class PedidoViewHolder extends RecyclerView.ViewHolder {
-        private final ItemPedidoClienteBinding binding;
 
-        PedidoViewHolder(ItemPedidoClienteBinding binding) {
-            super(binding.getRoot());
-            this.binding = binding;
+        private final TextView textViewPedidoId;
+        private final TextView textViewData;
+        private final TextView textViewValor;
+        private final TextView textViewDescricao;
+        private final TextView textViewStatus;
+        private final Button btnConfirmarEntrega; // Botão adicionado
+
+        public PedidoViewHolder(@NonNull View itemView) {
+            super(itemView);
+            textViewPedidoId = itemView.findViewById(R.id.textViewPedidoId);
+            textViewData = itemView.findViewById(R.id.textViewData);
+            textViewValor = itemView.findViewById(R.id.textViewValor);
+            textViewDescricao = itemView.findViewById(R.id.textViewDescricao);
+            textViewStatus = itemView.findViewById(R.id.textViewStatus);
+            btnConfirmarEntrega = itemView.findViewById(R.id.btnConfirmarEntrega); // Inicializa o botão
         }
 
-        void bind(Pedido pedido, boolean isAdmin) {
-            binding.textViewPedidoIdCliente.setText(String.format(Locale.getDefault(), "Pedido ID: #%d", pedido.getId()));
-            binding.textViewPedidoDataCliente.setText(String.format("Data: %s", formatarData(pedido.getData())));
-            binding.textViewPedidoDescricaoCliente.setText(pedido.getDescricao());
-            binding.textViewPedidoValorCliente.setText(String.format(Locale.getDefault(), "Total: R$ %.2f", pedido.getValor()));
+        public void bind(Pedido pedido) {
+            textViewPedidoId.setText("Pedido #" + pedido.getId());
+            textViewData.setText(pedido.getData());
+            textViewValor.setText(String.format("R$ %.2f", pedido.getValor()));
+            textViewDescricao.setText(pedido.getDescricao().replace("\\n", "\n"));
+            textViewStatus.setText("Status: " + capitalize(pedido.getStatus()));
 
-            // AQUI A MUDANÇA: Esconde a label de status
-            binding.textViewPedidoStatusCliente.setVisibility(View.GONE);
-
-            if (isAdmin) {
-                binding.textViewInfoClienteAdmin.setVisibility(View.VISIBLE);
-                binding.textViewInfoClienteAdmin.setText(String.format(Locale.getDefault(), "Cliente ID: %d", pedido.getClienteId()));
+            // Lógica para mostrar o botão
+            if ("saiu para entrega".equalsIgnoreCase(pedido.getStatus())) {
+                btnConfirmarEntrega.setVisibility(View.VISIBLE);
             } else {
-                binding.textViewInfoClienteAdmin.setVisibility(View.GONE);
+                btnConfirmarEntrega.setVisibility(View.GONE);
             }
+
+            // Ação do clique
+            btnConfirmarEntrega.setOnClickListener(v -> {
+                onConfirmarEntrega.accept(pedido);
+            });
         }
 
-        private String formatarData(String dataOriginal) {
-            if (dataOriginal == null) return "";
-            // Tenta o formato com milissegundos e fuso horário
-            SimpleDateFormat formatoEntrada = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault());
-            // Tenta o formato sem milissegundos
-            SimpleDateFormat formatoEntradaAlternativo = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault());
-            // Formato de saída desejado
-            SimpleDateFormat formatoSaida = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-
-            try {
-                Date date = formatoEntrada.parse(dataOriginal);
-                return formatoSaida.format(date);
-            } catch (ParseException e) {
-                try {
-                    Date date = formatoEntradaAlternativo.parse(dataOriginal);
-                    return formatoSaida.format(date);
-                } catch (ParseException ex) {
-                    Log.e("PedidoAdapter", "Erro ao parsear data: " + dataOriginal, ex);
-                    return dataOriginal.split("T")[0]; // Em último caso, retorna só a data
-                }
+        private String capitalize(String str) {
+            if (str == null || str.isEmpty()) {
+                return str;
             }
+            return str.substring(0, 1).toUpperCase() + str.substring(1);
         }
     }
 }

@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.Toast;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.projetofinal.R;
-import com.example.projetofinal.databinding.ActivityMainCozinhaBinding; // Import correto para o binding
+import com.example.projetofinal.databinding.ActivityMainCozinhaBinding;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +17,7 @@ import projetofinal.models.Pedido;
 
 public class MainCozinhaActivity extends BaseActivity {
 
-    private ActivityMainCozinhaBinding binding; // Variável de binding
+    private ActivityMainCozinhaBinding binding;
     private PedidoAdapterCozinha pedidoAdapter;
     private List<Pedido> pedidoList = new ArrayList<>();
     private PedidoDao pedidoDao;
@@ -25,7 +25,6 @@ public class MainCozinhaActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Infla o layout usando o binding
         binding = ActivityMainCozinhaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -36,16 +35,13 @@ public class MainCozinhaActivity extends BaseActivity {
     }
 
     private void setupRecyclerView() {
-        // Acessa o RecyclerView através do binding
         binding.recyclerViewPedidosCozinha.setLayoutManager(new LinearLayoutManager(this));
         pedidoAdapter = new PedidoAdapterCozinha(pedidoList, this, this::mudarStatusPedido);
         binding.recyclerViewPedidosCozinha.setAdapter(pedidoAdapter);
     }
 
     private void setupListeners() {
-        // Acessa os componentes através do binding
         binding.swipeRefreshLayout.setOnRefreshListener(this::carregarPedidos);
-
         binding.topAppBar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_logout) {
                 fazerLogout();
@@ -84,7 +80,7 @@ public class MainCozinhaActivity extends BaseActivity {
         if ("pendente".equalsIgnoreCase(statusAtual)) {
             novoStatus = "em preparo";
         } else if ("em preparo".equalsIgnoreCase(statusAtual)) {
-            novoStatus = "concluido";
+            novoStatus = "saiu para entrega"; // <-- ALTERAÇÃO AQUI
         } else {
             return;
         }
@@ -101,7 +97,6 @@ public class MainCozinhaActivity extends BaseActivity {
     }
 
     private void verificarListaVazia() {
-        // Acessa as views através do binding
         if (pedidoList.isEmpty()) {
             binding.recyclerViewPedidosCozinha.setVisibility(View.GONE);
             binding.textViewEmpty.setVisibility(View.VISIBLE);

@@ -3,7 +3,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="md_theme_primary">#FF8F00</color> <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_primary">#FF8F00</color>
+    <color name="md_theme_onPrimary">#FFFFFF</color>
     <color name="md_theme_primaryContainer">#FFDDBA</color>
     <color name="md_theme_onPrimaryContainer">#291800</color>
     <color name="md_theme_secondary">#705D41</color>
@@ -36,4 +37,7 @@
     <color name="status_em_preparo">#2196F3</color>
     <color name="status_concluido">#4CAF50</color>
     <color name="status_cancelado">@color/md_theme_error</color>
+
+    <color name="cinza_claro">#BDBDBD</color>
+    <color name="amarelo_estrela">#FFC107</color>
 </resources>

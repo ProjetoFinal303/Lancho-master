@@ -3,16 +3,18 @@ package projetofinal.main;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 import com.example.projetofinal.databinding.FragmentPedidosBinding;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import projetofinal.adapters.PedidoAdapterCliente;
 import projetofinal.dao.PedidoDao;
@@ -23,7 +25,7 @@ public class PedidosFragment extends Fragment {
     private FragmentPedidosBinding binding;
     private PedidoDao pedidoDao;
     private PedidoAdapterCliente pedidoAdapter;
-    private List<Pedido> listaDePedidos = new ArrayList<>();
+    private List<Pedido> pedidoList = new ArrayList<>();
     private static final String TAG = "PedidosFragment";
 
     @Nullable
@@ -36,58 +38,91 @@ public class PedidosFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         pedidoDao = new PedidoDao(getContext());
         setupRecyclerView();
-
-        SharedPreferences prefs = getActivity().getSharedPreferences(LoginActivity.PREFS_NAME, Context.MODE_PRIVATE);
-        int clienteId = prefs.getInt(LoginActivity.KEY_USER_ID, -1);
-
-        if (clienteId != -1) {
-            carregarPedidosDoCliente(clienteId);
-        } else {
-            binding.textViewNenhumPedido.setVisibility(View.VISIBLE);
-            binding.progressBarPedidos.setVisibility(View.GONE);
-        }
+        carregarPedidos();
     }
 
     private void setupRecyclerView() {
         binding.recyclerViewPedidos.setLayoutManager(new LinearLayoutManager(getContext()));
-        pedidoAdapter = new PedidoAdapterCliente(getContext(), listaDePedidos, false);
+        // Passa o método de confirmação para o adapter
+        pedidoAdapter = new PedidoAdapterCliente(pedidoList, getContext(), this::confirmarEntrega);
         binding.recyclerViewPedidos.setAdapter(pedidoAdapter);
     }
 
-    private void carregarPedidosDoCliente(int idCliente) {
+    private void carregarPedidos() {
         binding.progressBarPedidos.setVisibility(View.VISIBLE);
-        pedidoDao.buscarPedidosPorClienteId(idCliente,
+        binding.textViewNenhumPedido.setVisibility(View.GONE);
+        binding.recyclerViewPedidos.setVisibility(View.GONE);
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(LoginActivity.PREFS_NAME, Context.MODE_PRIVATE);
+        int clienteId = prefs.getInt(LoginActivity.KEY_USER_ID, -1);
+
+        if (clienteId == -1) {
+            Toast.makeText(getContext(), "Erro: ID do cliente não encontrado.", Toast.LENGTH_SHORT).show();
+            binding.progressBarPedidos.setVisibility(View.GONE);
+            binding.textViewNenhumPedido.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        pedidoDao.buscarPedidosPorClienteId(clienteId,
                 pedidos -> {
                     if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> {
-                            binding.progressBarPedidos.setVisibility(View.GONE);
+                            pedidoList.clear();
                             if (pedidos != null && !pedidos.isEmpty()) {
-                                listaDePedidos.clear();
-                                listaDePedidos.addAll(pedidos);
-                                listaDePedidos.sort((p1, p2) -> Integer.compare(p2.getId(), p1.getId()));
-                                pedidoAdapter.atualizarPedidos(listaDePedidos);
-                                binding.recyclerViewPedidos.setVisibility(View.VISIBLE);
-                                binding.textViewNenhumPedido.setVisibility(View.GONE);
-                            } else {
-                                binding.recyclerViewPedidos.setVisibility(View.GONE);
-                                binding.textViewNenhumPedido.setVisibility(View.VISIBLE);
+                                pedidos.sort(Comparator.comparingInt(Pedido::getId).reversed());
+                                pedidoList.addAll(pedidos);
                             }
+                            pedidoAdapter.notifyDataSetChanged();
+                            verificarListaVazia();
+                            binding.progressBarPedidos.setVisibility(View.GONE);
                         });
                     }
                 },
                 error -> {
                     if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> {
-                            binding.progressBarPedidos.setVisibility(View.GONE);
                             Log.e(TAG, "Erro ao carregar pedidos: ", error);
-                            binding.textViewNenhumPedido.setVisibility(View.VISIBLE);
+                            Toast.makeText(getContext(), "Falha ao carregar pedidos.", Toast.LENGTH_SHORT).show();
+                            verificarListaVazia();
+                            binding.progressBarPedidos.setVisibility(View.GONE);
                         });
                     }
                 }
         );
+    }
+
+    private void confirmarEntrega(Pedido pedido) {
+        binding.progressBarPedidos.setVisibility(View.VISIBLE);
+        pedidoDao.updateStatus(pedido.getId(), "concluido",
+                () -> {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            Toast.makeText(getContext(), "Pedido #" + pedido.getId() + " concluído! Bom apetite!", Toast.LENGTH_LONG).show();
+                            carregarPedidos(); // Recarrega a lista para mostrar a mudança
+                        });
+                    }
+                },
+                error -> {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            Log.e(TAG, "Erro ao confirmar entrega: " + error);
+                            Toast.makeText(getContext(), "Não foi possível confirmar a entrega.", Toast.LENGTH_SHORT).show();
+                            binding.progressBarPedidos.setVisibility(View.GONE);
+                        });
+                    }
+                });
+    }
+
+    private void verificarListaVazia() {
+        if (pedidoList.isEmpty()) {
+            binding.recyclerViewPedidos.setVisibility(View.GONE);
+            binding.textViewNenhumPedido.setVisibility(View.VISIBLE);
+        } else {
+            binding.recyclerViewPedidos.setVisibility(View.VISIBLE);
+            binding.textViewNenhumPedido.setVisibility(View.GONE);
+        }
     }
 
     @Override

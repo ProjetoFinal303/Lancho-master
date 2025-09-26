@@ -4,9 +4,9 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton; // Importar ImageButton
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,7 +15,6 @@ import com.example.projetofinal.R;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-
 import projetofinal.models.Produto;
 
 public class ProdutoAdapter extends RecyclerView.Adapter<ProdutoAdapter.ProdutoViewHolder> {
@@ -27,7 +26,7 @@ public class ProdutoAdapter extends RecyclerView.Adapter<ProdutoAdapter.ProdutoV
 
     public interface OnProdutoInteractionListener {
         void onProdutoClick(Produto produto, View clickedView);
-        void onProdutoDeleteClick(Produto produto); // Novo método para exclusão
+        void onProdutoDeleteClick(Produto produto);
     }
 
     public ProdutoAdapter(Context context, List<Produto> produtoList, OnProdutoInteractionListener listener, String userRole) {
@@ -64,55 +63,61 @@ public class ProdutoAdapter extends RecyclerView.Adapter<ProdutoAdapter.ProdutoV
     }
 
     class ProdutoViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView imagemProduto;
-        private final TextView nomeProduto;
-        private final TextView descricaoProduto;
-        private final TextView precoProduto;
-        private final Button btnComprar;
-        private final ImageButton btnExcluirProduto; // Referência para o botão de excluir
+        // IDs Corretos do novo layout
+        private final ImageView imgProduto;
+        private final TextView txtNomeProduto;
+        private final TextView txtDescricaoProduto;
+        private final TextView txtPrecoProduto;
+        private final RatingBar ratingBarProduto;
+        private final TextView txtTotalAvaliacoes;
+        private final ImageButton btnExcluirProduto;
 
         ProdutoViewHolder(View itemView) {
             super(itemView);
-            imagemProduto = itemView.findViewById(R.id.imagemProduto);
-            nomeProduto = itemView.findViewById(R.id.nomeProduto);
-            descricaoProduto = itemView.findViewById(R.id.descricaoProduto);
-            precoProduto = itemView.findViewById(R.id.precoProduto);
-            btnComprar = itemView.findViewById(R.id.btnComprar);
-            btnExcluirProduto = itemView.findViewById(R.id.btnExcluirProduto); // Mapeia o botão
+            // Mapeando os IDs corretos
+            imgProduto = itemView.findViewById(R.id.imgProduto);
+            txtNomeProduto = itemView.findViewById(R.id.txtNomeProduto);
+            txtDescricaoProduto = itemView.findViewById(R.id.txtDescricaoProduto);
+            txtPrecoProduto = itemView.findViewById(R.id.txtPrecoProduto);
+            ratingBarProduto = itemView.findViewById(R.id.ratingBarProduto);
+            txtTotalAvaliacoes = itemView.findViewById(R.id.txtTotalAvaliacoes);
+            btnExcluirProduto = itemView.findViewById(R.id.btnExcluirProduto);
         }
 
         void bind(final Produto produto, final OnProdutoInteractionListener listener, final String userRole) {
-            nomeProduto.setText(produto.getNome());
-            descricaoProduto.setText(produto.getDescricao());
+            txtNomeProduto.setText(produto.getNome());
+            txtDescricaoProduto.setText(produto.getDescricao());
+
             if (produto.getPreco() != null) {
-                precoProduto.setText(String.format(Locale.getDefault(), "R$ %.2f", produto.getPreco()));
+                txtPrecoProduto.setText(String.format(Locale.getDefault(), "R$ %.2f", produto.getPreco()));
             } else {
-                precoProduto.setText("R$ 0,00");
+                txtPrecoProduto.setText("R$ 0,00");
             }
 
-            if (produto.getImageUrl() != null && !produto.getImageUrl().isEmpty()) {
-                Glide.with(itemView.getContext())
-                        .load(produto.getImageUrl())
-                        .placeholder(R.drawable.ic_launcher_foreground)
-                        .error(R.drawable.ic_launcher_background)
-                        .into(imagemProduto);
-            } else {
-                imagemProduto.setImageResource(R.drawable.ic_launcher_foreground);
-            }
+            // Lógica de avaliação
+            ratingBarProduto.setRating((float) produto.getMediaAvaliacoes());
+            txtTotalAvaliacoes.setText(String.format(Locale.getDefault(), "(%d)", produto.getTotalAvaliacoes()));
 
-            // Lógica de visibilidade dos botões
+            // Carrega a imagem
+            Glide.with(itemView.getContext())
+                    .load(produto.getImageUrl())
+                    .placeholder(R.drawable.lanchoxburger) // Imagem padrão
+                    .error(R.drawable.lanchoxburger) // Imagem de erro
+                    .into(imgProduto);
+
+            // Lógica de visibilidade e clique (da sua versão original)
             if (Objects.equals(userRole, "admin")) {
-                btnComprar.setVisibility(View.GONE);
                 btnExcluirProduto.setVisibility(View.VISIBLE);
                 btnExcluirProduto.setOnClickListener(v -> {
                     if (listener != null) {
                         listener.onProdutoDeleteClick(produto);
                     }
                 });
-            } else {
-                btnComprar.setVisibility(View.VISIBLE);
+                itemView.setOnClickListener(null); // Admin não clica no card
+            } else { // Cliente
                 btnExcluirProduto.setVisibility(View.GONE);
-                btnComprar.setOnClickListener(view -> {
+                // O card inteiro é clicável para o cliente (substitui o antigo btnComprar)
+                itemView.setOnClickListener(view -> {
                     if (listener != null) {
                         listener.onProdutoClick(produto, view);
                     }

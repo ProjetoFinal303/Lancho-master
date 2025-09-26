@@ -3,51 +3,121 @@ package projetofinal.models;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Objects;
 
 public class Produto implements Serializable {
 
     @SerializedName("id")
-    private String id;
+    private int id;
 
-    @SerializedName("name")
+    @SerializedName("nome")
     private String nome;
 
-    @SerializedName("description")
+    @SerializedName("descricao")
     private String descricao;
 
-    @SerializedName("price")
+    @SerializedName("preco")
     private BigDecimal preco;
 
-    @SerializedName("imageUrl")
+    @SerializedName("image_url")
     private String imageUrl;
 
-    public Produto() {}
+    @SerializedName("stripe_price_id")
+    private String stripePriceId;
 
-    // Getters
-    public String getId() { return id; }
-    public String getNome() { return nome; }
-    public String getDescricao() { return descricao; }
-    public BigDecimal getPreco() { return preco; }
-    public String getImageUrl() { return imageUrl; }
+    @SerializedName("categoria")
+    private String categoria;
 
-    // Setters
-    public void setId(String id) { this.id = id; }
-    public void setNome(String nome) { this.nome = nome; }
-    public void setDescricao(String descricao) { this.descricao = descricao; }
-    public void setPreco(BigDecimal preco) { this.preco = preco; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    @SerializedName("media_avaliacoes")
+    private double mediaAvaliacoes;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Produto produto = (Produto) o;
-        return Objects.equals(id, produto.id);
+    @SerializedName("total_avaliacoes")
+    private int totalAvaliacoes;
+
+    // Construtor vazio adicionado de volta para compatibilidade
+    public Produto() {
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public Produto(int id, String nome, String descricao, BigDecimal preco, String imageUrl, String categoria, double mediaAvaliacoes, int totalAvaliacoes) {
+        this.id = id;
+        this.nome = nome;
+        this.descricao = descricao;
+        this.preco = preco;
+        this.imageUrl = imageUrl;
+        this.categoria = categoria;
+        this.mediaAvaliacoes = mediaAvaliacoes;
+        this.totalAvaliacoes = totalAvaliacoes;
+    }
+
+    // Getters e Setters (todos permanecem os mesmos)
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public BigDecimal getPreco() {
+        return preco;
+    }
+
+    public void setPreco(BigDecimal preco) {
+        this.preco = preco;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getStripePriceId() {
+        return stripePriceId;
+    }
+
+    public void setStripePriceId(String stripePriceId) {
+        this.stripePriceId = stripePriceId;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public double getMediaAvaliacoes() {
+        return mediaAvaliacoes;
+    }
+
+    public void setMediaAvaliacoes(double mediaAvaliacoes) {
+        this.mediaAvaliacoes = mediaAvaliacoes;
+    }
+
+    public int getTotalAvaliacoes() {
+        return totalAvaliacoes;
+    }
+
+    public void setTotalAvaliacoes(int totalAvaliacoes) {
+        this.totalAvaliacoes = totalAvaliacoes;
     }
 }

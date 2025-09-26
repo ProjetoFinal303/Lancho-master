@@ -24,6 +24,11 @@
 
     <style name="Theme.LanchoneteDigital" parent="Base.Theme.LanchoneteDigital" />
 
+    <style name="RatingBar" parent="Theme.AppCompat">
+        <item name="colorControlNormal">@color/cinza_claro</item>
+        <item name="colorControlActivated">@color/amarelo_estrela</item>
+    </style>
+
     <style name="AppTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxCornerRadiusTopStart">16dp</item>
         <item name="boxCornerRadiusTopEnd">16dp</item>

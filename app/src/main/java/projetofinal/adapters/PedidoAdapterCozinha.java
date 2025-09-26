@@ -1,8 +1,6 @@
 package projetofinal.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,17 +88,11 @@ public class PedidoAdapterCozinha extends RecyclerView.Adapter<PedidoAdapterCozi
                     break;
                 case "em preparo":
                     backgroundResId = R.drawable.status_em_preparo_bg;
-                    buttonText = "Finalizar Pedido";
-                    break;
-                case "saiu para entrega":
-                case "concluido":
-                    // Itens com esses status não deveriam aparecer, mas por segurança:
-                    backgroundResId = R.drawable.status_concluido_bg;
-                    buttonVisibility = View.GONE; // Esconde o botão
+                    buttonText = "Saiu para Entrega"; // <-- ALTERAÇÃO AQUI
                     break;
                 default:
                     backgroundResId = R.drawable.status_background_placeholder;
-                    buttonVisibility = View.GONE; // Esconde o botão para status desconhecido
+                    buttonVisibility = View.GONE;
                     break;
             }
 
