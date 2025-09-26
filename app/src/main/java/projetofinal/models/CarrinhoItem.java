@@ -7,20 +7,20 @@ public class CarrinhoItem {
     private int quantidade;
     private String priceId;
 
-    // Construtor corrigido para aceitar a quantidade
+    // Construtor original que o app usa, agora com a lógica correta
     public CarrinhoItem(Produto produto, int quantidade) {
         this.produto = produto;
         this.quantidade = quantidade;
+        // A correção importante está aqui: usar o stripe_price_id
         this.priceId = produto.getStripePriceId();
     }
 
-    // Construtor original mantido para compatibilidade
+    // Mantendo o construtor de um argumento por segurança
     public CarrinhoItem(Produto produto) {
         this.produto = produto;
         this.quantidade = 1;
         this.priceId = produto.getStripePriceId();
     }
-
 
     public Produto getProduto() {
         return produto;
@@ -57,7 +57,7 @@ public class CarrinhoItem {
         }
     }
 
-    // Método renomeado de volta para getPrecoTotalItem()
+    // Nome do método corrigido de volta para getPrecoTotalItem()
     public BigDecimal getPrecoTotalItem() {
         if (produto.getPreco() == null) {
             return BigDecimal.ZERO;

@@ -1,6 +1,7 @@
 package projetofinal.main;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -45,8 +46,7 @@ public class PedidosFragment extends Fragment {
 
     private void setupRecyclerView() {
         binding.recyclerViewPedidos.setLayoutManager(new LinearLayoutManager(getContext()));
-        // Passa o método de confirmação para o adapter
-        pedidoAdapter = new PedidoAdapterCliente(pedidoList, getContext(), this::confirmarEntrega);
+        pedidoAdapter = new PedidoAdapterCliente(pedidoList, getContext(), this::confirmarEntrega, this::abrirTelaAvaliacao);
         binding.recyclerViewPedidos.setAdapter(pedidoAdapter);
     }
 
@@ -100,7 +100,7 @@ public class PedidosFragment extends Fragment {
                     if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> {
                             Toast.makeText(getContext(), "Pedido #" + pedido.getId() + " concluído! Bom apetite!", Toast.LENGTH_LONG).show();
-                            carregarPedidos(); // Recarrega a lista para mostrar a mudança
+                            carregarPedidos();
                         });
                     }
                 },
@@ -113,6 +113,12 @@ public class PedidosFragment extends Fragment {
                         });
                     }
                 });
+    }
+
+    private void abrirTelaAvaliacao(Pedido pedido) {
+        Intent intent = new Intent(getActivity(), AvaliarPedidoActivity.class);
+        intent.putExtra("descricaoPedido", pedido.getDescricao());
+        startActivity(intent);
     }
 
     private void verificarListaVazia() {

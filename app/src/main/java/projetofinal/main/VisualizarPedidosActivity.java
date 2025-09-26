@@ -60,8 +60,8 @@ public class VisualizarPedidosActivity extends BaseActivity {
 
     private void setupRecyclerView() {
         binding.recyclerViewPedidos.setLayoutManager(new LinearLayoutManager(this));
-        // O admin não tem ação de clique, então passamos uma função vazia.
-        pedidoAdapter = new PedidoAdapterCliente(listaDePedidos, this, pedido -> {});
+        // CORREÇÃO: Passa os dois listeners, com o de avaliação vazio, pois o admin não o utiliza.
+        pedidoAdapter = new PedidoAdapterCliente(listaDePedidos, this, pedido -> {}, pedido -> {});
         binding.recyclerViewPedidos.setAdapter(pedidoAdapter);
     }
 
@@ -100,7 +100,7 @@ public class VisualizarPedidosActivity extends BaseActivity {
             listaDePedidos.clear();
             pedidos.sort(Comparator.comparingInt(Pedido::getId).reversed());
             listaDePedidos.addAll(pedidos);
-            pedidoAdapter.notifyDataSetChanged(); // Usa o método padrão do adapter
+            pedidoAdapter.notifyDataSetChanged();
             binding.recyclerViewPedidos.setVisibility(View.VISIBLE);
             binding.textViewNenhumPedido.setVisibility(View.GONE);
         } else {

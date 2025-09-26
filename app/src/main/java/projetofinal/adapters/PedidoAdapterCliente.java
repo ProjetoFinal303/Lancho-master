@@ -17,12 +17,15 @@ public class PedidoAdapterCliente extends RecyclerView.Adapter<PedidoAdapterClie
 
     private final List<Pedido> pedidoList;
     private final Context context;
-    private final Consumer<Pedido> onConfirmarEntrega; // Interface para o clique
+    private final Consumer<Pedido> onConfirmarEntrega;
+    private final Consumer<Pedido> onAvaliarPedido; // Novo listener para o botão de avaliar
 
-    public PedidoAdapterCliente(List<Pedido> pedidoList, Context context, Consumer<Pedido> onConfirmarEntrega) {
+    // Construtor atualizado
+    public PedidoAdapterCliente(List<Pedido> pedidoList, Context context, Consumer<Pedido> onConfirmarEntrega, Consumer<Pedido> onAvaliarPedido) {
         this.pedidoList = pedidoList;
         this.context = context;
         this.onConfirmarEntrega = onConfirmarEntrega;
+        this.onAvaliarPedido = onAvaliarPedido;
     }
 
     @NonNull
@@ -50,7 +53,8 @@ public class PedidoAdapterCliente extends RecyclerView.Adapter<PedidoAdapterClie
         private final TextView textViewValor;
         private final TextView textViewDescricao;
         private final TextView textViewStatus;
-        private final Button btnConfirmarEntrega; // Botão adicionado
+        private final Button btnConfirmarEntrega;
+        private final Button btnAvaliarPedido; // Referência para o novo botão
 
         public PedidoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -59,7 +63,8 @@ public class PedidoAdapterCliente extends RecyclerView.Adapter<PedidoAdapterClie
             textViewValor = itemView.findViewById(R.id.textViewValor);
             textViewDescricao = itemView.findViewById(R.id.textViewDescricao);
             textViewStatus = itemView.findViewById(R.id.textViewStatus);
-            btnConfirmarEntrega = itemView.findViewById(R.id.btnConfirmarEntrega); // Inicializa o botão
+            btnConfirmarEntrega = itemView.findViewById(R.id.btnConfirmarEntrega);
+            btnAvaliarPedido = itemView.findViewById(R.id.btnAvaliarPedido); // Inicializa o novo botão
         }
 
         public void bind(Pedido pedido) {
@@ -69,17 +74,20 @@ public class PedidoAdapterCliente extends RecyclerView.Adapter<PedidoAdapterClie
             textViewDescricao.setText(pedido.getDescricao().replace("\\n", "\n"));
             textViewStatus.setText("Status: " + capitalize(pedido.getStatus()));
 
-            // Lógica para mostrar o botão
-            if ("saiu para entrega".equalsIgnoreCase(pedido.getStatus())) {
+            // Lógica de visibilidade dos botões
+            btnConfirmarEntrega.setVisibility(View.GONE);
+            btnAvaliarPedido.setVisibility(View.GONE);
+
+            String status = pedido.getStatus().toLowerCase();
+            if ("saiu para entrega".equals(status)) {
                 btnConfirmarEntrega.setVisibility(View.VISIBLE);
-            } else {
-                btnConfirmarEntrega.setVisibility(View.GONE);
+            } else if ("concluido".equals(status)) {
+                btnAvaliarPedido.setVisibility(View.VISIBLE);
             }
 
-            // Ação do clique
-            btnConfirmarEntrega.setOnClickListener(v -> {
-                onConfirmarEntrega.accept(pedido);
-            });
+            // Ações de clique
+            btnConfirmarEntrega.setOnClickListener(v -> onConfirmarEntrega.accept(pedido));
+            btnAvaliarPedido.setOnClickListener(v -> onAvaliarPedido.accept(pedido));
         }
 
         private String capitalize(String str) {
