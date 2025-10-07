@@ -3,9 +3,11 @@ package projetofinal.main;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Toast; // Import necessário para o Toast
-import androidx.appcompat.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.projetofinal.R;
@@ -24,40 +26,35 @@ public class MainAdminActivity extends BaseActivity {
         Toolbar toolbar = binding.toolbarMainAdmin;
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Painel Administrativo");
+            getSupportActionBar().setTitle(R.string.admin_panel_title);
         }
 
-        // Listener para o novo botão de Sincronização
-        binding.btnSincronizarProdutos.setOnClickListener(v -> {
-            // A implementação da chamada de rede para a Edge Function precisa ser criada.
-            // Por enquanto, exibimos uma mensagem ao usuário.
-            Toast.makeText(this, "Iniciando sincronização com o Stripe...", Toast.LENGTH_LONG).show();
+        setupListeners();
+    }
 
+    private void setupListeners() {
+        binding.cardSincronizarProdutos.setOnClickListener(v -> {
+            Toast.makeText(this, "Iniciando sincronização com o Stripe...", Toast.LENGTH_LONG).show();
             // TODO: Implementar a chamada para a Edge Function 'sync-stripe-products'
-            // usando um serviço de rede autenticado (ex: OkHttp com o token JWT do usuário).
         });
 
-        binding.btnGerenciarProdutos.setOnClickListener(v -> {
-            // A tela VisualizarProdutoActivity agora mostra os produtos do Stripe
+        binding.cardGerenciarProdutos.setOnClickListener(v -> {
             startActivity(new Intent(MainAdminActivity.this, VisualizarProdutoActivity.class));
         });
 
-        binding.btnGerenciarEstoque.setOnClickListener(v -> {
-            startActivity(new Intent(MainAdminActivity.this, VisualizarEstoqueActivity.class));
-        });
+        // O CARD DE ESTOQUE FOI REMOVIDO DO LAYOUT E SEU LISTENER FOI REMOVIDO DAQUI
 
-        binding.btnVisualizarPedidos.setOnClickListener(v -> {
+        binding.cardVisualizarPedidos.setOnClickListener(v -> {
             Intent intent = new Intent(MainAdminActivity.this, VisualizarPedidosActivity.class);
             intent.putExtra("USER_ROLE", "admin");
             startActivity(intent);
         });
 
-        binding.btnGerenciarClientes.setOnClickListener(v -> {
-            // A tela VisualizarClienteActivity agora inclui a função de excluir
+        binding.cardGerenciarClientes.setOnClickListener(v -> {
             startActivity(new Intent(MainAdminActivity.this, VisualizarClienteActivity.class));
         });
 
-        binding.btnLogoutAdmin.setOnClickListener(v -> {
+        binding.cardLogoutAdmin.setOnClickListener(v -> {
             logoutAdmin();
         });
     }

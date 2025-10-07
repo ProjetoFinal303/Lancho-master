@@ -142,4 +142,11 @@
     <string name="quantidade_em_estoque">Em estoque: %d</string>
 
     <string name="placeholder_text">Texto de Exemplo</string>
+
+    <string name="admin_panel_title">Painel de Controle</string>
+    <string name="admin_sincronizar_produtos">Sincronizar Produtos</string>
+
+    <string name="profile_title">Meu Perfil</string>
+    <string name="profile_content_description">Acessar a tela de perfil do usuário</string>
+
 </resources>

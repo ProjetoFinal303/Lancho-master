@@ -33,7 +33,9 @@ public class Produto implements Serializable {
     @SerializedName("total_avaliacoes")
     private int totalAvaliacoes;
 
-    // Construtor vazio adicionado de volta para compatibilidade
+    // NOVO CAMPO ADICIONADO PARA O ESTOQUE
+    private int quantidadeEstoque;
+
     public Produto() {
     }
 
@@ -48,76 +50,27 @@ public class Produto implements Serializable {
         this.totalAvaliacoes = totalAvaliacoes;
     }
 
-    // Getters e Setters (todos permanecem os mesmos)
-    public int getId() {
-        return id;
-    }
+    // Getters e Setters existentes
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+    public String getDescricao() { return descricao; }
+    public void setDescricao(String descricao) { this.descricao = descricao; }
+    public BigDecimal getPreco() { return preco; }
+    public void setPreco(BigDecimal preco) { this.preco = preco; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public String getStripePriceId() { return stripePriceId; }
+    public void setStripePriceId(String stripePriceId) { this.stripePriceId = stripePriceId; }
+    public String getCategoria() { return categoria; }
+    public void setCategoria(String categoria) { this.categoria = categoria; }
+    public double getMediaAvaliacoes() { return mediaAvaliacoes; }
+    public void setMediaAvaliacoes(double mediaAvaliacoes) { this.mediaAvaliacoes = mediaAvaliacoes; }
+    public int getTotalAvaliacoes() { return totalAvaliacoes; }
+    public void setTotalAvaliacoes(int totalAvaliacoes) { this.totalAvaliacoes = totalAvaliacoes; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public BigDecimal getPreco() {
-        return preco;
-    }
-
-    public void setPreco(BigDecimal preco) {
-        this.preco = preco;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public String getStripePriceId() {
-        return stripePriceId;
-    }
-
-    public void setStripePriceId(String stripePriceId) {
-        this.stripePriceId = stripePriceId;
-    }
-
-    public String getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
-    }
-
-    public double getMediaAvaliacoes() {
-        return mediaAvaliacoes;
-    }
-
-    public void setMediaAvaliacoes(double mediaAvaliacoes) {
-        this.mediaAvaliacoes = mediaAvaliacoes;
-    }
-
-    public int getTotalAvaliacoes() {
-        return totalAvaliacoes;
-    }
-
-    public void setTotalAvaliacoes(int totalAvaliacoes) {
-        this.totalAvaliacoes = totalAvaliacoes;
-    }
+    // GETTER E SETTER PARA O NOVO CAMPO DE ESTOQUE
+    public int getQuantidadeEstoque() { return quantidadeEstoque; }
+    public void setQuantidadeEstoque(int quantidadeEstoque) { this.quantidadeEstoque = quantidadeEstoque; }
 }

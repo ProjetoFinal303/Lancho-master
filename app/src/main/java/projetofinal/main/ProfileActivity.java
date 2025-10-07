@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
@@ -35,6 +36,7 @@ public class ProfileActivity extends BaseActivity {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Meu Perfil");
         }
 
         imagePickerLauncher = registerForActivityResult(
@@ -48,7 +50,29 @@ public class ProfileActivity extends BaseActivity {
 
         clienteDao = new ClienteDao(this);
         SharedPreferences prefs = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
-        clienteIdLogado = prefs.getInt(LoginActivity.KEY_USER_ID, -1);
+
+        // ============================ INÍCIO DA CORREÇÃO ============================
+        // 1. Lemos o ID do usuário como String, que é como ele foi salvo.
+        String userIdStr = prefs.getString(LoginActivity.KEY_USER_ID, null);
+
+        // 2. Convertemos para int com segurança, tratando possíveis erros.
+        if (userIdStr != null) {
+            try {
+                clienteIdLogado = Integer.parseInt(userIdStr);
+            } catch (NumberFormatException e) {
+                Log.e("ProfileActivity", "Erro ao converter ID do usuário para número: " + userIdStr, e);
+                clienteIdLogado = -1; // Define como inválido em caso de erro
+            }
+        }
+
+        // 3. Se o ID não for válido, exibe uma mensagem e fecha a tela para evitar crash.
+        if (clienteIdLogado == -1) {
+            Toast.makeText(this, "Erro ao carregar perfil. Por favor, faça login novamente.", Toast.LENGTH_LONG).show();
+            finish();
+            return; // Impede a execução do resto do código que causaria o crash
+        }
+        // ============================ FIM DA CORREÇÃO ============================
+
 
         binding.btnEditarDados.setOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, AtualizarClienteActivity.class);
@@ -65,6 +89,7 @@ public class ProfileActivity extends BaseActivity {
     }
 
     private void uploadAvatar(Uri imageUri) {
+        if (clienteIdLogado == -1) return;
         Toast.makeText(this, "Enviando nova foto...", Toast.LENGTH_SHORT).show();
         SupabaseStorageClient.uploadFile(this, imageUri,
                 publicUrl -> runOnUiThread(() -> {
@@ -79,7 +104,7 @@ public class ProfileActivity extends BaseActivity {
                                 error -> runOnUiThread(() -> Toast.makeText(this, "Erro ao salvar URL da foto.", Toast.LENGTH_SHORT).show())
                         );
                     } catch (Exception e) {
-                        //...
+                        Log.e("ProfileActivity", "Erro ao criar JSON para atualizar avatar", e);
                     }
                 }),
                 error -> runOnUiThread(() -> Toast.makeText(this, "Falha no upload da imagem.", Toast.LENGTH_SHORT).show())

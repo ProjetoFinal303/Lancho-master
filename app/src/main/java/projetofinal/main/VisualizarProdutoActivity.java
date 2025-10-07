@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -39,10 +41,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import projetofinal.adapters.ProdutoAdapter;
+import projetofinal.dao.EstoqueDao;
 import projetofinal.dao.ProdutoDao;
 import projetofinal.database.SupabaseFunctionClient;
 import projetofinal.database.SupabaseStorageClient;
 import projetofinal.models.CarrinhoItem;
+import projetofinal.models.Estoque;
 import projetofinal.models.Produto;
 
 public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAdapter.OnProdutoInteractionListener {
@@ -55,6 +59,7 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
     private int clienteIdLogado = -1;
     private String userRole;
     private ProdutoDao produtoDao;
+    private EstoqueDao estoqueDao;
     private Uri imagemSelecionadaUri = null;
     private ImageView imgPreviewDialog;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
@@ -84,9 +89,15 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
         gson = gsonBuilder.create();
 
         produtoDao = new ProdutoDao(this);
+        estoqueDao = new EstoqueDao(this);
 
         SharedPreferences prefs = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
-        clienteIdLogado = prefs.getInt(LoginActivity.KEY_USER_ID, -1);
+
+        try {
+            clienteIdLogado = Integer.parseInt(prefs.getString(LoginActivity.KEY_USER_ID, "-1"));
+        } catch (Exception e) {
+            clienteIdLogado = prefs.getInt(LoginActivity.KEY_USER_ID, -1);
+        }
         userRole = prefs.getString(LoginActivity.KEY_USER_ROLE, "");
 
         configurarToolbar();
@@ -128,6 +139,7 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
         super.onResume();
         carregarItensCarrinho();
         atualizarBotaoCarrinho();
+        fetchProductsFromSupabase();
     }
 
     private void setupRecyclerView() {
@@ -138,7 +150,11 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
 
     @Override
     public void onProdutoClick(Produto produto, View clickedView) {
-        adicionarAoCarrinho(produto);
+        if ("admin".equals(userRole)) {
+            mostrarDialogoEditarProduto(produto);
+        } else {
+            adicionarAoCarrinho(produto);
+        }
     }
 
     @Override
@@ -157,7 +173,7 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             if ("admin".equals(userRole)) {
-                getSupportActionBar().setTitle("Gerenciar Produtos");
+                getSupportActionBar().setTitle("Gerenciar Produtos e Estoque");
             } else {
                 getSupportActionBar().setTitle("Cardápio");
             }
@@ -166,7 +182,7 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
 
     private void fetchProductsFromSupabase() {
         setLoading(true);
-        produtoDao.listarTodos(
+        produtoDao.listarTodosComEstoque(
                 produtosRecebidos -> runOnUiThread(() -> {
                     setLoading(false);
                     if (produtosRecebidos != null && !produtosRecebidos.isEmpty()) {
@@ -185,6 +201,80 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
                     binding.recyclerViewProdutos.setVisibility(View.GONE);
                     binding.textViewNenhumProduto.setText("Erro ao carregar o cardápio.");
                     binding.textViewNenhumProduto.setVisibility(View.VISIBLE);
+                })
+        );
+    }
+
+    private void mostrarDialogoEditarProduto(Produto produto) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Editar Produto e Estoque");
+
+        View viewInflated = LayoutInflater.from(this).inflate(R.layout.dialog_add_produto, (ViewGroup) binding.getRoot(), false);
+        final EditText inputNome = viewInflated.findViewById(R.id.edtNomeProdutoDialog);
+        final EditText inputDesc = viewInflated.findViewById(R.id.edtDescricaoProdutoDialog);
+        final EditText inputPreco = viewInflated.findViewById(R.id.edtPrecoProdutoDialog);
+        final Button btnEscolherImagem = viewInflated.findViewById(R.id.btnEscolherImagemDialog);
+        imgPreviewDialog = viewInflated.findViewById(R.id.imgPreviewDialog);
+
+        // ============================ CORREÇÃO DO CRASH ============================
+        // 1. Encontra o LinearLayout pelo ID que adicionamos ao XML.
+        LinearLayout layout = viewInflated.findViewById(R.id.dialog_linear_layout);
+        // =========================================================================
+
+        final EditText inputEstoque = new EditText(this);
+        inputEstoque.setHint("Quantidade em Estoque");
+        inputEstoque.setInputType(InputType.TYPE_CLASS_NUMBER);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(0, 24, 0, 0);
+        inputEstoque.setLayoutParams(lp);
+
+        if (layout != null) {
+            layout.addView(inputEstoque); // Adiciona o campo de estoque ao LinearLayout
+        } else {
+            // Fallback caso o ID não seja encontrado, para evitar outro crash
+            Log.e(TAG, "LinearLayout com id 'dialog_linear_layout' não encontrado em dialog_add_produto.xml");
+            return;
+        }
+
+        inputNome.setText(produto.getNome());
+        inputDesc.setText(produto.getDescricao());
+        inputPreco.setText(produto.getPreco().toPlainString());
+        inputEstoque.setText(String.valueOf(produto.getQuantidadeEstoque()));
+
+        if (produto.getImageUrl() != null && !produto.getImageUrl().isEmpty()) {
+            Glide.with(this).load(produto.getImageUrl()).into(imgPreviewDialog);
+            imgPreviewDialog.setVisibility(View.VISIBLE);
+        }
+
+        btnEscolherImagem.setText("Alterar Imagem (Opcional)");
+        builder.setView(viewInflated);
+
+        builder.setPositiveButton("Salvar", (dialog, which) -> {
+            try {
+                int novaQuantidade = Integer.parseInt(inputEstoque.getText().toString());
+                Estoque estoqueAtualizado = new Estoque();
+                estoqueAtualizado.setProdutoId(produto.getId());
+                estoqueAtualizado.setQuantidade(novaQuantidade);
+                salvarAtualizacaoEstoque(estoqueAtualizado);
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Quantidade de estoque inválida.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    private void salvarAtualizacaoEstoque(Estoque estoqueParaSalvar) {
+        setLoading(true);
+        estoqueDao.inserirOuAtualizar(estoqueParaSalvar,
+                response -> runOnUiThread(() -> {
+                    Toast.makeText(this, "Estoque atualizado com sucesso!", Toast.LENGTH_SHORT).show();
+                    fetchProductsFromSupabase();
+                }),
+                error -> runOnUiThread(() -> {
+                    setLoading(false);
+                    Log.e(TAG, "Erro ao salvar estoque: ", error);
+                    Toast.makeText(this, "Erro ao salvar: " + error.getMessage(), Toast.LENGTH_LONG).show();
                 })
         );
     }
@@ -218,7 +308,7 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
         setLoading(true);
         try {
             JSONObject payload = new JSONObject();
-            payload.put("stripe_price_id", produto.getId());
+            payload.put("stripe_price_id", produto.getStripePriceId());
 
             SupabaseFunctionClient.invoke("delete-stripe-product", payload,
                     response -> runOnUiThread(() -> {
