@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,8 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.ImageView; // <<<--- CORREÇÃO AQUI
+import android.widget.LinearLayout; // <<<--- E AQUI
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -27,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.example.projetofinal.R;
 import com.example.projetofinal.databinding.ActivityVisualizarProdutoBinding;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
@@ -92,13 +92,12 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
         estoqueDao = new EstoqueDao(this);
 
         SharedPreferences prefs = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
-
+        userRole = prefs.getString(LoginActivity.KEY_USER_ROLE, "");
         try {
             clienteIdLogado = Integer.parseInt(prefs.getString(LoginActivity.KEY_USER_ID, "-1"));
         } catch (Exception e) {
             clienteIdLogado = prefs.getInt(LoginActivity.KEY_USER_ID, -1);
         }
-        userRole = prefs.getString(LoginActivity.KEY_USER_ROLE, "");
 
         configurarToolbar();
         setupRecyclerView();
@@ -108,9 +107,226 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
         if ("admin".equals(userRole)) {
             binding.fabAdicionarProduto.setVisibility(View.VISIBLE);
             binding.fabAdicionarProduto.setOnClickListener(v -> mostrarDialogoAdicionarProduto());
+        } else {
+            binding.fabAdicionarProduto.setVisibility(View.GONE);
         }
 
         fetchProductsFromSupabase();
+    }
+
+    private void mostrarDialogoEditarProduto(Produto produto) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Editar Produto e Estoque");
+
+        View viewInflated = LayoutInflater.from(this).inflate(R.layout.dialog_add_produto, (ViewGroup) binding.getRoot(), false);
+        final TextInputEditText inputNome = viewInflated.findViewById(R.id.edtNomeProdutoDialog);
+        final TextInputEditText inputDesc = viewInflated.findViewById(R.id.edtDescricaoProdutoDialog);
+        final TextInputEditText inputPreco = viewInflated.findViewById(R.id.edtPrecoProdutoDialog);
+        final TextInputEditText inputEstoque = viewInflated.findViewById(R.id.edtEstoqueProdutoDialog);
+        final Button btnEscolherImagem = viewInflated.findViewById(R.id.btnEscolherImagemDialog);
+        imgPreviewDialog = viewInflated.findViewById(R.id.imgPreviewDialog);
+
+        inputNome.setText(produto.getNome());
+        inputDesc.setText(produto.getDescricao());
+        inputPreco.setText(produto.getPreco().toPlainString());
+        inputEstoque.setText(String.valueOf(produto.getQuantidadeEstoque()));
+
+        if (produto.getImageUrl() != null && !produto.getImageUrl().isEmpty()) {
+            Glide.with(this).load(produto.getImageUrl()).into(imgPreviewDialog);
+            imgPreviewDialog.setVisibility(View.VISIBLE);
+        }
+
+        imagemSelecionadaUri = null;
+        btnEscolherImagem.setText("Alterar Imagem (Opcional)");
+        btnEscolherImagem.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            imagePickerLauncher.launch(intent);
+        });
+
+        builder.setView(viewInflated);
+
+        builder.setPositiveButton("Salvar", (dialog, which) -> {
+            String nome = inputNome.getText().toString().trim();
+            String desc = inputDesc.getText().toString().trim();
+            String precoStr = inputPreco.getText().toString().trim();
+            String estoqueStr = inputEstoque.getText().toString().trim();
+
+            if (nome.isEmpty() || precoStr.isEmpty() || estoqueStr.isEmpty()) {
+                Toast.makeText(this, "Nome, preço e estoque são obrigatórios.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            try {
+                BigDecimal preco = new BigDecimal(precoStr);
+                int estoque = Integer.parseInt(estoqueStr);
+                salvarAtualizacoesProdutoEEstoque(produto, nome, desc, preco, estoque);
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Preço ou estoque inválido.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    private void salvarAtualizacoesProdutoEEstoque(Produto produtoOriginal, String novoNome, String novaDesc, BigDecimal novoPreco, int novaQuantidade) {
+        setLoading(true);
+
+        produtoOriginal.setNome(novoNome);
+        produtoOriginal.setDescricao(novaDesc);
+        produtoOriginal.setPreco(novoPreco);
+
+        if (imagemSelecionadaUri != null) {
+            SupabaseStorageClient.uploadFile(this, imagemSelecionadaUri,
+                    publicUrl -> runOnUiThread(() -> {
+                        produtoOriginal.setImageUrl(publicUrl);
+                        atualizarProdutoEEstoqueNoBanco(produtoOriginal, novaQuantidade);
+                    }),
+                    error -> runOnUiThread(() -> {
+                        setLoading(false);
+                        Toast.makeText(this, "Erro no upload da imagem: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    })
+            );
+        } else {
+            atualizarProdutoEEstoqueNoBanco(produtoOriginal, novaQuantidade);
+        }
+    }
+
+    private void atualizarProdutoEEstoqueNoBanco(Produto produtoAtualizado, int novaQuantidade) {
+        produtoDao.atualizar(produtoAtualizado,
+                responseProduto -> runOnUiThread(() -> {
+                    Estoque estoque = new Estoque();
+                    estoque.setProdutoId(produtoAtualizado.getId());
+                    estoque.setQuantidade(novaQuantidade);
+
+                    estoqueDao.inserirOuAtualizar(estoque,
+                            responseEstoque -> runOnUiThread(() -> {
+                                setLoading(false);
+                                Toast.makeText(this, "Produto e estoque atualizados!", Toast.LENGTH_SHORT).show();
+                                fetchProductsFromSupabase();
+                            }),
+                            errorEstoque -> runOnUiThread(() -> {
+                                setLoading(false);
+                                Log.e(TAG, "Erro ao atualizar estoque: ", errorEstoque);
+                                Toast.makeText(this, "Erro ao salvar estoque: " + errorEstoque.getMessage(), Toast.LENGTH_LONG).show();
+                            })
+                    );
+                }),
+                errorProduto -> runOnUiThread(() -> {
+                    setLoading(false);
+                    Log.e(TAG, "Erro ao atualizar produto: ", errorProduto);
+                    Toast.makeText(this, "Erro ao salvar produto: " + errorProduto.getMessage(), Toast.LENGTH_LONG).show();
+                })
+        );
+    }
+
+    private void mostrarDialogoAdicionarProduto() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Adicionar Novo Produto");
+
+        View viewInflated = LayoutInflater.from(this).inflate(R.layout.dialog_add_produto, (ViewGroup) binding.getRoot(), false);
+        final TextInputEditText inputNome = viewInflated.findViewById(R.id.edtNomeProdutoDialog);
+        final TextInputEditText inputDesc = viewInflated.findViewById(R.id.edtDescricaoProdutoDialog);
+        final TextInputEditText inputPreco = viewInflated.findViewById(R.id.edtPrecoProdutoDialog);
+        final TextInputEditText inputEstoque = viewInflated.findViewById(R.id.edtEstoqueProdutoDialog);
+        final Button btnEscolherImagem = viewInflated.findViewById(R.id.btnEscolherImagemDialog);
+        imgPreviewDialog = viewInflated.findViewById(R.id.imgPreviewDialog);
+
+        imagemSelecionadaUri = null;
+        imgPreviewDialog.setVisibility(View.GONE);
+
+        btnEscolherImagem.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            imagePickerLauncher.launch(intent);
+        });
+
+        builder.setView(viewInflated);
+
+        builder.setPositiveButton("Adicionar", (dialog, which) -> {
+            try {
+                String nome = inputNome.getText().toString().trim();
+                String desc = inputDesc.getText().toString().trim();
+                double preco = Double.parseDouble(inputPreco.getText().toString().trim());
+                int estoque = Integer.parseInt(inputEstoque.getText().toString().trim());
+
+                if (nome.isEmpty() || preco <= 0) {
+                    Toast.makeText(this, "Nome e preço são obrigatórios.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                JSONObject payload = new JSONObject();
+                payload.put("nome", nome);
+                payload.put("descricao", desc);
+                payload.put("preco", preco);
+                payload.put("quantidadeEstoque", estoque);
+
+                if (imagemSelecionadaUri != null) {
+                    setLoading(true);
+                    Toast.makeText(this, "Fazendo upload da imagem...", Toast.LENGTH_SHORT).show();
+                    SupabaseStorageClient.uploadFile(this, imagemSelecionadaUri,
+                            publicUrl -> runOnUiThread(() -> {
+                                try {
+                                    payload.put("imageUrl", publicUrl);
+                                    adicionarProduto(payload);
+                                } catch (JSONException e) {
+                                    setLoading(false);
+                                    Toast.makeText(this, "Erro ao preparar dados da imagem.", Toast.LENGTH_SHORT).show();
+                                }
+                            }),
+                            error -> runOnUiThread(() -> {
+                                setLoading(false);
+                                Toast.makeText(this, "Falha no upload da imagem: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                            })
+                    );
+                } else {
+                    payload.put("imageUrl", (Object) null);
+                    adicionarProduto(payload);
+                }
+
+            } catch (Exception e) {
+                Toast.makeText(this, "Dados inválidos.", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Erro no botão Adicionar", e);
+            }
+        });
+        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    private void adicionarProduto(JSONObject payload) {
+        setLoading(true);
+        SupabaseFunctionClient.invoke("add-stripe-product", payload,
+                response -> runOnUiThread(() -> {
+                    Toast.makeText(this, "Produto adicionado com sucesso!", Toast.LENGTH_LONG).show();
+                    fetchProductsFromSupabase();
+                }),
+                error -> runOnUiThread(() -> {
+                    setLoading(false);
+                    Log.e(TAG, "Erro Supabase ao adicionar: ", error);
+                    Toast.makeText(this, "Falha ao adicionar: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                })
+        );
+    }
+
+    private void deletarProduto(Produto produto) {
+        setLoading(true);
+        try {
+            JSONObject payload = new JSONObject();
+            payload.put("stripe_price_id", produto.getStripePriceId());
+
+            SupabaseFunctionClient.invoke("delete-stripe-product", payload,
+                    response -> runOnUiThread(() -> {
+                        Toast.makeText(this, "Produto '" + produto.getNome() + "' excluído.", Toast.LENGTH_LONG).show();
+                        fetchProductsFromSupabase();
+                    }),
+                    error -> runOnUiThread(() -> {
+                        setLoading(false);
+                        Log.e(TAG, "Erro Supabase ao deletar: ", error);
+                        Toast.makeText(this, "Falha ao excluir: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    })
+            );
+        } catch (JSONException e) {
+            setLoading(false);
+            Toast.makeText(this, "Erro interno ao preparar dados para exclusão.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -161,7 +377,7 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
     public void onProdutoDeleteClick(Produto produto) {
         new AlertDialog.Builder(this)
                 .setTitle("Confirmar Exclusão")
-                .setMessage("Tem certeza que deseja excluir o produto '" + produto.getNome() + "' do Stripe? Esta ação não pode ser desfeita.")
+                .setMessage("Tem certeza que deseja excluir o produto '" + produto.getNome() + "'?")
                 .setPositiveButton("Sim, Excluir", (dialog, which) -> deletarProduto(produto))
                 .setNegativeButton("Não", null)
                 .show();
@@ -172,11 +388,7 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            if ("admin".equals(userRole)) {
-                getSupportActionBar().setTitle("Gerenciar Produtos e Estoque");
-            } else {
-                getSupportActionBar().setTitle("Cardápio");
-            }
+            getSupportActionBar().setTitle("admin".equals(userRole) ? "Gerenciar Produtos" : "Cardápio");
         }
     }
 
@@ -192,12 +404,11 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
                     } else {
                         binding.recyclerViewProdutos.setVisibility(View.GONE);
                         binding.textViewNenhumProduto.setVisibility(View.VISIBLE);
-                        binding.textViewNenhumProduto.setText(R.string.nenhum_produto_cadastrado);
                     }
                 }),
                 error -> runOnUiThread(() -> {
                     setLoading(false);
-                    Log.e(TAG, "Erro ao buscar produtos do Supabase: ", error);
+                    Log.e(TAG, "Erro ao buscar produtos: ", error);
                     binding.recyclerViewProdutos.setVisibility(View.GONE);
                     binding.textViewNenhumProduto.setText("Erro ao carregar o cardápio.");
                     binding.textViewNenhumProduto.setVisibility(View.VISIBLE);
@@ -205,83 +416,9 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
         );
     }
 
-    private void mostrarDialogoEditarProduto(Produto produto) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Editar Produto e Estoque");
-
-        View viewInflated = LayoutInflater.from(this).inflate(R.layout.dialog_add_produto, (ViewGroup) binding.getRoot(), false);
-        final EditText inputNome = viewInflated.findViewById(R.id.edtNomeProdutoDialog);
-        final EditText inputDesc = viewInflated.findViewById(R.id.edtDescricaoProdutoDialog);
-        final EditText inputPreco = viewInflated.findViewById(R.id.edtPrecoProdutoDialog);
-        final Button btnEscolherImagem = viewInflated.findViewById(R.id.btnEscolherImagemDialog);
-        imgPreviewDialog = viewInflated.findViewById(R.id.imgPreviewDialog);
-
-        // ============================ CORREÇÃO DO CRASH ============================
-        // 1. Encontra o LinearLayout pelo ID que adicionamos ao XML.
-        LinearLayout layout = viewInflated.findViewById(R.id.dialog_linear_layout);
-        // =========================================================================
-
-        final EditText inputEstoque = new EditText(this);
-        inputEstoque.setHint("Quantidade em Estoque");
-        inputEstoque.setInputType(InputType.TYPE_CLASS_NUMBER);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.setMargins(0, 24, 0, 0);
-        inputEstoque.setLayoutParams(lp);
-
-        if (layout != null) {
-            layout.addView(inputEstoque); // Adiciona o campo de estoque ao LinearLayout
-        } else {
-            // Fallback caso o ID não seja encontrado, para evitar outro crash
-            Log.e(TAG, "LinearLayout com id 'dialog_linear_layout' não encontrado em dialog_add_produto.xml");
-            return;
-        }
-
-        inputNome.setText(produto.getNome());
-        inputDesc.setText(produto.getDescricao());
-        inputPreco.setText(produto.getPreco().toPlainString());
-        inputEstoque.setText(String.valueOf(produto.getQuantidadeEstoque()));
-
-        if (produto.getImageUrl() != null && !produto.getImageUrl().isEmpty()) {
-            Glide.with(this).load(produto.getImageUrl()).into(imgPreviewDialog);
-            imgPreviewDialog.setVisibility(View.VISIBLE);
-        }
-
-        btnEscolherImagem.setText("Alterar Imagem (Opcional)");
-        builder.setView(viewInflated);
-
-        builder.setPositiveButton("Salvar", (dialog, which) -> {
-            try {
-                int novaQuantidade = Integer.parseInt(inputEstoque.getText().toString());
-                Estoque estoqueAtualizado = new Estoque();
-                estoqueAtualizado.setProdutoId(produto.getId());
-                estoqueAtualizado.setQuantidade(novaQuantidade);
-                salvarAtualizacaoEstoque(estoqueAtualizado);
-            } catch (NumberFormatException e) {
-                Toast.makeText(this, "Quantidade de estoque inválida.", Toast.LENGTH_SHORT).show();
-            }
-        });
-        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
-        builder.show();
-    }
-
-    private void salvarAtualizacaoEstoque(Estoque estoqueParaSalvar) {
-        setLoading(true);
-        estoqueDao.inserirOuAtualizar(estoqueParaSalvar,
-                response -> runOnUiThread(() -> {
-                    Toast.makeText(this, "Estoque atualizado com sucesso!", Toast.LENGTH_SHORT).show();
-                    fetchProductsFromSupabase();
-                }),
-                error -> runOnUiThread(() -> {
-                    setLoading(false);
-                    Log.e(TAG, "Erro ao salvar estoque: ", error);
-                    Toast.makeText(this, "Erro ao salvar: " + error.getMessage(), Toast.LENGTH_LONG).show();
-                })
-        );
-    }
-
     private void setLoading(boolean isLoading) {
         binding.progressBarProdutos.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-        if (isLoading) {
+        if(isLoading) {
             binding.recyclerViewProdutos.setVisibility(View.GONE);
             binding.textViewNenhumProduto.setVisibility(View.GONE);
         }
@@ -298,122 +435,13 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
                 error -> runOnUiThread(() -> {
                     setLoading(false);
                     Log.e(TAG, "Erro ao sincronizar: ", error);
-                    Toast.makeText(this, "Falha na sincronização.", Toast.LENGTH_SHORT).show();
-                    fetchProductsFromSupabase();
-                })
-        );
-    }
-
-    private void deletarProduto(Produto produto) {
-        setLoading(true);
-        try {
-            JSONObject payload = new JSONObject();
-            payload.put("stripe_price_id", produto.getStripePriceId());
-
-            SupabaseFunctionClient.invoke("delete-stripe-product", payload,
-                    response -> runOnUiThread(() -> {
-                        setLoading(false);
-                        Toast.makeText(this, "Produto excluído do Stripe. Sincronize para atualizar a lista.", Toast.LENGTH_LONG).show();
-                    }),
-                    error -> runOnUiThread(() -> {
-                        setLoading(false);
-                        Log.e(TAG, "Erro ao deletar: ", error);
-                        Toast.makeText(this, "Falha ao excluir produto.", Toast.LENGTH_SHORT).show();
-                    })
-            );
-        } catch (JSONException e) {
-            setLoading(false);
-            Toast.makeText(this, "Erro ao preparar dados para exclusão.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void mostrarDialogoAdicionarProduto() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Adicionar Novo Produto");
-
-        View viewInflated = LayoutInflater.from(this).inflate(R.layout.dialog_add_produto, (ViewGroup) binding.getRoot(), false);
-        final EditText inputNome = viewInflated.findViewById(R.id.edtNomeProdutoDialog);
-        final EditText inputDesc = viewInflated.findViewById(R.id.edtDescricaoProdutoDialog);
-        final EditText inputPreco = viewInflated.findViewById(R.id.edtPrecoProdutoDialog);
-        final Button btnEscolherImagem = viewInflated.findViewById(R.id.btnEscolherImagemDialog);
-        imgPreviewDialog = viewInflated.findViewById(R.id.imgPreviewDialog);
-
-        imagemSelecionadaUri = null;
-        imgPreviewDialog.setVisibility(View.GONE);
-
-        btnEscolherImagem.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            imagePickerLauncher.launch(intent);
-        });
-
-        builder.setView(viewInflated);
-
-        builder.setPositiveButton("Adicionar", (dialog, which) -> {
-            try {
-                String nome = inputNome.getText().toString().trim();
-                String desc = inputDesc.getText().toString().trim();
-                double preco = Double.parseDouble(inputPreco.getText().toString().trim());
-
-                if(nome.isEmpty() || preco <= 0) {
-                    Toast.makeText(this, "Nome e preço são obrigatórios.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (imagemSelecionadaUri != null) {
-                    Toast.makeText(this, "Fazendo upload da imagem...", Toast.LENGTH_SHORT).show();
-                    setLoading(true);
-                    SupabaseStorageClient.uploadFile(this, imagemSelecionadaUri,
-                            publicUrl -> runOnUiThread(() -> adicionarProdutoAoStripe(nome, desc, preco, publicUrl)),
-                            error -> runOnUiThread(() -> {
-                                Toast.makeText(this, "Falha no upload da imagem.", Toast.LENGTH_SHORT).show();
-                                setLoading(false);
-                            })
-                    );
-                } else {
-                    adicionarProdutoAoStripe(nome, desc, preco, null);
-                }
-
-            } catch (Exception e) {
-                Toast.makeText(this, "Dados inválidos.", Toast.LENGTH_SHORT).show();
-            }
-        });
-        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
-        builder.show();
-    }
-
-    private void adicionarProdutoAoStripe(String nome, String desc, double preco, String imageUrl) {
-        setLoading(true);
-        try {
-            JSONObject payload = new JSONObject();
-            payload.put("nome", nome);
-            payload.put("descricao", desc);
-            payload.put("preco", preco);
-            payload.put("imageUrl", imageUrl);
-
-            adicionarProduto(payload);
-
-        } catch (JSONException e) {
-            setLoading(false);
-            Toast.makeText(this, "Erro ao criar dados para envio.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void adicionarProduto(JSONObject payload) {
-        SupabaseFunctionClient.invoke("add-stripe-product", payload,
-                response -> runOnUiThread(() -> {
-                    setLoading(false);
-                    Toast.makeText(this, "Produto adicionado ao Stripe! Sincronize para ver na lista.", Toast.LENGTH_LONG).show();
-                }),
-                error -> runOnUiThread(() -> {
-                    setLoading(false);
-                    Log.e(TAG, "Erro ao adicionar: ", error);
-                    Toast.makeText(this, "Falha ao adicionar produto.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Falha na sincronização: " + error.getMessage(), Toast.LENGTH_LONG).show();
                 })
         );
     }
 
     private void adicionarAoCarrinho(Produto produto) {
-        if(itensNoCarrinho == null) itensNoCarrinho = new ArrayList<>();
+        if (itensNoCarrinho == null) itensNoCarrinho = new ArrayList<>();
         CarrinhoItem itemExistente = null;
         for (CarrinhoItem item : itensNoCarrinho) {
             if (Objects.equals(item.getProduto().getId(), produto.getId())) {
@@ -438,12 +466,7 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
         SharedPreferences sharedPreferences = getSharedPreferences(CadastrarPedidoActivity.CARRINHO_PREFS, Context.MODE_PRIVATE);
         String jsonItens = sharedPreferences.getString(CadastrarPedidoActivity.KEY_ITENS_CARRINHO + "_" + clienteIdLogado, null);
         Type type = new TypeToken<ArrayList<CarrinhoItem>>() {}.getType();
-
-        if (jsonItens != null) {
-            itensNoCarrinho = gson.fromJson(jsonItens, type);
-        } else {
-            itensNoCarrinho = new ArrayList<>();
-        }
+        itensNoCarrinho = (jsonItens != null) ? gson.fromJson(jsonItens, type) : new ArrayList<>();
     }
 
     private void salvarItensCarrinho() {
@@ -463,7 +486,9 @@ public class VisualizarProdutoActivity extends BaseActivity implements ProdutoAd
 
         int totalItens = 0;
         if (itensNoCarrinho != null) {
-            totalItens = itensNoCarrinho.stream().filter(Objects::nonNull).mapToInt(CarrinhoItem::getQuantidade).sum();
+            for(CarrinhoItem item : itensNoCarrinho) {
+                if(item != null) totalItens += item.getQuantidade();
+            }
         }
 
         if (totalItens > 0) {

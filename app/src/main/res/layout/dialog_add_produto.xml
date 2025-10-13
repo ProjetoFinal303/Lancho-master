@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="24dp">
@@ -10,45 +11,82 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/edtNomeProdutoDialog"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nome do Produto"
-            android:inputType="textCapWords" />
+            android:hint="Nome do Produto">
 
-        <EditText
-            android:id="@+id/edtDescricaoProdutoDialog"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtNomeProdutoDialog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapWords"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Descrição do Produto"
-            android:inputType="textMultiLine"
-            android:maxLines="3" />
+            android:hint="Descrição">
 
-        <EditText
-            android:id="@+id/edtPrecoProdutoDialog"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtDescricaoProdutoDialog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:minLines="3"
+                android:gravity="top"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Preço (Ex: 19.90)"
-            android:inputType="numberDecimal" />
+            android:hint="Preço (ex: 19.99)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtPrecoProdutoDialog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutEstoqueProdutoDialog"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Quantidade em Estoque">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtEstoqueProdutoDialog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/btnEscolherImagemDialog"
-            android:layout_width="match_parent"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Escolher Imagem" />
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:text="Escolher Imagem"/>
 
         <ImageView
             android:id="@+id/imgPreviewDialog"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
             android:scaleType="centerCrop"
-            android:visibility="gone" />
+            android:contentDescription="Pré-visualização da imagem do produto" />
 
     </LinearLayout>
 </ScrollView>

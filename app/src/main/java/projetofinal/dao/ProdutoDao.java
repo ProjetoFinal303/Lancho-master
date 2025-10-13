@@ -14,10 +14,11 @@ public class ProdutoDao {
     private static final String TABLE_NAME = "Produto";
 
     public ProdutoDao(Context context) {
-        // O construtor está correto como está.
+        // O construtor está correto, pois o SupabaseClient não depende do context.
     }
 
     private Produto parseProdutoComEstoque(JSONObject obj) {
+        if (obj == null) return null;
         Produto p = new Produto();
         try {
             p.setId(obj.getInt("id"));
@@ -30,33 +31,35 @@ public class ProdutoDao {
             p.setMediaAvaliacoes(obj.optDouble("media_avaliacoes", 0.0));
             p.setTotalAvaliacoes(obj.optInt("total_avaliacoes", 0));
 
-            // ============================ CORREÇÃO DEFINITIVA ============================
+            // ============================ CORREÇÃO DA LEITURA DO ESTOQUE ============================
             // Esta nova lógica verifica se "Estoque" é um objeto único (para relação 1-para-1)
-            // ou um array (caso a restrição mude no futuro). Isso torna o código robusto.
-            JSONObject estoqueObj = obj.optJSONObject("Estoque");
-            if (estoqueObj != null) {
-                // Se for um objeto único, pega a quantidade diretamente.
-                p.setQuantidadeEstoque(estoqueObj.optInt("quantidade", 0));
-            } else {
-                // Se não for um objeto, tenta ler como um array.
+            // ou um array. Isso torna o código robusto e resolve o problema do estoque zerado.
+            int quantidade = 0;
+            if (obj.has("Estoque") && !obj.isNull("Estoque")) {
+                // Tenta ler como um Array primeiro (padrão do Supabase)
                 JSONArray estoqueArray = obj.optJSONArray("Estoque");
                 if (estoqueArray != null && estoqueArray.length() > 0) {
-                    p.setQuantidadeEstoque(estoqueArray.getJSONObject(0).optInt("quantidade", 0));
+                    quantidade = estoqueArray.getJSONObject(0).optInt("quantidade", 0);
                 } else {
-                    // Se não encontrar nem objeto nem array, o estoque é 0.
-                    p.setQuantidadeEstoque(0);
+                    // Se não for um array, tenta ler como um Objeto (caso de relação 1-para-1 direta)
+                    JSONObject estoqueObj = obj.optJSONObject("Estoque");
+                    if (estoqueObj != null) {
+                        quantidade = estoqueObj.optInt("quantidade", 0);
+                    }
                 }
             }
-            // ===========================================================================
+            p.setQuantidadeEstoque(quantidade);
+            // =======================================================================================
 
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return null; // Retorna null se houver erro para não adicionar um produto malformado à lista
         }
         return p;
     }
 
     public void listarTodosComEstoque(Consumer<List<Produto>> onSuccess, Consumer<Exception> onError) {
+        // A query que busca o produto e seu estoque relacionado
         String selectQuery = "*,Estoque(quantidade)";
 
         SupabaseDatabaseClient.get(TABLE_NAME + "?select=" + selectQuery,
@@ -66,7 +69,7 @@ public class ProdutoDao {
                         List<Produto> produtos = new ArrayList<>();
                         for (int i = 0; i < jsonArray.length(); i++) {
                             Produto p = parseProdutoComEstoque(jsonArray.getJSONObject(i));
-                            if (p != null) {
+                            if (p != null) { // Adiciona à lista apenas se o parsing foi bem-sucedido
                                 produtos.add(p);
                             }
                         }
@@ -79,45 +82,42 @@ public class ProdutoDao {
         );
     }
 
-    // Mantém o método original para não quebrar outras partes do app
+    // Mantém este método para compatibilidade, mas agora ele também busca o estoque.
     public void listarTodos(Consumer<List<Produto>> onSuccess, Consumer<Exception> onError) {
-        SupabaseDatabaseClient.get(TABLE_NAME,
-                response -> {
-                    try {
-                        JSONArray jsonArray = new JSONArray(response);
-                        List<Produto> produtos = new ArrayList<>();
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            Produto p = parseProdutoComEstoque(jsonArray.getJSONObject(i)); // Usa o parser novo aqui também
-                            if (p != null) {
-                                produtos.add(p);
-                            }
-                        }
-                        onSuccess.accept(produtos);
-                    } catch (Exception e) {
-                        onError.accept(e);
-                    }
-                },
-                onError
-        );
+        listarTodosComEstoque(onSuccess, onError);
     }
 
-    public void buscarPorId(int id, Consumer<Produto> onSuccess, Consumer<Exception> onError) {
-        String selectQuery = "*,Estoque(quantidade)";
-        SupabaseDatabaseClient.get(TABLE_NAME + "?id=eq." + id + "&select=" + selectQuery,
-                response -> {
-                    try {
-                        JSONArray jsonArray = new JSONArray(response);
-                        if (jsonArray.length() > 0) {
-                            onSuccess.accept(parseProdutoComEstoque(jsonArray.getJSONObject(0)));
-                        } else {
-                            onSuccess.accept(null);
-                        }
-                    } catch (Exception e) {
-                        onError.accept(e);
-                    }
-                },
-                onError
-        );
+    public void inserir(Produto produto, Consumer<String> onSuccess, Consumer<Exception> onError) {
+        try {
+            JSONObject json = new JSONObject();
+            json.put("nome", produto.getNome());
+            json.put("descricao", produto.getDescricao());
+            json.put("preco", produto.getPreco().doubleValue());
+            json.put("image_url", produto.getImageUrl());
+            json.put("stripe_price_id", produto.getStripePriceId());
+            json.put("categoria", produto.getCategoria());
+
+            SupabaseDatabaseClient.insert(TABLE_NAME, json.toString(), onSuccess, onError);
+        } catch (Exception e) {
+            onError.accept(e);
+        }
+    }
+
+    public void atualizar(Produto produto, Consumer<String> onSuccess, Consumer<Exception> onError) {
+        try {
+            JSONObject json = new JSONObject();
+            json.put("nome", produto.getNome());
+            json.put("descricao", produto.getDescricao());
+            json.put("preco", produto.getPreco().doubleValue());
+            if (produto.getImageUrl() != null && !produto.getImageUrl().isEmpty()) {
+                json.put("image_url", produto.getImageUrl());
+            }
+
+            String urlPath = TABLE_NAME + "?id=eq." + produto.getId();
+            SupabaseDatabaseClient.patch(urlPath, json.toString(), onSuccess, onError);
+        } catch (Exception e) {
+            onError.accept(e);
+        }
     }
 
     public void excluir(int id, Consumer<String> onSuccess, Consumer<Exception> onError) {
