@@ -1,124 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="?android:attr/colorBackground"
+    android:background="@color/lancho_background"
     tools:context="projetofinal.main.LoginActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <ImageView
-            android:id="@+id/imageViewLogo"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="32dp"
-            android:src="@mipmap/ic_launcher"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="Logo do Lanchô"/>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilEmail"
-            style="@style/AppTextInputLayoutStyle"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:hint="@string/email_hint"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imageViewLogo">
+            android:padding="24dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edtEmail"
-                android:layout_width="match_parent"
+            <ImageButton
+                android:id="@+id/btnLanguage"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_language"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Mudar Idioma"
+                app:tint="@color/lancho_text_secondary"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="16dp"/>
+
+            <ImageButton
+                android:id="@+id/btnThemeToggle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_moon"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Trocar Tema"
+                app:tint="@color/lancho_text_secondary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="16dp"/>
+
+            <ImageView
+                android:id="@+id/imageViewLogo"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="80dp"
+                android:src="@drawable/lancho_logo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="Logo do Lanchô"/>
+
+            <TextView
+                android:id="@+id/textViewTitle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:maxLines="1"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:text="@string/bem_vindo_de_volta"
+                android:textColor="@color/lancho_text_primary"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
+                app:layout_constraintTop_toBottomOf="@id/imageViewLogo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilSenha"
-            style="@style/AppTextInputLayoutStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="@string/senha_hint"
-            app:passwordToggleEnabled="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tilEmail">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edtSenha"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/textViewSubtitle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:maxLines="1"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:text="@string/faca_login_para_continuar"
+                android:textColor="@color/lancho_text_secondary"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
-        <Button
-            android:id="@+id/btnLogin"
-            style="@style/AppButtonStyle.Primary"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/entrar_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tilSenha"/>
 
-        <TextView
-            android:id="@+id/textViewSeparator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="ou"
-            android:textAllCaps="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnLogin" />
+            <LinearLayout
+                android:id="@+id/glass_container"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/login_glass_background"
+                android:padding="24dp"
+                android:layout_marginTop="32dp"
+                app:layout_constraintTop_toBottomOf="@id/textViewSubtitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-        <Button
-            android:id="@+id/btnGoogleLogin"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Entrar com Google"
-            app:icon="@drawable/ic_google_logo"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewSeparator" />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilEmail"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/email_hint"
+                    app:boxStrokeColor="@color/lancho_accent"
+                    app:hintTextColor="@color/lancho_text_secondary">
 
-        <ProgressBar
-            android:id="@+id/progressBarLogin"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/btnGoogleLogin"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp"/>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/lancho_text_primary"
+                        android:maxLines="1"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/btnIrParaCadastro"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/criar_conta_cliente_button"
-            app:layout_constraintTop_toBottomOf="@+id/progressBarLogin"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="32dp"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilSenha"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/senha_hint"
+                    app:passwordToggleEnabled="true"
+                    app:boxStrokeColor="@color/lancho_accent"
+                    app:hintTextColor="@color/lancho_text_secondary"
+                    app:passwordToggleTint="@color/lancho_text_secondary">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtSenha"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:textColor="@color/lancho_text_primary"
+                        android:maxLines="1"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnLogin"
+                style="@style/AppButtonStyle.Primary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/entrar_button"
+                android:paddingVertical="14dp"
+                app:layout_constraintEnd_toEndOf="@id/glass_container"
+                app:layout_constraintStart_toStartOf="@id/glass_container"
+                app:layout_constraintTop_toBottomOf="@id/glass_container"/>
+
+            <ProgressBar
+                android:id="@+id/progressBarLogin"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:elevation="10dp"
+                android:indeterminateTint="@color/lancho_accent"
+                app:layout_constraintTop_toTopOf="@id/glass_container"
+                app:layout_constraintBottom_toBottomOf="@id/btnLogin"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:visibility="visible"/>
+
+            <Button
+                android:id="@+id/btnIrParaCadastro"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/criar_conta_cliente_button"
+                android:textColor="@color/lancho_text_primary"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintTop_toBottomOf="@id/btnLogin"
+                app:layout_constraintVertical_bias="1.0"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

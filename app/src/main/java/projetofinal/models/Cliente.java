@@ -8,6 +8,7 @@ public class Cliente {
     private String contato;
     private String senha;
     private String avatarUrl;
+    private String role; // <-- CAMPO ADICIONADO
 
     // Construtor vazio (necessário)
     public Cliente() {}
@@ -38,4 +39,8 @@ public class Cliente {
 
     public String getAvatarUrl() { return avatarUrl; }
     public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
+
+    // GETTER E SETTER PARA ROLE ADICIONADOS
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }

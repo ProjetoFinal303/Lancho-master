@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
+        android:name="projetofinal.main.MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -31,21 +32,16 @@
         <activity android:name="projetofinal.main.MainAdminActivity" android:exported="false" />
         <activity android:name="projetofinal.main.MainClienteActivity" android:exported="false" />
         <activity android:name="projetofinal.main.MainCozinhaActivity" android:exported="false" />
-
         <activity android:name="projetofinal.main.CadastrarClienteActivity" android:exported="false" />
         <activity android:name="projetofinal.main.VisualizarClienteActivity" android:exported="false" />
         <activity android:name="projetofinal.main.AtualizarClienteActivity" android:exported="false" />
-
         <activity android:name="projetofinal.main.VisualizarProdutoActivity" android:exported="false" />
-
         <activity android:name="projetofinal.main.CadastrarPedidoActivity" android:exported="false" />
         <activity android:name="projetofinal.main.VisualizarPedidosActivity" android:exported="false" />
         <activity android:name="projetofinal.main.ExcluirPedidoActivity" android:exported="false" />
         <activity android:name="projetofinal.main.ReceberComandasActivity" android:exported="false" />
-
         <activity android:name="projetofinal.main.ProfileActivity" android:exported="false" />
         <activity android:name="projetofinal.main.SettingsActivity" android:exported="false" />
-
         <activity android:name="projetofinal.main.AvaliarPedidoActivity" android:exported="false" />
 
     </application>

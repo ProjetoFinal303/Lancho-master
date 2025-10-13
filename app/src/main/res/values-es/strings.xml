@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lanchô Digital</string>
+
+    <!-- General & Temas -->
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
+    <string name="theme_system">Predeterminado del Sistema</string>
+    <string name="settings_title">Configuración</string>
+    <string name="theme_label">Tema</string>
+    <string name="sim">Sí</string>
+    <string name="nao">No</string>
+    <string name="buscar_button">Buscar</string>
+    <string name="limpar_busca_button">Limpiar</string>
+    <string name="logout_button">Cerrar Sesión</string>
+    <string name="voltar">Volver</string>
+    <string name="erro_conexao">Error de conexión. Inténtalo de nuevo.</string>
+    <string name="confirmar_exclusao_title">Confirmar Eliminación</string>
+    <string name="atualizar_button">Actualizar</string>
+    <string name="excluir_button">Eliminar</string>
+
+    <!-- Idiomas -->
+    <string name="language_label">Idioma</string>
+    <string name="portuguese">Portugués</string>
+    <string name="english">Inglés</string>
+    <string name="spanish">Español</string>
+
+    <!-- Pantalla de Login -->
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="bem_vindo_de_volta">¡Bienvenido de vuelta!</string>
+    <string name="faca_login_para_continuar">Inicia sesión para continuar</string>
+    <string name="email_hint">Correo electrónico</string>
+    <string name="senha_hint">Contraseña</string>
+    <string name="entrar_button">Iniciar Sesión</string>
+    <string name="criar_conta_cliente_button">¿Primera vez aquí? Regístrate</string>
+    <string name="login_failed">¡Correo electrónico o contraseña incorrectos!</string>
+    <string name="login_fields_required">¡Por favor, rellena el correo y la contraseña!</string>
+
+    <!-- Pantalla de Registro -->
+    <string name="cadastrar_cliente_title">Crea tu Cuenta</string>
+    <string name="cadastro_subtitulo">¡Es rápido, fácil y la primera hamburguesa es inolvidable!</string>
+    <string name="nome_cliente_hint">Nombre completo</string>
+    <string name="contato_cliente_hint">Contacto (Teléfono)</string>
+    <string name="confirmar_senha_hint">Confirmar Contraseña</string>
+    <string name="cadastrar_button">Registrarse</string>
+    <string name="ja_tem_conta">¿Ya tienes una cuenta? Inicia sesión</string>
+    <string name="cadastro_sucesso">¡Cuenta creada con éxito!</string>
+    <string name="cadastro_falha">Error al crear la cuenta.</string>
+    <string name="email_ja_existe">Este correo electrónico ya está en uso.</string>
+    <string name="senhas_nao_coincidem">¡Las contraseñas no coinciden!</string>
+    <string name="email_invalido">¡Formato de correo electrónico no válido!</string>
+    <string name="campos_obrigatorios">¡Todos los campos son obligatorios!</string>
+
+    <!-- Pantalla de Perfil -->
+    <string name="profile_title">Mi Perfil</string>
+    <string name="editar_dados">Editar Perfil</string>
+    <string name="erro_carregar_perfil">Error al cargar el perfil. Por favor, inicia sesión de nuevo.</string>
+    <string name="foto_perfil_atualizada">¡Foto de perfil actualizada!</string>
+    <string name="erro_salvar_foto">Error al guardar la URL de la foto.</string>
+    <string name="falha_upload_imagem">Error al subir la imagen.</string>
+    <string name="enviando_foto">Subiendo nueva foto...</string>
+    <string name="erro_carregar_dados">Error al cargar los datos.</string>
+
+    <!-- Admin: Panel & Clientes -->
+    <string name="admin_panel_title">Panel de Control</string>
+    <string name="admin_gerenciar_produtos">Gestionar Productos</string>
+    <string name="admin_visualizar_pedidos">Ver Pedidos</string>
+    <string name="admin_gerenciar_clientes">Gestionar Clientes</string>
+    <string name="admin_sincronizar_produtos">Sincronizar Productos</string>
+    <string name="visualizar_clientes_title">Clientes Registrados</string>
+    <string name="buscar_cliente_id_hint">Buscar por ID del Cliente</string>
+    <string name="nenhum_cliente_cadastrado">No hay clientes registrados.</string>
+    <string name="atualizar_cliente_title">Actualizar Datos</string>
+    <string name="id_cliente_hint">ID del Cliente</string>
+    <string name="cliente_nao_encontrado">¡Usuario no encontrado!</string>
+    <string name="nova_senha_opcional_hint">Nueva Contraseña (opcional)</string>
+    <string name="atualizacao_sucesso">¡Datos actualizados con éxito!</string>
+    <string name="atualizacao_falha">Error al actualizar los datos.</string>
+    <string name="email_em_uso_outro_cliente">¡Este correo electrónico ya está en uso por otro cliente!</string>
+    <string name="cliente_excluido_sucesso">¡Cliente eliminado con éxito!</string>
+    <string name="falha_excluir_cliente">Error al eliminar el cliente.</string>
+    <string name="confirmar_exclusao_cliente_message">¿Estás seguro de que quieres eliminar al cliente %1$s (ID: %2$d)?</string>
+
+    <!-- Cliente: Navegación -->
+    <string name="cliente_menu_destaque">Destacados</string>
+    <string name="cliente_menu_cardapio">Menú</string>
+    <string name="cliente_menu_pedidos">Mis Pedidos</string>
+
+    <!-- Cocina: Navegación & Pantallas -->
+    <string name="cozinha_painel_title">Panel de Cocina</string>
+    <string name="cozinha_menu_sair">Cerrar Sesión</string>
+    <string name="comandas_ativas_title">Pedidos Activos</string>
+    <string name="nenhuma_comanda_ativa">No hay pedidos activos en este momento.</string>
+
+    <!-- Productos, Menú & Carrito -->
+    <string name="visualizar_produtos_title">Menú</string>
+    <string name="gerenciar_produtos_estoque_title">Gestionar Productos y Stock</string>
+    <string name="nenhum_produto_cadastrado">No hay productos disponibles en este momento.</string>
+    <string name="erro_carregar_cardapio">Error al cargar el menú.</string>
+    <string name="sincronizando">Sincronizando...</string>
+    <string name="sincronizacao_concluida">¡Sincronización completa!</string>
+    <string name="falha_sincronizacao">Fallo en la sincronización.</string>
+    <string name="confirmar_exclusao_produto_stripe">¿Estás seguro de que quieres eliminar el producto \'%1$s\' de Stripe?</string>
+    <string name="produto_excluido_stripe">Producto eliminado de Stripe. Sincroniza para actualizar la lista.</string>
+    <string name="falha_excluir_produto_stripe">Error al eliminar el producto.</string>
+    <string name="adicionar_novo_produto">Añadir Nuevo Producto</string>
+    <string name="editar_produto_estoque">Editar Producto y Stock</string>
+    <string name="quantidade_estoque_invalida">Cantidad de stock no válida.</string>
+    <string name="estoque_atualizado_sucesso">¡Stock actualizado con éxito!</string>
+    <string name="erro_salvar_estoque">Error al guardar el stock.</string>
+    <string name="produto_e_estoque_atualizados">¡Producto y stock actualizados!</string>
+    <string name="erro_salvar_produto">Error al guardar el producto.</string>
+    <string name="adicionar_ao_carrinho">Añadir</string>
+    <string name="ver_carrinho">Ver Carrito (%d)</string>
+    <string name="carrinho_vazio">Tu carrito está vacío.</string>
+    <string name="finalizar_pedido">Finalizar Pedido</string>
+    <string name="total_carrinho">Total: $ %.2f</string>
+    <string name="item_adicionado">"¡%1$s añadido!"</string>
+    <string name="item_removido_carrinho">Artículo eliminado: %s</string>
+    <string name="remover_item_confirmacao">¿Eliminar %1$s del carrito?</string>
+    <string name="meu_carrinho_title">Mi Carrito</string>
+    <string name="produto_adicionado_stripe">¡Producto añadido a Stripe! Sincroniza para verlo en la lista.</string>
+    <string name="falha_adicionar_produto_stripe">Error al añadir el producto.</string>
+    <string name="quantidade_estoque_hint">Nueva Cantidad</string>
+    <string name="produto_nao_encontrado">Producto no encontrado.</string>
+
+    <!-- Pedidos & Calificación -->
+    <string name="visualizar_pedidos_title">Mis Pedidos</string>
+    <string name="pedido_realizado_sucesso">¡Pedido realizado con éxito! ID: %d</string>
+    <string name="falha_realizar_pedido">Error al realizar el pedido.</string>
+    <string name="meus_pedidos_title">Mis Pedidos</string>
+    <string name="visualizar_todos_pedidos_title">Todos los Pedidos</string>
+    <string name="nenhum_pedido_encontrado">No se encontraron pedidos.</string>
+    <string name="excluir_pedido_title">Eliminar Pedido</string>
+    <string name="id_pedido_hint">ID del Pedido</string>
+    <string name="pedido_excluido_sucesso">¡Pedido eliminado con éxito!</string>
+    <string name="falha_excluir_pedido">Error al eliminar el pedido.</string>
+    <string name="pedido_nao_encontrado">Pedido no encontrado.</string>
+    <string name="confirmar_exclusao_pedido_message">¿Estás seguro de que quieres eliminar el pedido ID: %1$d?</string>
+    <string name="pedido_id">Pedido ID: %d</string>
+    <string name="pedido_data_info">Fecha: %s</string>
+    <string name="pedido_status_info">Estado: %s</string>
+    <string name="pedido_valor_info">Total: $ %.2f</string>
+    <string name="pedido_descricao_info">Artículos: %s</string>
+    <string name="marcar_como_em_preparo">En Preparación</string>
+    <string name="marcar_como_concluido">Completado</string>
+    <string name="marcar_como_cancelado">Cancelar Pedido</string>
+    <string name="status_atualizado_sucesso">¡Estado del pedido actualizado!</string>
+    <string name="falha_atualizar_status">Error al actualizar el estado del pedido.</string>
+    <string name="avaliar_pedido_title">Calificar Pedido</string>
+    <string name="o_que_achou_do_pedido">¿Qué te pareció tu pedido?</string>
+    <string name="deixe_um_comentario">Deja un comentario (opcional)</string>
+    <string name="enviar_avaliacao">Enviar Calificación</string>
+    <string name="avaliacao_enviada">¡Gracias por tu calificación!</string>
+    <string name="erro_enviar_avaliacao">Error al enviar la calificación.</string>
+    <string name="selecione_pelo_menos_um_produto">Selecciona al menos un producto para calificar.</string>
+
+</resources>

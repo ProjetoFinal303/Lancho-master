@@ -1,3 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="dark_primary">#FFC107</color> <color name="dark_primary_dark">#FFA000</color> <color name="dark_accent">#FFD600</color> <color name="dark_background">#121212</color> <color name="dark_surface">#212121</color> <color name="dark_text_primary">#FFFFFF</color> <color name="dark_text_secondary">#BDBDBD</color> </resources>
+    <color name="dark_primary">#FFC107</color>
+    <color name="dark_primary_dark">#FFA000</color>
+    <color name="dark_accent">#FFD600</color>
+    <color name="dark_background">#121212</color>
+    <color name="dark_surface">#212121</color>
+    <color name="dark_text_primary">#FFFFFF</color>
+    <color name="dark_text_secondary">#BDBDBD</color>
+
+    <color name="md_theme_primary">#FFB95F</color>
+    <color name="md_theme_onPrimary">#4F2A00</color>
+    <color name="md_theme_background">#1F1B16</color>
+    <color name="md_theme_onBackground">#EAE1D9</color>
+    <color name="md_theme_surface">#1F1B16</color>
+    <color name="md_theme_onSurface">#EAE1D9</color>
+
+    <color name="lancho_background">#0d1a2d</color> <color name="lancho_text_primary">#f9fafb</color>
+    <color name="lancho_text_secondary">#d1d5db</color>
+    <color name="lancho_glass_bg">#66111827</color> <color name="lancho_glass_border">#33FFFFFF</color> <color name="lancho_accent">#f59e0b</color>
+</resources>

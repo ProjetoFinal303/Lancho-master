@@ -1,111 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Lanchonete Digital</string>
-
+    <string name="app_name">Lanchô Digital</string>
     <string name="default_web_client_id">975618621125-k0qaq6qimn0ddb45gv8d9mfkps0pttgv.apps.googleusercontent.com</string>
 
+    <!-- GERAL & TEMAS -->
     <string name="theme_light">Claro</string>
     <string name="theme_dark">Escuro</string>
     <string name="theme_system">Padrão do Sistema</string>
-
     <string name="settings_title">Configurações</string>
     <string name="theme_label">Tema</string>
-    <string name="esqueci_senha"><u>Esqueceu sua senha?</u></string>
-    <string name="recuperar_senha_email_enviado">Se o e-mail estiver correto, um link para redefinir a senha foi enviado.</string>
-    <string name="email_hint">E-mail</string>
+    <string name="sim">Sim</string>
+    <string name="nao">Não</string>
+    <string name="buscar_button">Buscar</string>
+    <string name="limpar_busca_button">Limpar</string>
+    <string name="logout_button">Sair</string>
+    <string name="voltar">Voltar</string>
+    <string name="erro_conexao">Erro de conexão. Tente novamente.</string>
+    <string name="confirmar_exclusao_title">Confirmar Exclusão</string>
+    <string name="atualizar_button">Atualizar</string>
+    <string name="excluir_button">Excluir</string>
 
+    <!-- IDIOMAS -->
+    <string name="language_label">Idioma</string>
+    <string name="portuguese">Português</string>
+    <string name="english">Inglês</string>
+    <string name="spanish">Espanhol</string>
+
+    <!-- TELA DE LOGIN -->
     <string name="login_title">Login</string>
+    <string name="bem_vindo_de_volta">Bem-vindo de volta!</string>
+    <string name="faca_login_para_continuar">Faça login para continuar</string>
+    <string name="email_hint">E-mail</string>
     <string name="senha_hint">Senha</string>
     <string name="entrar_button">Entrar</string>
     <string name="criar_conta_cliente_button">Primeira vez? Cadastre-se</string>
     <string name="login_failed">E-mail ou senha incorretos!</string>
     <string name="login_fields_required">Preencha e-mail e senha!</string>
-    <string name="cliente_nao_encontrado">Usuário não encontrado!</string>
 
-    <string name="cadastrar_cliente_title">Cadastrar Novo Cliente</string>
+    <!-- TELA DE CADASTRO -->
+    <string name="cadastrar_cliente_title">Crie sua Conta</string>
+    <string name="cadastro_subtitulo">É rápido, fácil e o primeiro lanche é inesquecível!</string>
     <string name="nome_cliente_hint">Nome completo</string>
-    <string name="contato_cliente_hint">Telefone (Ex: 21987654321)</string>
+    <string name="contato_cliente_hint">Contato (Telefone)</string>
     <string name="confirmar_senha_hint">Confirmar Senha</string>
     <string name="cadastrar_button">Cadastrar</string>
+    <string name="ja_tem_conta">Já tem uma conta? Faça login</string>
     <string name="cadastro_sucesso">Cliente cadastrado com sucesso!</string>
     <string name="cadastro_falha">Erro ao cadastrar cliente.</string>
-    <string name="email_ja_existe">Já existe um cliente com este e-mail.</string>
+    <string name="email_ja_existe">Este e-mail já está em uso.</string>
     <string name="senhas_nao_coincidem">As senhas não coincidem!</string>
     <string name="email_invalido">Formato de e-mail inválido!</string>
     <string name="campos_obrigatorios">Preencha todos os campos obrigatórios!</string>
 
-    <string name="atualizar_cliente_title">Atualizar Dados do Cliente</string>
-    <string name="id_cliente_hint">ID do Cliente</string>
-    <string name="buscar_button">Buscar</string>
-    <string name="cliente_nao_encontrado_id">Cliente com ID %1$d não encontrado!</string>
-    <string name="informe_id_generico">Informe o ID do %1$s!</string>
-    <string name="id_invalido">ID inválido!</string>
-    <string name="nova_senha_opcional_hint">Nova Senha (deixe em branco para não alterar)</string>
-    <string name="atualizar_button">Atualizar Dados</string>
-    <string name="atualizacao_sucesso">Dados atualizados com sucesso!</string>
-    <string name="atualizacao_falha">Erro ao atualizar dados.</string>
-    <string name="buscar_primeiro_generico">Busque um %1$s antes de atualizar!</string>
-    <string name="email_em_uso_outro_cliente">Este e-mail já está em uso por outro cliente!</string>
+    <!-- TELA DE PERFIL -->
+    <string name="profile_title">Meu Perfil</string>
+    <string name="editar_dados">Editar Dados</string>
+    <string name="erro_carregar_perfil">Erro ao carregar perfil. Por favor, faça login novamente.</string>
+    <string name="foto_perfil_atualizada">Foto de perfil atualizada!</string>
+    <string name="erro_salvar_foto">Erro ao salvar URL da foto.</string>
+    <string name="falha_upload_imagem">Falha no upload da imagem.</string>
+    <string name="enviando_foto">Enviando nova foto...</string>
+    <string name="erro_carregar_dados">Erro ao carregar dados.</string>
 
+    <!-- ADMIN: PAINEL & CLIENTES -->
+    <string name="admin_panel_title">Painel de Controle</string>
+    <string name="admin_gerenciar_produtos">Gerenciar Produtos</string>
+    <string name="admin_visualizar_pedidos">Visualizar Pedidos</string>
+    <string name="admin_gerenciar_clientes">Gerenciar Clientes</string>
+    <string name="admin_sincronizar_produtos">Sincronizar Produtos</string>
     <string name="visualizar_clientes_title">Clientes Cadastrados</string>
     <string name="buscar_cliente_id_hint">Buscar por ID do Cliente</string>
-    <string name="limpar_busca_button">Limpar</string>
     <string name="nenhum_cliente_cadastrado">Nenhum cliente cadastrado.</string>
-    <string name="dados_cliente_nome">Nome: %1$s</string>
-    <string name="dados_cliente_email">Email: %1$s</string>
-    <string name="dados_cliente_contato">Contato: %1$s</string>
-
-    <string name="excluir_cliente_title">Excluir Cliente</string>
-    <string name="aviso_id_excluir">⚠️ Consulte o ID na tela de Visualizar Clientes.</string>
-    <string name="excluir_button">Excluir</string>
+    <string name="atualizar_cliente_title">Atualizar Dados</string>
+    <string name="id_cliente_hint">ID do Cliente</string>
+    <string name="cliente_nao_encontrado">Usuário não encontrado!</string>
+    <string name="nova_senha_opcional_hint">Nova Senha (opcional)</string>
+    <string name="atualizacao_sucesso">Dados atualizados com sucesso!</string>
+    <string name="atualizacao_falha">Erro ao atualizar dados.</string>
+    <string name="email_em_uso_outro_cliente">Este e-mail já está em uso por outro cliente!</string>
     <string name="cliente_excluido_sucesso">Cliente excluído com sucesso!</string>
     <string name="falha_excluir_cliente">Falha ao excluir cliente.</string>
-    <string name="confirmar_exclusao_title">Confirmar Exclusão</string>
-    <string name="confirmar_exclusao_cliente_message">Tem certeza que deseja excluir o cliente %1$s (ID: %2$d)? Esta ação não pode ser desfeita.</string>
-    <string name="sim">Sim</string>
-    <string name="nao">Não</string>
-    <string name="informe_id_cliente">Informe o ID do %1$s!</string>
-    <string name="admin_gerenciar_produtos">Gerenciar Produtos</string>
-    <string name="admin_gerenciar_estoque">Gerenciar Estoque</string>
-    <string name="admin_visualizar_pedidos">Visualizar Todos os Pedidos</string>
-    <string name="admin_gerenciar_clientes">Gerenciar Clientes</string>
+    <string name="confirmar_exclusao_cliente_message">Tem certeza que deseja excluir o cliente %1$s (ID: %2$d)?</string>
 
-    <string name="cliente_visualizar_produtos">Cardápio / Fazer Pedido</string>
-    <string name="cliente_meus_pedidos">Meus Pedidos</string>
-    <string name="logout_button">Sair</string>
+    <!-- CLIENTE: NAVEGAÇÃO -->
+    <string name="cliente_menu_destaque">Destaques</string>
+    <string name="cliente_menu_cardapio">Cardápio</string>
+    <string name="cliente_menu_pedidos">Meus Pedidos</string>
 
-    <string name="cozinha_receber_comandas">Ver Comandas Ativas</string>
+    <!-- COZINHA: NAVEGAÇÃO & TELAS -->
     <string name="cozinha_painel_title">Painel da Cozinha</string>
+    <string name="cozinha_menu_sair">Sair</string>
+    <string name="comandas_ativas_title">Comandas Ativas</string>
+    <string name="nenhuma_comanda_ativa">Nenhuma comanda ativa no momento.</string>
 
+    <!-- PRODUTOS, CARDÁPIO & CARRINHO -->
     <string name="visualizar_produtos_title">Cardápio</string>
+    <string name="gerenciar_produtos_estoque_title">Gerenciar Produtos e Estoque</string>
     <string name="nenhum_produto_cadastrado">Nenhum produto disponível no momento.</string>
-    <string name="cadastrar_produto_title">Cadastrar Novo Produto</string>
-    <string name="nome_produto_hint">Nome do Produto</string>
-    <string name="descricao_produto_hint">Descrição do Produto</string>
-    <string name="preco_produto_hint">Preço (Ex: 12.50)</string>
-    <string name="produto_adicionado_sucesso">Produto adicionado com sucesso!</string>
-    <string name="falha_adicionar_produto">Falha ao adicionar produto.</string>
-    <string name="produto_ja_existe">Um produto com este nome já existe.</string>
-    <string name="atualizar_produto_title">Atualizar Produto</string>
-    <string name="produto_atualizado_sucesso">Produto atualizado com sucesso!</string>
-    <string name="falha_atualizar_produto">Falha ao atualizar produto.</string>
-    <string name="excluir_produto_title">Excluir Produto</string>
-    <string name="id_produto_hint">ID do Produto</string>
-    <string name="produto_excluido_sucesso">Produto excluído com sucesso!</string>
-    <string name="falha_excluir_produto">Falha ao excluir produto.</string>
-    <string name="produto_nao_encontrado">Produto não encontrado.</string>
-    <string name="confirmar_exclusao_produto_message">Tem certeza que deseja excluir o produto %1$s (ID: %2$d)?</string>
+    <string name="erro_carregar_cardapio">Erro ao carregar o cardápio.</string>
+    <string name="sincronizando">Sincronizando...</string>
+    <string name="sincronizacao_concluida">Sincronização concluída!</string>
+    <string name="falha_sincronizacao">Falha na sincronização.</string>
+    <string name="confirmar_exclusao_produto_stripe">Tem certeza que deseja excluir o produto \'%1$s\' do Stripe?</string>
+    <string name="produto_excluido_stripe">Produto excluído do Stripe. Sincronize para atualizar a lista.</string>
+    <string name="falha_excluir_produto_stripe">Falha ao excluir produto.</string>
+    <string name="adicionar_novo_produto">Adicionar Novo Produto</string>
+    <string name="editar_produto_estoque">Editar Produto e Estoque</string>
+    <string name="quantidade_estoque_invalida">Quantidade de estoque inválida.</string>
+    <string name="estoque_atualizado_sucesso">Estoque atualizado com sucesso!</string>
+    <string name="erro_salvar_estoque">Erro ao salvar estoque.</string>
+    <string name="produto_e_estoque_atualizados">Produto e estoque atualizados!</string>
+    <string name="erro_salvar_produto">Erro ao salvar produto.</string>
     <string name="adicionar_ao_carrinho">Adicionar</string>
     <string name="ver_carrinho">Ver Carrinho (%d)</string>
     <string name="carrinho_vazio">Seu carrinho está vazio.</string>
     <string name="finalizar_pedido">Finalizar Pedido</string>
     <string name="total_carrinho">Total: R$ %.2f</string>
-    <string name="pedido_realizado_sucesso">Pedido realizado com sucesso! ID: %d</string>
-    <string name="falha_realizar_pedido">Falha ao realizar pedido.</string>
+    <string name="item_adicionado">"%1$s adicionado!"</string>
     <string name="item_removido_carrinho">Item removido: %s</string>
     <string name="remover_item_confirmacao">Remover %1$s do carrinho?</string>
     <string name="meu_carrinho_title">Meu Carrinho</string>
+    <string name="produto_adicionado_stripe">Produto adicionado ao Stripe! Sincronize para ver na lista.</string>
+    <string name="falha_adicionar_produto_stripe">Falha ao adicionar produto.</string>
+    <string name="quantidade_estoque_hint">Nova Quantidade</string>
+    <string name="produto_nao_encontrado">Produto não encontrado.</string>
 
+    <!-- PEDIDOS & AVALIAÇÃO -->
     <string name="visualizar_pedidos_title">Meus Pedidos</string>
+    <string name="pedido_realizado_sucesso">Pedido realizado com sucesso! ID: %d</string>
+    <string name="falha_realizar_pedido">Falha ao realizar pedido.</string>
+    <string name="meus_pedidos_title">Meus Pedidos</string>
     <string name="visualizar_todos_pedidos_title">Todos os Pedidos</string>
     <string name="nenhum_pedido_encontrado">Nenhum pedido encontrado.</string>
     <string name="excluir_pedido_title">Excluir Pedido</string>
@@ -115,7 +139,6 @@
     <string name="pedido_nao_encontrado">Pedido não encontrado.</string>
     <string name="confirmar_exclusao_pedido_message">Tem certeza que deseja excluir o pedido ID: %1$d?</string>
     <string name="pedido_id">Pedido ID: %d</string>
-    <string name="pedido_cliente_id_info">Cliente ID: %d</string>
     <string name="pedido_data_info">Data: %s</string>
     <string name="pedido_status_info">Status: %s</string>
     <string name="pedido_valor_info">Valor: R$ %.2f</string>
@@ -125,28 +148,13 @@
     <string name="marcar_como_cancelado">Cancelar Pedido</string>
     <string name="status_atualizado_sucesso">Status do pedido atualizado!</string>
     <string name="falha_atualizar_status">Falha ao atualizar status do pedido.</string>
-    <string name="comandas_ativas_title">Comandas Ativas</string>
-    <string name="nenhuma_comanda_ativa">Nenhuma comanda ativa no momento.</string>
-
-    <string name="visualizar_estoque_title">Estoque de Produtos</string>
-    <string name="nenhum_item_estoque">Nenhum item no estoque.</string>
-    <string name="atualizar_estoque_title">Atualizar Estoque</string>
-    <string name="id_produto_estoque_hint">ID do Produto para Estoque</string>
-    <string name="quantidade_estoque_hint">Nova Quantidade</string>
-    <string name="estoque_atualizado_sucesso">Estoque atualizado com sucesso!</string>
-    <string name="falha_atualizar_estoque">Falha ao atualizar estoque.</string>
-    <string name="produto_nao_encontrado_estoque">Produto não encontrado para atualizar estoque.</string>
-    <string name="btn_ir_atualizar_estoque">Atualizar Estoque de Produto</string>
-    <string name="btn_cadastrar_produto">Cadastrar Novo Produto</string>
-    <string name="produto_nome_estoque">Produto: %s</string>
-    <string name="quantidade_em_estoque">Em estoque: %d</string>
-
-    <string name="placeholder_text">Texto de Exemplo</string>
-
-    <string name="admin_panel_title">Painel de Controle</string>
-    <string name="admin_sincronizar_produtos">Sincronizar Produtos</string>
-
-    <string name="profile_title">Meu Perfil</string>
-    <string name="profile_content_description">Acessar a tela de perfil do usuário</string>
+    <string name="avaliar_pedido_title">Avaliar Pedido</string>
+    <string name="o_que_achou_do_pedido">O que você achou do seu pedido?</string>
+    <string name="deixe_um_comentario">Deixe um comentário (opcional)</string>
+    <string name="enviar_avaliacao">Enviar Avaliação</string>
+    <string name="avaliacao_enviada">Obrigado pela sua avaliação!</string>
+    <string name="erro_enviar_avaliacao">Erro ao enviar avaliação.</string>
+    <string name="selecione_pelo_menos_um_produto">Selecione pelo menos um produto para avaliar.</string>
 
 </resources>
+

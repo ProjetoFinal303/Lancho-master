@@ -2,6 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="yellow_500">#f59e0b</color>
 
     <color name="md_theme_primary">#FF8F00</color>
     <color name="md_theme_onPrimary">#FFFFFF</color>
@@ -32,12 +33,14 @@
     <color name="button_primary_pressed">#C56000</color>
     <color name="button_danger_default">@color/md_theme_error</color>
     <color name="button_danger_pressed">#93000A</color>
-
     <color name="status_pendente">#FFC107</color>
     <color name="status_em_preparo">#2196F3</color>
     <color name="status_concluido">#4CAF50</color>
     <color name="status_cancelado">@color/md_theme_error</color>
-
     <color name="cinza_claro">#BDBDBD</color>
     <color name="amarelo_estrela">#FFC107</color>
+
+    <color name="lancho_background">#EAE0D5</color> <color name="lancho_text_primary">#1f2937</color>
+    <color name="lancho_text_secondary">#4b5563</color>
+    <color name="lancho_glass_bg">#40FFFFFF</color> <color name="lancho_glass_border">#66FFFFFF</color> <color name="lancho_accent">#ca8a04</color>
 </resources>

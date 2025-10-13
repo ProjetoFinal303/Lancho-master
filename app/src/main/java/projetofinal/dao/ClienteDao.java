@@ -15,6 +15,7 @@ public class ClienteDao {
     public ClienteDao(Context context) {}
 
     private Cliente parseCliente(JSONObject obj) throws Exception {
+        if (obj == null) return null;
         Cliente c = new Cliente();
         c.setId(obj.getInt("id"));
         c.setNome(obj.optString("nome", ""));
@@ -22,6 +23,8 @@ public class ClienteDao {
         c.setContato(obj.optString("contato", ""));
         c.setSenha(obj.optString("senha", ""));
         c.setAvatarUrl(obj.optString("avatar_url", null));
+        // LINHA ADICIONADA PARA LER A ROLE DO BANCO DE DADOS
+        c.setRole(obj.optString("role", "cliente")); // 'cliente' como padrão
         return c;
     }
 
@@ -65,6 +68,12 @@ public class ClienteDao {
             json.put("email", cliente.getEmail());
             json.put("contato", cliente.getContato());
             json.put("senha", cliente.getSenha());
+            // Ao inserir, podemos definir a role padrão se não for especificada
+            if (cliente.getRole() != null) {
+                json.put("role", cliente.getRole());
+            } else {
+                json.put("role", "cliente");
+            }
             SupabaseDatabaseClient.insert(TABELA, json.toString(), onSuccess, onError);
         } catch (Exception e) { onError.accept(e); }
     }

@@ -18,6 +18,7 @@ import com.example.projetofinal.databinding.ActivityProfileBinding;
 import org.json.JSONObject;
 import projetofinal.dao.ClienteDao;
 import projetofinal.database.SupabaseStorageClient;
+import projetofinal.models.Cliente;
 
 public class ProfileActivity extends BaseActivity {
 
@@ -51,25 +52,20 @@ public class ProfileActivity extends BaseActivity {
         clienteDao = new ClienteDao(this);
         SharedPreferences prefs = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
 
-        // ============================ INÍCIO DA CORREÇÃO ============================
-        // 1. Lemos o ID do usuário como String, que é como ele foi salvo.
-        String userIdStr = prefs.getString(LoginActivity.KEY_USER_ID, null);
+        // ============================ CORREÇÃO DO CRASH ============================
+        // O ID do usuário é salvo como um número (int), então precisamos lê-lo como int.
+        // O valor padrão -1 indica que não foi encontrado nenhum ID.
+        clienteIdLogado = prefs.getInt(LoginActivity.KEY_USER_ID, -1);
 
-        // 2. Convertemos para int com segurança, tratando possíveis erros.
-        if (userIdStr != null) {
-            try {
-                clienteIdLogado = Integer.parseInt(userIdStr);
-            } catch (NumberFormatException e) {
-                Log.e("ProfileActivity", "Erro ao converter ID do usuário para número: " + userIdStr, e);
-                clienteIdLogado = -1; // Define como inválido em caso de erro
-            }
-        }
-
-        // 3. Se o ID não for válido, exibe uma mensagem e fecha a tela para evitar crash.
+        // Se o ID for inválido, o usuário provavelmente não está logado.
         if (clienteIdLogado == -1) {
-            Toast.makeText(this, "Erro ao carregar perfil. Por favor, faça login novamente.", Toast.LENGTH_LONG).show();
-            finish();
-            return; // Impede a execução do resto do código que causaria o crash
+            Toast.makeText(this, "Erro: Usuário não encontrado. Faça login novamente.", Toast.LENGTH_LONG).show();
+            // Redireciona para a tela de login para evitar crash e confusão.
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish(); // Fecha a tela de perfil
+            return; // Impede a execução do resto do código
         }
         // ============================ FIM DA CORREÇÃO ============================
 
@@ -99,6 +95,9 @@ public class ProfileActivity extends BaseActivity {
                         clienteDao.atualizarParcial(clienteIdLogado, payload,
                                 response -> runOnUiThread(() -> {
                                     Toast.makeText(this, "Foto de perfil atualizada!", Toast.LENGTH_SHORT).show();
+                                    // Salva a nova URL localmente para atualização instantânea
+                                    SharedPreferences prefs = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
+                                    prefs.edit().putString("userAvatarUrl", publicUrl).apply();
                                     carregarDadosDoCliente(); // Recarrega para mostrar a nova foto
                                 }),
                                 error -> runOnUiThread(() -> Toast.makeText(this, "Erro ao salvar URL da foto.", Toast.LENGTH_SHORT).show())
@@ -136,14 +135,17 @@ public class ProfileActivity extends BaseActivity {
 
                         // Carrega a foto de perfil com Glide
                         Glide.with(this)
-                                .load(cliente.getAvatarUrl()) // Usa o novo campo getAvatarUrl()
-                                .placeholder(R.drawable.ic_person) // Imagem padrão
-                                .error(R.drawable.ic_person) // Imagem de erro
+                                .load(cliente.getAvatarUrl())
+                                .placeholder(R.drawable.ic_person) // Imagem padrão enquanto carrega
+                                .error(R.drawable.ic_person) // Imagem padrão se der erro
+                                .circleCrop() // Deixa a imagem redonda
                                 .into(binding.profileImage);
                     });
+                } else {
+                    runOnUiThread(() -> Toast.makeText(this, "Não foi possível carregar os dados do usuário.", Toast.LENGTH_SHORT).show());
                 }
             }, error -> runOnUiThread(() ->
-                    Toast.makeText(this, "Erro ao carregar dados.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Erro de conexão ao carregar dados.", Toast.LENGTH_SHORT).show()
             ));
         }
     }
