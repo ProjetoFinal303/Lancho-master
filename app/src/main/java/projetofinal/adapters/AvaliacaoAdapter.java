@@ -23,7 +23,7 @@ public class AvaliacaoAdapter extends RecyclerView.Adapter<AvaliacaoAdapter.Aval
 
     private final Context context;
     private final List<Produto> produtoList;
-    // Usamos um Map para guardar as avaliações em andamento, associadas ao ID do produto
+
     private final Map<Integer, Avaliacao> avaliacoesMap = new HashMap<>();
 
     public AvaliacaoAdapter(Context context, List<Produto> produtoList) {
@@ -49,9 +49,7 @@ public class AvaliacaoAdapter extends RecyclerView.Adapter<AvaliacaoAdapter.Aval
         return produtoList.size();
     }
 
-    // Método para a Activity pegar todas as avaliações preenchidas
     public List<Avaliacao> getAvaliacoes() {
-        // Retorna apenas as avaliações que receberam uma nota
         List<Avaliacao> avaliacoesValidas = new ArrayList<>();
         for (Avaliacao avaliacao : avaliacoesMap.values()) {
             if (avaliacao.getNota() > 0) {
@@ -76,8 +74,6 @@ public class AvaliacaoAdapter extends RecyclerView.Adapter<AvaliacaoAdapter.Aval
 
         public void bind(Produto produto) {
             textViewNomeProduto.setText(produto.getNome());
-
-            // Garante que o estado (nota/comentário) seja mantido se a lista rolar
             Avaliacao avaliacaoAtual = avaliacoesMap.get(produto.getId());
             if (avaliacaoAtual != null) {
                 ratingBar.setRating(avaliacaoAtual.getNota());
@@ -87,7 +83,6 @@ public class AvaliacaoAdapter extends RecyclerView.Adapter<AvaliacaoAdapter.Aval
                 editTextComentario.setText("");
             }
 
-            // Listener para quando a nota mudar
             ratingBar.setOnRatingBarChangeListener((ratingBar, rating, fromUser) -> {
                 if (fromUser) {
                     int produtoId = produtoList.get(getAdapterPosition()).getId();
@@ -100,7 +95,7 @@ public class AvaliacaoAdapter extends RecyclerView.Adapter<AvaliacaoAdapter.Aval
                 }
             });
 
-            // Listener para quando o texto do comentário mudar
+
             editTextComentario.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -110,7 +105,6 @@ public class AvaliacaoAdapter extends RecyclerView.Adapter<AvaliacaoAdapter.Aval
                     int produtoId = produtoList.get(getAdapterPosition()).getId();
                     Avaliacao avaliacao = avaliacoesMap.get(produtoId);
                     if (avaliacao == null) {
-                        // Cria uma avaliação com nota 0 se o usuário só digitar texto
                         avaliacao = new Avaliacao(produtoId, 0, 0, s.toString());
                         avaliacoesMap.put(produtoId, avaliacao);
                     }

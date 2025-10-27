@@ -22,14 +22,12 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.PedidoView
     public PedidoAdapter(Context context, List<Pedido> pedidoList /*, OnPedidoClickListener listener */) {
         this.context = context;
         this.pedidoList = pedidoList;
-        // this.clickListener = listener;
     }
 
     @NonNull
     @Override
     public PedidoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        // Inflar usando a classe de binding gerada para item_pedido.xml
         ItemPedidoBinding binding = ItemPedidoBinding.inflate(inflater, parent, false);
         return new PedidoViewHolder(binding);
     }
@@ -47,28 +45,26 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.PedidoView
 
     public void atualizarPedidos(List<Pedido> novosPedidos) {
         this.pedidoList = novosPedidos;
-        notifyDataSetChanged(); // Para simplicidade. Considere DiffUtil para listas grandes.
+        notifyDataSetChanged();
     }
 
     static class PedidoViewHolder extends RecyclerView.ViewHolder {
-        private final ItemPedidoBinding binding; // Usar o binding
+        private final ItemPedidoBinding binding;
 
         PedidoViewHolder(ItemPedidoBinding binding) {
             super(binding.getRoot());
-            this.binding = binding; // Armazenar o binding
+            this.binding = binding;
         }
 
         void bind(final Pedido pedido /*, final OnPedidoClickListener listener */) {
-            // Acessar views através do objeto binding
             binding.textViewPedidoIdGenerico.setText(String.format(Locale.getDefault(), "Pedido ID: #%d", pedido.getId()));
             binding.textViewDataPedidoGenerico.setText(String.format("Data: %s", pedido.getData()));
             binding.textDescricaoPedido.setText(pedido.getDescricao()); // ID corrigido no XML
-            binding.textValorPedido.setText(String.format(Locale.getDefault(), "Valor Total: R$ %.2f", pedido.getValor())); // ID corrigido no XML
+            binding.textValorPedido.setText(String.format(Locale.getDefault(), "Valor Total: R$ %.2f", pedido.getValor()));
             binding.textViewStatusPedidoGenerico.setText(String.format("Status: %s", pedido.getStatus()));
 
-            // Lógica para colorir o status (opcional, mas melhora a UI)
             GradientDrawable statusBackground = (GradientDrawable) binding.textViewStatusPedidoGenerico.getBackground();
-            if (statusBackground == null) { // Cria um se não existir no XML (melhor ter um drawable base como status_background_placeholder)
+            if (statusBackground == null) {
                 statusBackground = new GradientDrawable();
                 statusBackground.setCornerRadius(itemView.getContext().getResources().getDimensionPixelSize(R.dimen.status_corner_radius));
                 binding.textViewStatusPedidoGenerico.setBackground(statusBackground);
@@ -95,13 +91,6 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.PedidoView
             }
             statusBackground.setColor(ContextCompat.getColor(itemView.getContext(), colorResId));
 
-
-            // Se você tiver um listener para cliques no item:
-            // itemView.setOnClickListener(v -> {
-            //    if (listener != null) {
-            //        listener.onPedidoClick(pedido);
-            //    }
-            // });
         }
     }
 }

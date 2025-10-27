@@ -2,6 +2,16 @@
 <resources>
     <string name="app_name">Lanchô Digital</string>
 
+    <string name="language_dialog_title">Choose Language</string>
+    <string name="notifications_label">Notifications</string>
+    <string name="order_notifications_label">Order Status</string>
+    <string name="order_notifications_summary">Receive updates about your orders</string>
+    <string name="promo_notifications_label">Promotions &amp; News</string>
+    <string name="promo_notifications_summary">Receive special offers and news</string>
+    <string name="more_info_label">More Information</string>
+    <string name="about_us_label">About Us</string>
+    <string name="website_label">Website</string>
+
     <!-- General & Themes -->
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>

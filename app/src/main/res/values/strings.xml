@@ -3,7 +3,6 @@
     <string name="app_name">Lanchô Digital</string>
     <string name="default_web_client_id">975618621125-k0qaq6qimn0ddb45gv8d9mfkps0pttgv.apps.googleusercontent.com</string>
 
-    <!-- GERAL & TEMAS -->
     <string name="theme_light">Claro</string>
     <string name="theme_dark">Escuro</string>
     <string name="theme_system">Padrão do Sistema</string>
@@ -20,14 +19,7 @@
     <string name="atualizar_button">Atualizar</string>
     <string name="excluir_button">Excluir</string>
 
-    <!-- IDIOMAS -->
-    <string name="language_label">Idioma</string>
-    <string name="portuguese">Português</string>
-    <string name="english">Inglês</string>
-    <string name="spanish">Espanhol</string>
-
-    <!-- TELA DE LOGIN -->
-    <string name="login_title">Login</string>
+    <string name="language_label">Idioma</string> <string name="portuguese">Português</string> <string name="english">Inglês</string> <string name="spanish">Espanhol</string> <string name="login_title">Login</string>
     <string name="bem_vindo_de_volta">Bem-vindo de volta!</string>
     <string name="faca_login_para_continuar">Faça login para continuar</string>
     <string name="email_hint">E-mail</string>
@@ -37,7 +29,6 @@
     <string name="login_failed">E-mail ou senha incorretos!</string>
     <string name="login_fields_required">Preencha e-mail e senha!</string>
 
-    <!-- TELA DE CADASTRO -->
     <string name="cadastrar_cliente_title">Crie sua Conta</string>
     <string name="cadastro_subtitulo">É rápido, fácil e o primeiro lanche é inesquecível!</string>
     <string name="nome_cliente_hint">Nome completo</string>
@@ -52,7 +43,6 @@
     <string name="email_invalido">Formato de e-mail inválido!</string>
     <string name="campos_obrigatorios">Preencha todos os campos obrigatórios!</string>
 
-    <!-- TELA DE PERFIL -->
     <string name="profile_title">Meu Perfil</string>
     <string name="editar_dados">Editar Dados</string>
     <string name="erro_carregar_perfil">Erro ao carregar perfil. Por favor, faça login novamente.</string>
@@ -62,7 +52,6 @@
     <string name="enviando_foto">Enviando nova foto...</string>
     <string name="erro_carregar_dados">Erro ao carregar dados.</string>
 
-    <!-- ADMIN: PAINEL & CLIENTES -->
     <string name="admin_panel_title">Painel de Controle</string>
     <string name="admin_gerenciar_produtos">Gerenciar Produtos</string>
     <string name="admin_visualizar_pedidos">Visualizar Pedidos</string>
@@ -82,18 +71,15 @@
     <string name="falha_excluir_cliente">Falha ao excluir cliente.</string>
     <string name="confirmar_exclusao_cliente_message">Tem certeza que deseja excluir o cliente %1$s (ID: %2$d)?</string>
 
-    <!-- CLIENTE: NAVEGAÇÃO -->
     <string name="cliente_menu_destaque">Destaques</string>
     <string name="cliente_menu_cardapio">Cardápio</string>
     <string name="cliente_menu_pedidos">Meus Pedidos</string>
 
-    <!-- COZINHA: NAVEGAÇÃO & TELAS -->
     <string name="cozinha_painel_title">Painel da Cozinha</string>
     <string name="cozinha_menu_sair">Sair</string>
     <string name="comandas_ativas_title">Comandas Ativas</string>
     <string name="nenhuma_comanda_ativa">Nenhuma comanda ativa no momento.</string>
 
-    <!-- PRODUTOS, CARDÁPIO & CARRINHO -->
     <string name="visualizar_produtos_title">Cardápio</string>
     <string name="gerenciar_produtos_estoque_title">Gerenciar Produtos e Estoque</string>
     <string name="nenhum_produto_cadastrado">Nenhum produto disponível no momento.</string>
@@ -125,7 +111,6 @@
     <string name="quantidade_estoque_hint">Nova Quantidade</string>
     <string name="produto_nao_encontrado">Produto não encontrado.</string>
 
-    <!-- PEDIDOS & AVALIAÇÃO -->
     <string name="visualizar_pedidos_title">Meus Pedidos</string>
     <string name="pedido_realizado_sucesso">Pedido realizado com sucesso! ID: %d</string>
     <string name="falha_realizar_pedido">Falha ao realizar pedido.</string>
@@ -156,5 +141,14 @@
     <string name="erro_enviar_avaliacao">Erro ao enviar avaliação.</string>
     <string name="selecione_pelo_menos_um_produto">Selecione pelo menos um produto para avaliar.</string>
 
-</resources>
+    <string name="language_dialog_title">Escolher Idioma</string>
+    <string name="notifications_label">Notificações</string>
+    <string name="order_notifications_label">Status dos Pedidos</string>
+    <string name="order_notifications_summary">Receber atualizações sobre seus pedidos</string>
+    <string name="promo_notifications_label">Promoções e Novidades</string>
+    <string name="promo_notifications_summary">Receber ofertas especiais e notícias</string>
+    <string name="more_info_label">Mais Informações</string>
+    <string name="about_us_label">Sobre Nós</string>
+    <string name="website_label">Website</string>
 
+</resources>

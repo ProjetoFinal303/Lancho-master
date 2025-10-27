@@ -9,7 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.projetofinal.R; // Certifique-se que R é importado corretamente
+import com.example.projetofinal.R;
 import com.example.projetofinal.databinding.ItemCarrinhoProdutoBinding;
 
 import java.util.List;
@@ -24,8 +24,8 @@ public class CarrinhoAdapter extends RecyclerView.Adapter<CarrinhoAdapter.Carrin
     private final OnCarrinhoInteractionListener listener;
 
     public interface OnCarrinhoInteractionListener {
-        void onItemQuantityChanged(); // Chamado quando a quantidade muda para atualizar o total
-        void onItemRemoved(CarrinhoItem item, int position); // Chamado para remover o item
+        void onItemQuantityChanged();
+        void onItemRemoved(CarrinhoItem item, int position);
     }
 
     public CarrinhoAdapter(Context context, List<CarrinhoItem> itensCarrinho, OnCarrinhoInteractionListener listener) {
@@ -56,7 +56,7 @@ public class CarrinhoAdapter extends RecyclerView.Adapter<CarrinhoAdapter.Carrin
     @SuppressLint("NotifyDataSetChanged")
     public void atualizarItens(List<CarrinhoItem> novosItens) {
         this.itensCarrinho = novosItens;
-        notifyDataSetChanged(); // Para simplicidade.
+        notifyDataSetChanged();
     }
 
 
@@ -81,12 +81,10 @@ public class CarrinhoAdapter extends RecyclerView.Adapter<CarrinhoAdapter.Carrin
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
                     CarrinhoItem item = itensCarrinho.get(position);
-                    if (item.getQuantidade() > 1) { // Não permite zerar por aqui, só remover
+                    if (item.getQuantidade() > 1) {
                         item.decrementarQuantidade();
                         notifyItemChanged(position);
                     } else {
-                        // Se a quantidade for 1, o próximo clique em diminuir poderia remover o item
-                        // ou mostrar um aviso. Para remover, use o botão de remover.
                         Toast.makeText(context, "Use o botão remover para tirar o item.", Toast.LENGTH_SHORT).show();
                     }
                     listener.onItemQuantityChanged();
@@ -98,7 +96,6 @@ public class CarrinhoAdapter extends RecyclerView.Adapter<CarrinhoAdapter.Carrin
                 if (position != RecyclerView.NO_POSITION) {
                     CarrinhoItem itemRemovido = itensCarrinho.get(position);
                     listener.onItemRemoved(itemRemovido, position);
-                    // listener.onItemQuantityChanged(); // Atualizar total após remoção
                 }
             });
         }

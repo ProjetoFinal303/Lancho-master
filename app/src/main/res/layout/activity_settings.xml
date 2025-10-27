@@ -18,29 +18,74 @@
             app:title="@string/settings_title" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
-        android:id="@+id/optionTheme"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/theme_label"
-            android:textAppearance="?attr/textAppearanceTitleMedium" />
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
 
-        <TextView
-            android:id="@+id/textViewCurrentTheme"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="Padrão do Sistema"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?android:attr/textColorSecondary"/>
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/optionTheme"
+                style="@style/SettingsOptionContainer">
+
+                <TextView
+                    style="@style/SettingsOptionTitle"
+                    android:text="@string/theme_label" />
+
+                <TextView
+                    android:id="@+id/textViewCurrentTheme"
+                    style="@style/SettingsOptionSummary"
+                    tools:text="Padrão do Sistema" />
+            </LinearLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                style="@style/SettingsDivider"/>
+
+            <LinearLayout
+                android:id="@+id/optionLanguage"
+                style="@style/SettingsOptionContainer">
+
+                <TextView
+                    style="@style/SettingsOptionTitle"
+                    android:text="@string/language_label" />
+
+                <TextView
+                    android:id="@+id/textViewCurrentLanguage"
+                    style="@style/SettingsOptionSummary"
+                    tools:text="Português" />
+            </LinearLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                style="@style/SettingsDivider"/>
+
+            <TextView
+                style="@style/SettingsSectionHeader"
+                android:text="@string/more_info_label" />
+
+            <LinearLayout
+                android:id="@+id/optionAboutUs"
+                style="@style/SettingsOptionContainer">
+
+                <TextView
+                    style="@style/SettingsOptionTitleOnly"
+                    android:text="@string/about_us_label" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/optionWebsite"
+                style="@style/SettingsOptionContainer">
+
+                <TextView
+                    style="@style/SettingsOptionTitleOnly"
+                    android:text="@string/website_label" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

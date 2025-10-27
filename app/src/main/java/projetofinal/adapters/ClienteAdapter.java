@@ -14,10 +14,9 @@ public class ClienteAdapter extends RecyclerView.Adapter<ClienteAdapter.ClientVi
     private List<Cliente> clienteList;
     private final OnItemClickListener listener;
 
-    // Interface para lidar com cliques no item e no botão de excluir
     public interface OnItemClickListener {
         void onItemClick(Cliente cliente);
-        void onDeleteClick(Cliente cliente); // Novo método para o clique de exclusão
+        void onDeleteClick(Cliente cliente);
     }
 
     public ClienteAdapter(List<Cliente> clienteList, OnItemClickListener listener) {
@@ -60,7 +59,6 @@ public class ClienteAdapter extends RecyclerView.Adapter<ClienteAdapter.ClientVi
 
             itemView.setOnClickListener(v -> listener.onItemClick(cliente));
 
-            // Configura o clique para o botão de excluir
             binding.btnExcluirCliente.setOnClickListener(v -> listener.onDeleteClick(cliente));
         }
     }

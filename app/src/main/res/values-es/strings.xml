@@ -124,6 +124,16 @@
     <string name="quantidade_estoque_hint">Nueva Cantidad</string>
     <string name="produto_nao_encontrado">Producto no encontrado.</string>
 
+    <string name="language_dialog_title">Elegir Idioma</string>
+    <string name="notifications_label">Notificaciones</string>
+    <string name="order_notifications_label">Estado de los Pedidos</string>
+    <string name="order_notifications_summary">Recibir actualizaciones sobre tus pedidos</string>
+    <string name="promo_notifications_label">Promociones y Novedades</string>
+    <string name="promo_notifications_summary">Recibir ofertas especiales y noticias</string>
+    <string name="more_info_label">Más Información</string>
+    <string name="about_us_label">Sobre Nosotros</string>
+    <string name="website_label">Sitio Web</string>
+
     <!-- Pedidos & Calificación -->
     <string name="visualizar_pedidos_title">Mis Pedidos</string>
     <string name="pedido_realizado_sucesso">¡Pedido realizado con éxito! ID: %d</string>
