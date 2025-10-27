@@ -21,10 +21,6 @@ public class SupabaseDatabaseClient {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private static final Gson gson = new Gson();
 
-    // =================================================================
-    // MÉTODOS ORIGINAIS (MANTIDOS PARA COMPATIBILIDADE)
-    // =================================================================
-
     public static void get(String urlPath, Consumer<String> onSuccess, Consumer<Exception> onError) {
         Request request = new Request.Builder()
                 .url(SUPABASE_URL + "/rest/v1/" + urlPath)

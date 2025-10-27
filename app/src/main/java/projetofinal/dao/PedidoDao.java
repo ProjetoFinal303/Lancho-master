@@ -31,10 +31,6 @@ public class PedidoDao {
         this.gson = new GsonBuilder().create();
     }
 
-    // =================================================================
-    // MÉTODOS NOVOS (PARA A TELA DA COZINHA)
-    // =================================================================
-
     public void getPedidosPorStatus(List<String> statusList, Consumer<List<Pedido>> onSuccess, Consumer<String> onError) {
         if (statusList == null || statusList.isEmpty()) {
             onSuccess.accept(new ArrayList<>());
